@@ -105,11 +105,42 @@ void FrameHandler::parse194(uint8_t payloadLength, const uint8_t* payload)
     sprintf(topic, "%S%S", BASE_TOPIC, HOT_WATER_TEMP_TARGET);
     mELClientMqtt.publish(topic, payloadStr);
 
-    // TODO: parse operation mode accordingly
-    uint8_t operationMode = payload[3];
-    itoa(operationMode, payloadStr, 10);
+    uint8_t operationMode = payload[3] & 0x0F;
     sprintf(topic, "%S%S", BASE_TOPIC, OPERATION_MODE);
+    switch (operationMode)
+    {
+        case 0:
+            sprintf(payloadStr, "%S", ENUM_OPERATION_MODE_ABSENCE);
+            break;
+        case 1:
+            sprintf(payloadStr, "%S", ENUM_OPERATION_MODE_ECO_ON);
+            break;
+        case 2:
+            sprintf(payloadStr, "%S", ENUM_OPERATION_MODE_ECO_OFF);
+            break;
+        case 3:
+            sprintf(payloadStr, "%S", ENUM_OPERATION_MODE_BOOST);
+            break;
+        case 4:
+            sprintf(payloadStr, "%S", ENUM_OPERATION_MODE_AUTO);
+            break;
+        default:
+            sprintf(payloadStr, "%S", ENUM_UNKNOWN);
+            break;
+    }
     mELClientMqtt.publish(topic, payloadStr);
+
+    bool timerMode =  payload[3] & 0x40;
+    sprintf(topic, "%S%S", BASE_TOPIC, OPERATION_TYPE);
+    if(timerMode) {
+        sprintf(payloadStr, "%S", ENUM_OPERATION_TYPE_TIMER);
+    } else{
+        sprintf(payloadStr, "%S", ENUM_OPERATION_TYPE_ALWAYS_ON);
+    }
+    mELClientMqtt.publish(topic, payloadStr);
+
+
+
 
     sprintf(payloadStr, "%02d:%02d:%02d", payload[21], payload[20], payload[17]);
     sprintf(topic, "%S%S", BASE_TOPIC, TIME);
