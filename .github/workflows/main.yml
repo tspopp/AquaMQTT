@@ -21,6 +21,5 @@ jobs:
         run: pip install --upgrade platformio
 
       - name: Build PlatformIO Project
+        working-directory: ./AquaMqttLogger
         run: pio run
-        env:
-            PLATFORMIO_CI_SRC: AquaMqttLogger
