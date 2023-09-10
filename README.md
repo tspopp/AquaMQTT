@@ -1,5 +1,7 @@
 # AquaMQTT (Work in Progress)
 
+[![PlatformIO CI](https://github.com/tspopp/AquaMQTT/actions/workflows/main.yml/badge.svg)](https://github.com/tspopp/AquaMQTT/actions/workflows/main.yml)
+
 Monitor your DHW heat pump locally using MQTT:
 
 - Access sensor data and operational states from your heat pump.
