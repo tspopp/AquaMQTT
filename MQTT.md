@@ -6,7 +6,6 @@
 | Current Water Temperature        | `%prefix/waterTemp`              | float  |   °C |                                                  |
 | Operation Mode                   | `%prefix/operationMode`          | Enum   |      |  AUTO, MAN ECO ON, MAN ECO OFF, BOOST, ABSENCE   |
 | Operation Type                   | `%prefix/operationType`          | Enum   |      |                         TIME WINDOW, ALWAYS ON   |
-| Operation Status                 | `%prefix/193bitmask`             | Enum   |      |                                            TBD   |
 | Total Heatpump Hours             | `%prefix/totalHeatpumpHours`     | uint32 |    h |                                                  |
 | Total Heating Element Hours      | `%prefix/totalHeatingElemHours`  | uint32 |    h |                                                  |
 | Total Hours                      | `%prefix/totalHours`             | uint32 |    h |                                                  |
@@ -20,6 +19,12 @@
 | Fan Speed                        | `%prefix/fanSpeed`               | uint16 |  rpm |                                                  |
 | Current Time                     | `%prefix/time`                   | string |      |                                 e.g 09:11:59     |
 | Current Date                     | `%prefix/date`                   | string |      |                                 e.g 07.09.2023   |
+| State: Fan On/Off                | `%prefix/stateFan`               | bool   |      |                                                  |
+| State: Heatpump On/Off           | `%prefix/stateHeatpump`          | bool   |      |                                                  |
+| State: Heating Element On/Off    | `%prefix/stateElement`           | bool   |      |                                                  |
+| State: Boiler Backup On/Off      | `%prefix/stateExtBoiler`         | bool   |      |                                                  |
+| State: Defrost On/Off Date       | `%prefix/stateDefrost`           | bool   |      |                                                  |
+
 
 ## Debug Messages
 

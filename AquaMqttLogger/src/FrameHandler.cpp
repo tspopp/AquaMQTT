@@ -33,7 +33,10 @@ void FrameHandler::loop()
 
 void FrameHandler::handleFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* payload)
 {
-    // logDebug(frameId, payloadLength, payload);
+    if (DEBUG_AQUAMQTT)
+    {
+        logDebug(frameId, payloadLength, payload);
+    }
 
     if (frameId == 193)
     {
@@ -49,7 +52,7 @@ void FrameHandler::handleFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* 
     }
 
     delete[] payload;
-};
+}
 
 void FrameHandler::parse193(uint8_t payloadLength, const uint8_t* payload)
 {
@@ -85,9 +88,29 @@ void FrameHandler::parse193(uint8_t payloadLength, const uint8_t* payload)
     sprintf(topic, "%S%S", BASE_TOPIC, FAN_SPEED);
     mELClientMqtt.publish(topic, payloadStr);
 
-    uint8_t bitmask = payload[17];
-    itoa(bitmask, payloadStr, 10);
-    sprintf(topic, "%S%S", BASE_TOPIC, BITMASK_193);
+    bool stateHeatingElement = payload[17] & 0x01;
+    itoa(stateHeatingElement, payloadStr, 10);
+    sprintf(topic, "%S%S", BASE_TOPIC, STATE_HEAT_ELEMENT);
+    mELClientMqtt.publish(topic, payloadStr);
+
+    bool stateHeatpump = payload[17] & 0x02;
+    itoa(stateHeatpump, payloadStr, 10);
+    sprintf(topic, "%S%S", BASE_TOPIC, STATE_HEATPUMP);
+    mELClientMqtt.publish(topic, payloadStr);
+
+    bool stateBoilerBackup = payload[17] & 0x04;
+    itoa(stateBoilerBackup, payloadStr, 10);
+    sprintf(topic, "%S%S", BASE_TOPIC, STATE_EXT_BOILER);
+    mELClientMqtt.publish(topic, payloadStr);
+
+    bool stateFan = payload[17] & 0x08;
+    itoa(stateFan, payloadStr, 10);
+    sprintf(topic, "%S%S", BASE_TOPIC, STATE_FAN);
+    mELClientMqtt.publish(topic, payloadStr);
+
+    bool stateDefrost = payload[17] & 0x20;
+    itoa(stateDefrost, payloadStr, 10);
+    sprintf(topic, "%S%S", BASE_TOPIC, STATE_DEFROST);
     mELClientMqtt.publish(topic, payloadStr);
 }
 
@@ -130,17 +153,17 @@ void FrameHandler::parse194(uint8_t payloadLength, const uint8_t* payload)
     }
     mELClientMqtt.publish(topic, payloadStr);
 
-    bool timerMode =  payload[3] & 0x40;
+    bool timerMode = payload[3] & 0x40;
     sprintf(topic, "%S%S", BASE_TOPIC, OPERATION_TYPE);
-    if(timerMode) {
+    if (timerMode)
+    {
         sprintf(payloadStr, "%S", ENUM_OPERATION_TYPE_TIMER);
-    } else{
+    }
+    else
+    {
         sprintf(payloadStr, "%S", ENUM_OPERATION_TYPE_ALWAYS_ON);
     }
     mELClientMqtt.publish(topic, payloadStr);
-
-
-
 
     sprintf(payloadStr, "%02d:%02d:%02d", payload[21], payload[20], payload[17]);
     sprintf(topic, "%S%S", BASE_TOPIC, TIME);
@@ -202,12 +225,6 @@ void FrameHandler::parse67(uint8_t payloadLength, const uint8_t* payload)
     uint16_t powerOverall = ((uint16_t) payload[8] << 8) | (uint16_t) payload[7];
     ultoa(powerOverall, payloadStr, 10);
     sprintf(topic, "%S%S", BASE_TOPIC, POWER_TOTAL);
-    mELClientMqtt.publish(topic, payloadStr);
-
-    // TODO: to be remove, still unknown
-    uint16_t groupa = ((uint16_t) payload[10] << 8) | (uint16_t) payload[9];
-    ultoa(groupa, payloadStr, 10);
-    sprintf(topic, "%S%S", BASE_TOPIC, UNKNOWN_67A);
     mELClientMqtt.publish(topic, payloadStr);
 }
 

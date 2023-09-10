@@ -1,6 +1,8 @@
 #ifndef AQUAMQTT_MQTTDEFINITIONS_H
 #define AQUAMQTT_MQTTDEFINITIONS_H
 
+#define DEBUG_AQUAMQTT 0
+
 const char DEBUG_TOPIC[] PROGMEM = { "tortuga/aquawin/dbg/" };
 const char BASE_TOPIC[] PROGMEM  = { "tortuga/aquawin/" };
 
@@ -32,7 +34,11 @@ const char POWER_TOTAL[] PROGMEM               = { "powerTotal" };
 const char POWER_HEAT_ELEMENT[] PROGMEM        = { "powerHeatingElem" };
 const char POWER_HEATPUMP[] PROGMEM            = { "powerHeatpump" };
 const char FAN_SPEED[] PROGMEM                 = { "fanSpeed" };
-const char UNKNOWN_67A[] PROGMEM               = { "67a" };
-const char BITMASK_193[] PROGMEM               = { "193bitmask" };
+
+const char STATE_FAN[] PROGMEM          = { "stateFan" };
+const char STATE_HEATPUMP[] PROGMEM     = { "stateHeatpump" };
+const char STATE_HEAT_ELEMENT[] PROGMEM = { "stateElement" };
+const char STATE_EXT_BOILER[] PROGMEM   = { "stateExtBoiler" };
+const char STATE_DEFROST[] PROGMEM      = { "stateDefrost" };
 
 #endif  // AQUAMQTT_MQTTDEFINITIONS_H

@@ -1,8 +1,9 @@
 #ifndef AQUAMQTT_FRAMEBUFFER_H
 #define AQUAMQTT_FRAMEBUFFER_H
 
-#include "../.pio/libdeps/nanoatmega328new/FastCRC/FastCRC.h"
-#include "../.pio/libdeps/nanoatmega328new/RingBuffer/src/RingBuf.h"
+#include <FastCRC.h>
+#include <RingBuf.h>
+
 #include "FrameHandler.h"
 
 #define HEATPUMP_MAX_FRAME_LENGTH 50
