@@ -2,10 +2,9 @@
 #define AQUAMQTT_FRAMEHANDLER_H
 
 #include <Arduino.h>
-
-#include "../.pio/libdeps/nanoatmega328new/ELClient/ELClient.h"
-#include "../.pio/libdeps/nanoatmega328new/ELClient/ELClientCmd.h"
-#include "../.pio/libdeps/nanoatmega328new/ELClient/ELClientMqtt.h"
+#include <ELClient.h>
+#include <ELClientCmd.h>
+#include <ELClientMqtt.h>
 
 class FrameHandler
 {
