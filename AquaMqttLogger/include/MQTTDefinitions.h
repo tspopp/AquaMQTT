@@ -3,8 +3,28 @@
 
 #define DEBUG_AQUAMQTT 0
 
-const char DEBUG_TOPIC[] PROGMEM = { "tortuga/aquawin/dbg/" };
-const char BASE_TOPIC[] PROGMEM  = { "tortuga/aquawin/" };
+enum HMIOperationMode : uint8_t
+{
+    ABSENCE      = 0,
+    ECO_ACTIVE   = 1,
+    ECO_INACTIVE = 2,
+    BOOST        = 3,
+    AUTO         = 4
+};
+
+class IMQTTCallback
+{
+public:
+    // tortuga/aquawin/ctrl/operationMode + ENUM_OPERATION_MODE
+    virtual void onOperationModeChanged(HMIOperationMode value) = 0;
+
+    // tortuga/aquawin/ctrl/waterTempTarget + float
+    virtual void onWaterTempTargetChanged(float value) = 0;
+};
+
+const char DEBUG_TOPIC[] PROGMEM   = { "tortuga/aquawin/dbg/" };
+const char BASE_TOPIC[] PROGMEM    = { "tortuga/aquawin/" };
+const char CONTROL_TOPIC[] PROGMEM = { "tortuga/aquawin/ctrl/" };
 
 const char ENUM_UNKNOWN[] PROGMEM = { "UNKNOWN" };
 

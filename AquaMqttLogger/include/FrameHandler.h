@@ -2,20 +2,15 @@
 #define AQUAMQTT_FRAMEHANDLER_H
 
 #include <Arduino.h>
-#include <ELClient.h>
-#include <ELClientCmd.h>
-#include <ELClientMqtt.h>
+
+#include "ESPLink.h"
 
 class FrameHandler
 {
 public:
-    FrameHandler();
+    FrameHandler(ESPLink* mqttClient);
 
     ~FrameHandler() = default;
-
-    bool setup();
-
-    void loop();
 
     void handleFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* payload);
 
@@ -26,9 +21,8 @@ private:
 
     void logDebug(uint8_t frameId, uint8_t payloadLength, uint8_t* payload);
 
-    ELClient     mElClient;
-    ELClientCmd  mELClientCmd;
-    ELClientMqtt mELClientMqtt;
+    ESPLink* mMqttClient;
+
 };
 
 #endif  // AQUAMQTT_FRAMEHANDLER_H
