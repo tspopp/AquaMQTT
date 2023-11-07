@@ -47,7 +47,6 @@ private:
     static void mqttDisconnected(void* response);
     static void mqttData(void* response);
 
-    Stream*        mSerial;
     ELClient*      mElClient;
     ELClientCmd*   mELClientCmd;
     ELClientMqtt*  mELClientMqtt;

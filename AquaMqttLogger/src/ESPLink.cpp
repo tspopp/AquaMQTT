@@ -6,13 +6,7 @@
 
 ESPLink::ESPLink() : mElClient(nullptr), mELClientCmd(nullptr), mELClientMqtt(nullptr), mCallback(nullptr)
 {
-}
-
-void ESPLink::init(Stream* serial)
-{
-
-    mSerial = serial;
-    mElClient     = new ELClient(serial);
+    mElClient     = new ELClient(&Serial);
     mELClientCmd  = new ELClientCmd(mElClient);
     mELClientMqtt = new ELClientMqtt(mElClient);
 }
@@ -26,11 +20,11 @@ bool ESPLink::setup()
         retry++;
         if (retry >= 5)
         {
-            mSerial->println(F("esp:nosync"));
+            Serial.println(F("esp:nosync"));
             return false;
         }
     }
-    mSerial->println(F("esp:sync"));
+    Serial.println(F("esp:sync"));
 
     mELClientMqtt->connectedCb.attach(mqttConnected);
     mELClientMqtt->disconnectedCb.attach(mqttDisconnected);
