@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>/Users/T3I6FA7/Workspace/privat/AquaMQTT/pcb/AquaMQTT.kicad_sch</source>
+    <date>2023 November 12, Sunday 20:48:04</date>
+    <tool>Eeschema 7.0.8</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>AquaMQTT Board</title>
+        <company>Thomas Popp</company>
+        <rev>1.0</rev>
+        <date>2023-11-08</date>
+        <source>AquaMQTT.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="A2">
+      <value>Arduino Nano ESP32</value>
+      <footprint>PCM_arduino-library:Arduino_Nano_ESP32_Socket</footprint>
+      <datasheet>https://docs.arduino.cc/hardware/nano-esp32</datasheet>
+      <libsource lib="PCM_arduino-library" part="Arduino_Nano_ESP32_Socket" description="Socket for Arduino Nano ESP32"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Socket for Arduino Nano ESP32"/>
+      <property name="ki_keywords" value="Arduino MPU Shield"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>54ed7b30-6fed-4edc-afa2-c2ebc78169cb</tstamps>
+    </comp>
+    <comp ref="H1">
+      <value>MountingHole</value>
+      <footprint>MountingHole:MountingHole_4.3mm_M4_DIN965</footprint>
+      <libsource lib="Mechanical" part="MountingHole" description="Mounting Hole without connection"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Mounting Hole without connection"/>
+      <property name="ki_keywords" value="mounting hole"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>fbfb1c45-c3ea-4722-970d-3e1bc20181be</tstamps>
+    </comp>
+    <comp ref="H2">
+      <value>MountingHole</value>
+      <footprint>MountingHole:MountingHole_4.3mm_M4_DIN965</footprint>
+      <libsource lib="Mechanical" part="MountingHole" description="Mounting Hole without connection"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Mounting Hole without connection"/>
+      <property name="ki_keywords" value="mounting hole"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>36c686a2-c336-4ef2-8b56-107e99f91936</tstamps>
+    </comp>
+    <comp ref="H3">
+      <value>MountingHole</value>
+      <footprint>MountingHole:MountingHole_4.3mm_M4_DIN965</footprint>
+      <libsource lib="Mechanical" part="MountingHole" description="Mounting Hole without connection"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Mounting Hole without connection"/>
+      <property name="ki_keywords" value="mounting hole"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a64e6841-fabd-4e2c-a8b6-282280f16575</tstamps>
+    </comp>
+    <comp ref="H4">
+      <value>MountingHole</value>
+      <footprint>MountingHole:MountingHole_4.3mm_M4_DIN965</footprint>
+      <libsource lib="Mechanical" part="MountingHole" description="Mounting Hole without connection"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Mounting Hole without connection"/>
+      <property name="ki_keywords" value="mounting hole"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c82e2b64-709b-4278-8313-a3b312fca340</tstamps>
+    </comp>
+    <comp ref="J1">
+      <value>DHW MAIN</value>
+      <footprint>Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical</footprint>
+      <libsource lib="Connector_Generic" part="Conn_02x04_Odd_Even" description="Generic connector, double row, 02x04, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Generic connector, double row, 02x04, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="ki_keywords" value="connector"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>09daa0f2-7aff-49dd-9369-3e1553341051</tstamps>
+    </comp>
+    <comp ref="J2">
+      <value>DHW HMI</value>
+      <footprint>Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical</footprint>
+      <libsource lib="Connector_Generic" part="Conn_02x04_Odd_Even" description="Generic connector, double row, 02x04, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Generic connector, double row, 02x04, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="ki_keywords" value="connector"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>780088ff-a201-4269-b458-9db78d79bf74</tstamps>
+    </comp>
+    <comp ref="J3">
+      <value>LLC 5V</value>
+      <footprint>Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical</footprint>
+      <libsource lib="Connector_Generic" part="Conn_01x06" description="Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="ki_keywords" value="connector"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>848d972d-48c0-4111-a21c-53b8050c5699</tstamps>
+    </comp>
+    <comp ref="J4">
+      <value>LLC 3V3</value>
+      <footprint>Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical</footprint>
+      <libsource lib="Connector_Generic" part="Conn_01x06" description="Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="ki_keywords" value="connector"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5c41f505-f62b-4edd-82d7-17905d3c78e1</tstamps>
+    </comp>
+    <comp ref="J5">
+      <value>Serial</value>
+      <footprint>Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical</footprint>
+      <libsource lib="Connector_Generic" part="Conn_01x04" description="Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="ki_keywords" value="connector"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>429db7a2-e4de-4898-9fb1-b45118e30060</tstamps>
+    </comp>
+    <comp ref="J6">
+      <value>RTC DS3231</value>
+      <footprint>Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical</footprint>
+      <libsource lib="Connector_Generic" part="Conn_01x04" description="Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="ki_keywords" value="connector"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>1d549021-1be6-4d59-b379-148a2c7fa35a</tstamps>
+    </comp>
+    <comp ref="J7">
+      <value>Passthrough</value>
+      <footprint>Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical</footprint>
+      <libsource lib="Connector_Generic" part="Conn_01x02" description="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="ki_keywords" value="connector"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>f58a8747-5b8f-4aa9-af99-ea690334347a</tstamps>
+    </comp>
+    <comp ref="Q1">
+      <value>BC547</value>
+      <footprint>Package_TO_SOT_THT:TO-92L_HandSolder</footprint>
+      <datasheet>https://www.onsemi.com/pub/Collateral/BC550-D.pdf</datasheet>
+      <libsource lib="Transistor_BJT" part="BC547" description="0.1A Ic, 45V Vce, Small Signal NPN Transistor, TO-92"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="0.1A Ic, 45V Vce, Small Signal NPN Transistor, TO-92"/>
+      <property name="ki_keywords" value="NPN Transistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>29690140-cc31-419e-bf3e-a3f07968c508</tstamps>
+    </comp>
+    <comp ref="Q2">
+      <value>BC547</value>
+      <footprint>Package_TO_SOT_THT:TO-92L_HandSolder</footprint>
+      <datasheet>https://www.onsemi.com/pub/Collateral/BC550-D.pdf</datasheet>
+      <libsource lib="Transistor_BJT" part="BC547" description="0.1A Ic, 45V Vce, Small Signal NPN Transistor, TO-92"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="0.1A Ic, 45V Vce, Small Signal NPN Transistor, TO-92"/>
+      <property name="ki_keywords" value="NPN Transistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>bdffd008-bd2a-4e84-be95-1d8dc54f7a8f</tstamps>
+    </comp>
+    <comp ref="Q3">
+      <value>BC547</value>
+      <footprint>Package_TO_SOT_THT:TO-92L_HandSolder</footprint>
+      <datasheet>https://www.onsemi.com/pub/Collateral/BC550-D.pdf</datasheet>
+      <libsource lib="Transistor_BJT" part="BC547" description="0.1A Ic, 45V Vce, Small Signal NPN Transistor, TO-92"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="0.1A Ic, 45V Vce, Small Signal NPN Transistor, TO-92"/>
+      <property name="ki_keywords" value="NPN Transistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3cf6064c-0b29-4650-a57a-074a2518299b</tstamps>
+    </comp>
+    <comp ref="Q4">
+      <value>BC547</value>
+      <footprint>Package_TO_SOT_THT:TO-92L_HandSolder</footprint>
+      <datasheet>https://www.onsemi.com/pub/Collateral/BC550-D.pdf</datasheet>
+      <libsource lib="Transistor_BJT" part="BC547" description="0.1A Ic, 45V Vce, Small Signal NPN Transistor, TO-92"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="0.1A Ic, 45V Vce, Small Signal NPN Transistor, TO-92"/>
+      <property name="ki_keywords" value="NPN Transistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>aba784c0-e24e-47d9-aef2-edcb2e1bfcdc</tstamps>
+    </comp>
+    <comp ref="R1">
+      <value>R4.7k</value>
+      <footprint>Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P20.32mm_Horizontal</footprint>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Resistor"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>2a86e6d7-2154-4437-8d89-2e6f7a14d926</tstamps>
+    </comp>
+    <comp ref="R2">
+      <value>R100k</value>
+      <footprint>Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P20.32mm_Horizontal</footprint>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Resistor"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b053ecd0-c2b3-4aad-9e82-e8eaa3209486</tstamps>
+    </comp>
+    <comp ref="R3">
+      <value>R10k</value>
+      <footprint>Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P20.32mm_Horizontal</footprint>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Resistor"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>96132371-8022-4ff9-aa71-64bb673cc132</tstamps>
+    </comp>
+    <comp ref="R4">
+      <value>R4.7k</value>
+      <footprint>Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P20.32mm_Horizontal</footprint>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Resistor"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>99b9bb9d-6e84-40c6-a044-2f03987e98a4</tstamps>
+    </comp>
+    <comp ref="R5">
+      <value>R100k</value>
+      <footprint>Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P20.32mm_Horizontal</footprint>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Resistor"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>4d4ae7cf-a26f-4079-a6c8-fbfe430fd141</tstamps>
+    </comp>
+    <comp ref="R6">
+      <value>R10k</value>
+      <footprint>Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P20.32mm_Horizontal</footprint>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="AquaMQTT.kicad_sch"/>
+      <property name="ki_description" value="Resistor"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>43779968-39b4-449d-bce5-8fb5ad1c4826</tstamps>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="Connector_Generic" part="Conn_01x02">
+      <description>Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x02</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector_Generic" part="Conn_01x04">
+      <description>Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x04</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector_Generic" part="Conn_01x06">
+      <description>Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x06</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+        <pin num="5" name="Pin_5" type="passive"/>
+        <pin num="6" name="Pin_6" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector_Generic" part="Conn_02x04_Odd_Even">
+      <description>Generic connector, double row, 02x04, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_2x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_02x04_Odd_Even</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+        <pin num="5" name="Pin_5" type="passive"/>
+        <pin num="6" name="Pin_6" type="passive"/>
+        <pin num="7" name="Pin_7" type="passive"/>
+        <pin num="8" name="Pin_8" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="R">
+      <description>Resistor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Mechanical" part="MountingHole">
+      <description>Mounting Hole without connection</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>MountingHole*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">H</field>
+        <field name="Value">MountingHole</field>
+        <field name="Datasheet">~</field>
+      </fields>
+    </libpart>
+    <libpart lib="PCM_arduino-library" part="Arduino_Nano_ESP32_Socket">
+      <description>Socket for Arduino Nano ESP32</description>
+      <docs>https://docs.arduino.cc/hardware/nano-esp32</docs>
+      <footprints>
+        <fp>Arduino_Nano_ESP32_Socket</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">A</field>
+        <field name="Value">Arduino_Nano_ESP32_Socket</field>
+        <field name="Footprint">PCM_arduino-library:Arduino_Nano_ESP32_Socket</field>
+        <field name="Datasheet">https://docs.arduino.cc/hardware/nano-esp32</field>
+      </fields>
+      <pins>
+        <pin num="3V3" name="3.3V" type="power_out"/>
+        <pin num="5V" name="5V" type="power_in"/>
+        <pin num="A0" name="A0" type="bidirectional"/>
+        <pin num="A1" name="A1" type="bidirectional"/>
+        <pin num="A2" name="A2" type="bidirectional"/>
+        <pin num="A3" name="A3" type="bidirectional"/>
+        <pin num="A4" name="A4/SDA" type="bidirectional"/>
+        <pin num="A5" name="A5/SCL" type="bidirectional"/>
+        <pin num="A6" name="A6" type="input"/>
+        <pin num="A7" name="A7" type="input"/>
+        <pin num="B0" name="B0" type="bidirectional"/>
+        <pin num="B1" name="B1" type="bidirectional"/>
+        <pin num="D0" name="D0/RX" type="bidirectional"/>
+        <pin num="D1" name="D1/TX" type="bidirectional"/>
+        <pin num="D2" name="D2" type="bidirectional"/>
+        <pin num="D3" name="D3" type="bidirectional"/>
+        <pin num="D4" name="D4" type="bidirectional"/>
+        <pin num="D5" name="D5" type="bidirectional"/>
+        <pin num="D6" name="D6" type="bidirectional"/>
+        <pin num="D7" name="D7" type="bidirectional"/>
+        <pin num="D8" name="D8" type="bidirectional"/>
+        <pin num="D9" name="D9" type="bidirectional"/>
+        <pin num="D10" name="D10" type="bidirectional"/>
+        <pin num="D11" name="D11_MOSI" type="bidirectional"/>
+        <pin num="D12" name="D12_MISO" type="bidirectional"/>
+        <pin num="D13" name="D13_SCK" type="bidirectional"/>
+        <pin num="GND1" name="GND" type="power_in"/>
+        <pin num="GND2" name="GND" type="power_in"/>
+        <pin num="RST" name="~{RESET}" type="open_collector"/>
+        <pin num="VIN" name="VIN" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="Transistor_BJT" part="BC547">
+      <description>0.1A Ic, 45V Vce, Small Signal NPN Transistor, TO-92</description>
+      <docs>https://www.onsemi.com/pub/Collateral/BC550-D.pdf</docs>
+      <footprints>
+        <fp>TO?92*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Q</field>
+        <field name="Value">BC547</field>
+        <field name="Footprint">Package_TO_SOT_THT:TO-92_Inline</field>
+        <field name="Datasheet">https://www.onsemi.com/pub/Collateral/BC550-D.pdf</field>
+      </fields>
+      <pins>
+        <pin num="1" name="C" type="passive"/>
+        <pin num="2" name="B" type="input"/>
+        <pin num="3" name="E" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Connector_Generic">
+      <uri>/Applications/KiCad/KiCad.app/Contents/SharedSupport/symbols//Connector_Generic.kicad_sym</uri>
+    </library>
+    <library logical="Device">
+      <uri>/Applications/KiCad/KiCad.app/Contents/SharedSupport/symbols//Device.kicad_sym</uri>
+    </library>
+    <library logical="Mechanical">
+      <uri>/Applications/KiCad/KiCad.app/Contents/SharedSupport/symbols//Mechanical.kicad_sym</uri>
+    </library>
+    <library logical="PCM_arduino-library">
+      <uri>/Users/T3I6FA7/Documents/KiCad/7.0/3rdparty/symbols/com_github_alarm-siren_arduino-kicad-library/arduino-library.kicad_sym</uri>
+    </library>
+    <library logical="Transistor_BJT">
+      <uri>/Applications/KiCad/KiCad.app/Contents/SharedSupport/symbols//Transistor_BJT.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="+3V3">
+      <node ref="A2" pin="3V3" pinfunction="3.3V" pintype="power_out"/>
+      <node ref="J4" pin="3" pinfunction="Pin_3" pintype="passive"/>
+      <node ref="J5" pin="4" pinfunction="Pin_4" pintype="passive"/>
+      <node ref="J6" pin="2" pinfunction="Pin_2" pintype="passive"/>
+    </net>
+    <net code="2" name="+5V">
+      <node ref="A2" pin="VIN" pinfunction="VIN" pintype="power_in"/>
+      <node ref="J1" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="J2" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="J3" pin="4" pinfunction="Pin_4" pintype="passive"/>
+      <node ref="R1" pin="1" pintype="passive"/>
+      <node ref="R2" pin="1" pintype="passive"/>
+      <node ref="R4" pin="1" pintype="passive"/>
+      <node ref="R5" pin="1" pintype="passive"/>
+    </net>
+    <net code="3" name="DHW_UNKNOWN">
+      <node ref="J1" pin="6" pinfunction="Pin_6" pintype="passive"/>
+      <node ref="J2" pin="6" pinfunction="Pin_6" pintype="passive"/>
+    </net>
+    <net code="4" name="GND">
+      <node ref="A2" pin="GND1" pinfunction="GND" pintype="power_in"/>
+      <node ref="A2" pin="GND2" pinfunction="GND" pintype="power_in"/>
+      <node ref="J1" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="J2" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="J3" pin="3" pinfunction="Pin_3" pintype="passive"/>
+      <node ref="J4" pin="4" pinfunction="Pin_4" pintype="passive"/>
+      <node ref="J5" pin="3" pinfunction="Pin_3" pintype="passive"/>
+      <node ref="J6" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="Q1" pin="3" pinfunction="E" pintype="passive"/>
+      <node ref="Q2" pin="3" pinfunction="E" pintype="passive"/>
+      <node ref="Q3" pin="3" pinfunction="E" pintype="passive"/>
+      <node ref="Q4" pin="3" pinfunction="E" pintype="passive"/>
+    </net>
+    <net code="5" name="Net-(A2-A4{slash}SDA)">
+      <node ref="A2" pin="A4" pinfunction="A4/SDA" pintype="bidirectional"/>
+      <node ref="J6" pin="3" pinfunction="Pin_3" pintype="passive"/>
+    </net>
+    <net code="6" name="Net-(A2-A5{slash}SCL)">
+      <node ref="A2" pin="A5" pinfunction="A5/SCL" pintype="bidirectional"/>
+      <node ref="J6" pin="4" pinfunction="Pin_4" pintype="passive"/>
+    </net>
+    <net code="7" name="Net-(A2-D0{slash}RX)">
+      <node ref="A2" pin="D0" pinfunction="D0/RX" pintype="bidirectional"/>
+      <node ref="J5" pin="2" pinfunction="Pin_2" pintype="passive"/>
+    </net>
+    <net code="8" name="Net-(A2-D1{slash}TX)">
+      <node ref="A2" pin="D1" pinfunction="D1/TX" pintype="bidirectional"/>
+      <node ref="J5" pin="1" pinfunction="Pin_1" pintype="passive"/>
+    </net>
+    <net code="9" name="Net-(Q1-B)">
+      <node ref="Q1" pin="2" pinfunction="B" pintype="input"/>
+      <node ref="R3" pin="2" pintype="passive"/>
+    </net>
+    <net code="10" name="Net-(Q1-C)">
+      <node ref="Q1" pin="1" pinfunction="C" pintype="passive"/>
+      <node ref="Q2" pin="2" pinfunction="B" pintype="input"/>
+      <node ref="R2" pin="2" pintype="passive"/>
+    </net>
+    <net code="11" name="Net-(Q3-B)">
+      <node ref="Q3" pin="2" pinfunction="B" pintype="input"/>
+      <node ref="R6" pin="2" pintype="passive"/>
+    </net>
+    <net code="12" name="Net-(Q3-C)">
+      <node ref="Q3" pin="1" pinfunction="C" pintype="passive"/>
+      <node ref="Q4" pin="2" pinfunction="B" pintype="input"/>
+      <node ref="R5" pin="2" pintype="passive"/>
+    </net>
+    <net code="13" name="OWB1_5V">
+      <node ref="J1" pin="5" pinfunction="Pin_5" pintype="passive"/>
+      <node ref="J3" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="J7" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="Q2" pin="1" pinfunction="C" pintype="passive"/>
+      <node ref="R1" pin="2" pintype="passive"/>
+    </net>
+    <net code="14" name="OWB2_5V">
+      <node ref="J2" pin="5" pinfunction="Pin_5" pintype="passive"/>
+      <node ref="J3" pin="5" pinfunction="Pin_5" pintype="passive"/>
+      <node ref="J7" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="Q4" pin="1" pinfunction="C" pintype="passive"/>
+      <node ref="R4" pin="2" pintype="passive"/>
+    </net>
+    <net code="15" name="RXD1_3V3_ESP">
+      <node ref="A2" pin="D2" pinfunction="D2" pintype="bidirectional"/>
+      <node ref="J4" pin="5" pinfunction="Pin_5" pintype="passive"/>
+    </net>
+    <net code="16" name="RXD2_3V3_ESP">
+      <node ref="A2" pin="D4" pinfunction="D4" pintype="bidirectional"/>
+      <node ref="J4" pin="2" pinfunction="Pin_2" pintype="passive"/>
+    </net>
+    <net code="17" name="TXD1_3V3_ESP">
+      <node ref="A2" pin="D3" pinfunction="D3" pintype="bidirectional"/>
+      <node ref="J4" pin="6" pinfunction="Pin_6" pintype="passive"/>
+    </net>
+    <net code="18" name="TXD1_5V_ESP">
+      <node ref="J3" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="R3" pin="1" pintype="passive"/>
+    </net>
+    <net code="19" name="TXD2_3V3_ESP">
+      <node ref="A2" pin="D5" pinfunction="D5" pintype="bidirectional"/>
+      <node ref="J4" pin="1" pinfunction="Pin_1" pintype="passive"/>
+    </net>
+    <net code="20" name="TXD2_5V_ESP">
+      <node ref="J3" pin="6" pinfunction="Pin_6" pintype="passive"/>
+      <node ref="R6" pin="1" pintype="passive"/>
+    </net>
+    <net code="21" name="unconnected-(A2-D11_MOSI-PadD11)">
+      <node ref="A2" pin="D11" pinfunction="D11_MOSI" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="22" name="unconnected-(A2-D12_MISO-PadD12)">
+      <node ref="A2" pin="D12" pinfunction="D12_MISO" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="23" name="unconnected-(A2-D13_SCK-PadD13)">
+      <node ref="A2" pin="D13" pinfunction="D13_SCK" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="24" name="unconnected-(A2-Pad5V)">
+      <node ref="A2" pin="5V" pinfunction="5V" pintype="power_in+no_connect"/>
+    </net>
+    <net code="25" name="unconnected-(A2-PadA0)">
+      <node ref="A2" pin="A0" pinfunction="A0" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="26" name="unconnected-(A2-PadA1)">
+      <node ref="A2" pin="A1" pinfunction="A1" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="27" name="unconnected-(A2-PadA2)">
+      <node ref="A2" pin="A2" pinfunction="A2" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="28" name="unconnected-(A2-PadA3)">
+      <node ref="A2" pin="A3" pinfunction="A3" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="29" name="unconnected-(A2-PadA6)">
+      <node ref="A2" pin="A6" pinfunction="A6" pintype="input+no_connect"/>
+    </net>
+    <net code="30" name="unconnected-(A2-PadA7)">
+      <node ref="A2" pin="A7" pinfunction="A7" pintype="input+no_connect"/>
+    </net>
+    <net code="31" name="unconnected-(A2-PadB0)">
+      <node ref="A2" pin="B0" pinfunction="B0" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="32" name="unconnected-(A2-PadB1)">
+      <node ref="A2" pin="B1" pinfunction="B1" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="33" name="unconnected-(A2-PadD6)">
+      <node ref="A2" pin="D6" pinfunction="D6" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="34" name="unconnected-(A2-PadD7)">
+      <node ref="A2" pin="D7" pinfunction="D7" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="35" name="unconnected-(A2-PadD8)">
+      <node ref="A2" pin="D8" pinfunction="D8" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="36" name="unconnected-(A2-PadD9)">
+      <node ref="A2" pin="D9" pinfunction="D9" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="37" name="unconnected-(A2-PadD10)">
+      <node ref="A2" pin="D10" pinfunction="D10" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="38" name="unconnected-(A2-~{RESET}-PadRST)">
+      <node ref="A2" pin="RST" pinfunction="~{RESET}" pintype="open_collector+no_connect"/>
+    </net>
+    <net code="39" name="unconnected-(J1-Pin_3-Pad3)">
+      <node ref="J1" pin="3" pinfunction="Pin_3" pintype="passive+no_connect"/>
+    </net>
+    <net code="40" name="unconnected-(J1-Pin_4-Pad4)">
+      <node ref="J1" pin="4" pinfunction="Pin_4" pintype="passive+no_connect"/>
+    </net>
+    <net code="41" name="unconnected-(J1-Pin_7-Pad7)">
+      <node ref="J1" pin="7" pinfunction="Pin_7" pintype="passive+no_connect"/>
+    </net>
+    <net code="42" name="unconnected-(J1-Pin_8-Pad8)">
+      <node ref="J1" pin="8" pinfunction="Pin_8" pintype="passive+no_connect"/>
+    </net>
+    <net code="43" name="unconnected-(J2-Pin_3-Pad3)">
+      <node ref="J2" pin="3" pinfunction="Pin_3" pintype="passive+no_connect"/>
+    </net>
+    <net code="44" name="unconnected-(J2-Pin_4-Pad4)">
+      <node ref="J2" pin="4" pinfunction="Pin_4" pintype="passive+no_connect"/>
+    </net>
+    <net code="45" name="unconnected-(J2-Pin_7-Pad7)">
+      <node ref="J2" pin="7" pinfunction="Pin_7" pintype="passive+no_connect"/>
+    </net>
+    <net code="46" name="unconnected-(J2-Pin_8-Pad8)">
+      <node ref="J2" pin="8" pinfunction="Pin_8" pintype="passive+no_connect"/>
+    </net>
+  </nets>
+</export>
