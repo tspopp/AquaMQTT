@@ -90,11 +90,11 @@ The main controller gives the HMI controller permission to send by emitting the 
 | 1 - 2       |   18 2  | Target Temp.     | See Temperature Table, 53°C |
 | 3           |     66  | OperationMode  | See Operation Mode Table |
 | 4           |    252  | ?                | - |
-| 5           |      0  | ?                | - |
-| 6           |    240  | ?                | - |
-| 7           |     17  | ?                | - |
+| 5           |      0  | Anti-Legionella Mode + Luftführung | 0 == Off, 1 == 1/month, 2 == 2/month, 3 == 3/month, 4 == 4/month, // 0 == umluft, 16 == 1 kanal, 32 == 2 kanal |
+| 6           |    240  | Not-Betrieb                | Off: 240, On: 241 |
+| 7           |     17  | Installationsoptions                | WT, WP-Only: 0, WP+Heizkessel-Prio-Wärmepumpe: 1, Wp+Heizkessel-Opt-Wärmepumpe: 17 / 10001, Wp+Heizkelsse-Opt-Heizkessel: 33 / 100001, Wp+Heizkessel-Prio-Heizkessel: 49 // 110001, Wp+Solarthermie: 50 // 110010|
 | 8           |    240  | ?                | - |
-| 9          |      4  | ?                | - |
+| 9          |      4  | Heating-Element                | Automatic-Mode: 4, Disabled: 0, Fresh-Reset = 164 / 10100100? (nothing set) Then 36 00100100 (umluftbetrieb set, rest missing ) Then 4 (all is good starting)..? |
 | 10          |     16  | Timer Mode: Window 1 Start | 16 = 04:00h, 12 = 03:00h |
 | 11          |     56  | Timer Mode: Window 1 Length  | 52 = 13h runtime, 56 = 14h runtime|
 | 12          |      0  | Timer Mode: Window 2 Start  | e.g. 52 = 13:00h - Value 0x00 0x00 is supported if Timer 2 is not set.  |
@@ -107,7 +107,7 @@ The main controller gives the HMI controller permission to send by emitting the 
 | 19          |     46  | Current Year, Half-Year | See Formula below  |
 | 20          |     11  | Current Time Minutes                | - |
 | 21          |     13  | Current Time Hour                | - |
-| 22          |      0  | TestMode (?)                | HeatingElement, Heatpump, Defrost, Fan Hi/Lo |
+| 22          |      0  | TestMode (?)                | HeatingElement, Heatpump, Defrost, Fan Hi/Lo // HMI Entered TestMode = 1, HMI Left TestMode = 0; WP TestMode Running = 2; Heating-Element = 3, Fan TestMode Running (slow) = 4 , Fan TestMode Running (fast) = 5 , Defrost = 6, 
 | 23          |      0  | ?                | - |
 | 24          |    255  | ?                | - |
 | 25          |      0  | ?                | - |
@@ -183,7 +183,7 @@ Example Table:
 
 ```
     uint16_t year  = 2000 + (payload[19] / 2);
-    uint8_t  month = 1 + (payload[18] >> 5) + ((payload[19] % 2) * 7);
+    uint8_t  month = (payload[18] >> 5) + ((payload[19] % 2) * 8);
     uint8_t  day   = payload[18] & 0x1F;
 ```
 

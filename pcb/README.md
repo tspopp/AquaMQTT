@@ -17,7 +17,13 @@ The board is designed using [Kicad](https://www.kicad.org/). You may need to ins
 additional [Arduino Kicad library](https://github.com/Alarm-Siren/arduino-kicad-library) before opening/editing the
 project.
 
+## Changelog
+
+1.1 (TODO) bigger pads, reroute hv3 <-> dhw main, adjust llc (wider)
+1.0 init
+
 ## BOM
+
 
 | Item                                                                                                                                                             | Count | Estimated Cost |
 |------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|----------------|
