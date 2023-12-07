@@ -46,8 +46,10 @@ Unfortunately, I had no success pairing those solutions with my Windhager brande
 - [x] SW prototype: Provide sensor data via MQTT
 - [x] Visualize data within HomeAssistant
 - [x] Prototype: Control the heat pump (replaces original HMI controller)
-- [ ] Prototype: Control the heat pump (man in the middle)
-- [ ] Final hardware, board layout and instructions
+- [x] Prototype: Control the heat pump (man in the middle)
+- [x] Final hardware, board layout and instructions
+- [ ] AquaMQTT first release
+- [ ] Setup Instructions
 - [ ] HomeAssistant configuration
 
 
