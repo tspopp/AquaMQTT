@@ -14,6 +14,7 @@ FrameBuffer::FrameBuffer(bool handle194, bool handle193, bool handle67, std::str
     , mCRCFailCount(0)
     , mUnhandledCount(0)
     , mHandledCount(0)
+    , mTransferBuffer{ 0 }
 {
 }
 
@@ -56,10 +57,6 @@ int FrameBuffer::handleFrame()
             return 0;
         }
 
-        // allocate buffer memory
-        // TODO: get rid of dynamically allocated memory
-        auto* payloadBuffer = new uint8_t[payloadLength]();
-
         // move frameId out of ringbuffer
         int frameId;
         mBuffer.pop(frameId);
@@ -69,7 +66,7 @@ int FrameBuffer::handleFrame()
         {
             int retVal;
             mBuffer.pop(retVal);
-            payloadBuffer[i] = retVal;
+            mTransferBuffer[i] = retVal;
         }
 
         // move crc out of ringbuffer
@@ -81,35 +78,23 @@ int FrameBuffer::handleFrame()
         mBuffer.pop(crcVal2);
 
         uint16_t desiredCRC = crcVal1 << 8 | crcVal2;
-        uint16_t actualCRC  = mCRC.ccitt(payloadBuffer, payloadLength);
+        uint16_t actualCRC  = mCRC.ccitt(mTransferBuffer, payloadLength);
 
         // completed and valid frame, move complete frame and ownership to frame handler
         if (desiredCRC == actualCRC)
         {
-            if (frameId == 194 && mHandle194)
+            if ((frameId == 194 && mHandle194) || (frameId == 193 && mHandle193) || (frameId == 67 && mHandle67))
             {
-                aquamqtt::DHWState::getInstance().storeFrame(frameId, payloadLength, payloadBuffer);
-                mHandledCount++;
-            }
-            else if (frameId == 193 && mHandle193)
-            {
-                aquamqtt::DHWState::getInstance().storeFrame(frameId, payloadLength, payloadBuffer);
-                mHandledCount++;
-            }
-            else if (frameId == 67 && mHandle67)
-            {
-                aquamqtt::DHWState::getInstance().storeFrame(frameId, payloadLength, payloadBuffer);
+                aquamqtt::DHWState::getInstance().storeFrame(frameId, payloadLength, mTransferBuffer);
                 mHandledCount++;
             }
             else
             {
                 mUnhandledCount++;
-                delete[] payloadBuffer;
             }
             return frameId;
         }
         mCRCFailCount++;
-        delete[] payloadBuffer;
         return 0;
     }
     return 0;
@@ -124,22 +109,9 @@ int MAGIC_SYNC_MESSAGES[3][2] = {
 // wait until ringbuffer starts with the beginning of a potential message
 bool FrameBuffer::isSync()
 {
-    if (mBuffer[0] == MAGIC_SYNC_MESSAGES[0][0] && mBuffer[1] == MAGIC_SYNC_MESSAGES[0][1])
-    {
-        return true;
-    }
-    else if (mBuffer[0] == MAGIC_SYNC_MESSAGES[1][0] && mBuffer[1] == MAGIC_SYNC_MESSAGES[1][1])
-    {
-        return true;
-    }
-    else if (mBuffer[0] == MAGIC_SYNC_MESSAGES[2][0] && mBuffer[1] == MAGIC_SYNC_MESSAGES[2][1])
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return ((mBuffer[0] == MAGIC_SYNC_MESSAGES[0][0] && mBuffer[1] == MAGIC_SYNC_MESSAGES[0][1])
+            || (mBuffer[0] == MAGIC_SYNC_MESSAGES[1][0] && mBuffer[1] == MAGIC_SYNC_MESSAGES[1][1])
+            || (mBuffer[0] == MAGIC_SYNC_MESSAGES[2][0] && mBuffer[1] == MAGIC_SYNC_MESSAGES[2][1]));
 }
 uint64_t FrameBuffer::getDroppedCount() const
 {

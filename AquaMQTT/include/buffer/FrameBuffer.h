@@ -29,6 +29,7 @@ private:
     bool isSync();
 
     RingBuf<int, HEATPUMP_MAX_FRAME_LENGTH> mBuffer;
+    uint8_t                                 mTransferBuffer[40];
 
     FastCRC16 mCRC;
 

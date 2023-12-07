@@ -102,8 +102,6 @@ public:
         }
 
         xSemaphoreGive(mMutex);
-
-        delete[] payload;
     }
 
     void updateFrameBufferStatistics(uint8_t source, BufferStatistics statistics)
