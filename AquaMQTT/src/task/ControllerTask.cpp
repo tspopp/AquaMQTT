@@ -56,15 +56,15 @@ void ControllerTask::loop()
 
         if (mFlagSeen67 && mFlagSeen193)
         {
-            if (valRead == 194)
+            if (valRead == aquamqtt::message::HMI_MESSAGE_IDENTIFIER)
             {
                 mFlagSeen67  = false;
                 mFlagSeen193 = false;
 
-                if (HMIStateProxy::getInstance().copyFrame(194, mTransferBuffer))
+                if (HMIStateProxy::getInstance().copyFrame(aquamqtt::message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
                 {
-                    uint16_t crc = mCRC.ccitt(mTransferBuffer, 35);
-                    Serial2.write(mTransferBuffer, 35);
+                    uint16_t crc = mCRC.ccitt(mTransferBuffer, aquamqtt::message::HMI_MESSAGE_LENGTH);
+                    Serial2.write(mTransferBuffer, aquamqtt::message::HMI_MESSAGE_LENGTH);
                     Serial2.write((uint8_t) (crc >> 8));
                     Serial2.write((uint8_t) (crc & 0xFF));
                     Serial2.flush();
@@ -90,12 +90,12 @@ void ControllerTask::loop()
         }
 
         int message = mBuffer.pushByte(valRead);
-        if (message == 67)
+        if (message == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER)
         {
             mFlagSeen67  = true;
             mFlagSeen193 = false;
         }
-        else if (message == 193)
+        else if (message == aquamqtt::message::MAIN_MESSAGE_IDENTIFIER)
         {
             mFlagSeen193 = true;
         }
@@ -123,7 +123,7 @@ void ControllerTask::loop()
         Serial.println(mBuffer.getDroppedCount());
 
         Serial.print("[main] stack size (words)");
-        Serial.println(uxTaskGetStackHighWaterMark( NULL ));
+        Serial.println(uxTaskGetStackHighWaterMark(NULL));
 
         mLastStatisticsUpdate = millis();
     }

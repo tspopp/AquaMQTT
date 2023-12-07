@@ -4,7 +4,7 @@
 #include <FastCRC.h>
 #include <RingBuf.h>
 
-#define HEATPUMP_MAX_FRAME_LENGTH 40
+#include "message/MessageConstants.h"
 
 class FrameBuffer
 {
@@ -28,8 +28,8 @@ private:
 
     bool isSync();
 
-    RingBuf<int, HEATPUMP_MAX_FRAME_LENGTH> mBuffer;
-    uint8_t                                 mTransferBuffer[40];
+    RingBuf<int, aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH> mBuffer;
+    uint8_t mTransferBuffer[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
 
     FastCRC16 mCRC;
 

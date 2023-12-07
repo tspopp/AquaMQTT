@@ -49,7 +49,7 @@ void HMITask::loop()
     bool printSerialStats = (millis() - mLastStatisticsUpdate) >= 5000;
 
     // request 194 from hmi
-    Serial1.write(194);
+    Serial1.write(aquamqtt::message::HMI_MESSAGE_IDENTIFIER);
     Serial1.flush();
     vTaskDelay(pdMS_TO_TICKS(60));
 
@@ -59,11 +59,11 @@ void HMITask::loop()
     }
 
     // as soon as we have a valid message from the main controller, forward it
-    if (DHWState::getInstance().copyFrame(67, mTransferBuffer))
+    if (DHWState::getInstance().copyFrame(aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
     {
-        uint16_t crc = mCRC.ccitt(mTransferBuffer, 31);
-        Serial1.write(67);
-        Serial1.write(mTransferBuffer, 31);
+        uint16_t crc = mCRC.ccitt(mTransferBuffer, aquamqtt::message::ENERGY_MESSAGE_LENGTH);
+        Serial1.write(aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER);
+        Serial1.write(mTransferBuffer, aquamqtt::message::ENERGY_MESSAGE_LENGTH);
         Serial1.write((uint8_t) (crc >> 8));
         Serial1.write((uint8_t) (crc & 0xFF));
         Serial1.flush();
@@ -77,11 +77,11 @@ void HMITask::loop()
     vTaskDelay(pdMS_TO_TICKS(100));
 
     // as soon as we have a valid message from the main controller, forward it
-    if (DHWState::getInstance().copyFrame(193, mTransferBuffer))
+    if (DHWState::getInstance().copyFrame(aquamqtt::message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
     {
-        uint16_t crc = mCRC.ccitt(mTransferBuffer, 37);
-        Serial1.write(193);
-        Serial1.write(mTransferBuffer, 37);
+        uint16_t crc = mCRC.ccitt(mTransferBuffer, aquamqtt::message::MAIN_MESSAGE_LENGTH);
+        Serial1.write(aquamqtt::message::MAIN_MESSAGE_IDENTIFIER);
+        Serial1.write(mTransferBuffer, aquamqtt::message::MAIN_MESSAGE_LENGTH);
         Serial1.write((uint8_t) (crc >> 8));
         Serial1.write((uint8_t) (crc & 0xFF));
         Serial1.flush();
@@ -122,9 +122,8 @@ void HMITask::loop()
         Serial.print(", dropped bytes=");
         Serial.println(mBuffer.getDroppedCount());
 
-
         Serial.print("[hmi]: stack size (words)");
-        Serial.println(uxTaskGetStackHighWaterMark( NULL ));
+        Serial.println(uxTaskGetStackHighWaterMark(NULL));
         Serial.print("[general]: minimum ever heep ");
         Serial.println(xPortGetMinimumEverFreeHeapSize());
 

@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#include "message/MessageConstants.h"
+
 namespace aquamqtt
 {
 
@@ -37,12 +39,12 @@ private:
     DHWState()
         : mMutex(xSemaphoreCreateMutex())
         , mNotify(nullptr)
-        , mHasMessage67(false)
-        , mHasMessage193(false)
-        , mHasMessage194(false)
-        , mMessage194{ 0 }
-        , mMessage193{ 0 }
-        , mMessage67{ 0 }
+        , mHasEnergyMessage(false)
+        , mHasMainMessage(false)
+        , mHasHmiMessage(false)
+        , mMessageHmi{ 0 }
+        , mMessageMain{ 0 }
+        , mMessageEnergy{ 0 }
         , mHmiStats{ 0, 0, 0, 0, 0 }
         , mMainStats{ 0, 0, 0, 0, 0 }
         , mListenerStats{ 0, 0, 0, 0, 0 }
@@ -70,30 +72,38 @@ public:
         {
             return;
         }
-        if (frameId == 194 && payloadLength == 35 && memcmp(mMessage194, payload, payloadLength) != 0)
+        if (frameId == aquamqtt::message::HMI_MESSAGE_IDENTIFIER
+            && payloadLength == aquamqtt::message::HMI_MESSAGE_LENGTH
+            && memcmp(mMessageHmi, payload, payloadLength) != 0)
         {
-            memcpy(mMessage194, payload, 35);
-            mHasMessage194 = true;
+            memcpy(mMessageHmi, payload, payloadLength);
+            mHasHmiMessage = true;
 
             if (mNotify != nullptr)
             {
                 xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
             }
         }
-        else if (frameId == 193 && payloadLength == 37 && memcmp(mMessage193, payload, payloadLength) != 0)
+        else if (
+                frameId == aquamqtt::message::MAIN_MESSAGE_IDENTIFIER
+                && payloadLength == aquamqtt::message::MAIN_MESSAGE_LENGTH
+                && memcmp(mMessageMain, payload, payloadLength) != 0)
         {
-            memcpy(mMessage193, payload, 37);
-            mHasMessage193 = true;
+            memcpy(mMessageMain, payload, payloadLength);
+            mHasMainMessage = true;
 
             if (mNotify != nullptr)
             {
                 xTaskNotifyIndexed(mNotify, 0, (1UL << 7UL), eSetBits);
             }
         }
-        else if (frameId == 67 && payloadLength == 31 && memcmp(mMessage67, payload, payloadLength) != 0)
+        else if (
+                frameId == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER
+                && payloadLength == aquamqtt::message::ENERGY_MESSAGE_LENGTH
+                && memcmp(mMessageEnergy, payload, payloadLength) != 0)
         {
-            memcpy(mMessage67, payload, 31);
-            mHasMessage67 = true;
+            memcpy(mMessageEnergy, payload, payloadLength);
+            mHasEnergyMessage = true;
 
             if (mNotify != nullptr)
             {
@@ -161,19 +171,19 @@ public:
         }
 
         bool handled = false;
-        if (frameId == 194 && mHasMessage194)
+        if (frameId == aquamqtt::message::HMI_MESSAGE_IDENTIFIER && mHasHmiMessage)
         {
-            memcpy(buffer, mMessage194, 35);
+            memcpy(buffer, mMessageHmi, aquamqtt::message::HMI_MESSAGE_LENGTH);
             handled = true;
         }
-        else if (frameId == 193 && mHasMessage193)
+        else if (frameId == aquamqtt::message::MAIN_MESSAGE_IDENTIFIER && mHasMainMessage)
         {
-            memcpy(buffer, mMessage193, 37);
+            memcpy(buffer, mMessageMain, aquamqtt::message::MAIN_MESSAGE_LENGTH);
             handled = true;
         }
-        else if (frameId == 67 && mHasMessage67)
+        else if (frameId == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER && mHasEnergyMessage)
         {
-            memcpy(buffer, mMessage67, 31);
+            memcpy(buffer, mMessageEnergy, aquamqtt::message::ENERGY_MESSAGE_LENGTH);
             handled = true;
         }
 
@@ -187,13 +197,13 @@ private:
 
     SemaphoreHandle_t mMutex;
 
-    bool mHasMessage194;
-    bool mHasMessage193;
-    bool mHasMessage67;
+    bool mHasHmiMessage;
+    bool mHasMainMessage;
+    bool mHasEnergyMessage;
 
-    uint8_t mMessage194[35];
-    uint8_t mMessage193[37];
-    uint8_t mMessage67[31];
+    uint8_t mMessageHmi[aquamqtt::message::HMI_MESSAGE_LENGTH];
+    uint8_t mMessageMain[aquamqtt::message::MAIN_MESSAGE_LENGTH];
+    uint8_t mMessageEnergy[aquamqtt::message::ENERGY_MESSAGE_LENGTH];
 
     BufferStatistics mHmiStats;
     BufferStatistics mMainStats;

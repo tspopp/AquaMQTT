@@ -145,7 +145,7 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 8) != 0)
     {
-        if (HMIStateProxy::getInstance().copyFrame(194, mTransferBuffer))
+        if (HMIStateProxy::getInstance().copyFrame(aquamqtt::message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             updateHMIStatus();
         }
@@ -155,7 +155,7 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 7) != 0)
     {
-        if (DHWState::getInstance().copyFrame(193, mTransferBuffer))
+        if (DHWState::getInstance().copyFrame(aquamqtt::message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             updateMainStatus();
         }
@@ -165,7 +165,7 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 6) != 0)
     {
-        if (DHWState::getInstance().copyFrame(67, mTransferBuffer))
+        if (DHWState::getInstance().copyFrame(aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             updateEnergyStats();
         }
@@ -183,7 +183,7 @@ void MQTTTask::loop()
         Serial.println("[mqtt] stat update");
         mLastFullUpdate = millis();
         Serial.print("[mqtt]: stack size (words)");
-        Serial.println(uxTaskGetStackHighWaterMark(NULL));
+        Serial.println(uxTaskGetStackHighWaterMark(nullptr));
     }
 
     mMQTTClient.loop();

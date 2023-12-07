@@ -83,7 +83,9 @@ int FrameBuffer::handleFrame()
         // completed and valid frame, move complete frame and ownership to frame handler
         if (desiredCRC == actualCRC)
         {
-            if ((frameId == 194 && mHandle194) || (frameId == 193 && mHandle193) || (frameId == 67 && mHandle67))
+            if ((frameId == aquamqtt::message::HMI_MESSAGE_IDENTIFIER && mHandle194)
+                || (frameId == aquamqtt::message::MAIN_MESSAGE_IDENTIFIER && mHandle193)
+                || (frameId == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER && mHandle67))
             {
                 aquamqtt::DHWState::getInstance().storeFrame(frameId, payloadLength, mTransferBuffer);
                 mHandledCount++;
@@ -100,18 +102,15 @@ int FrameBuffer::handleFrame()
     return 0;
 }
 
-int MAGIC_SYNC_MESSAGES[3][2] = {
-    { 194, 35 },
-    { 193, 37 },
-    { 67, 31 },
-};
-
 // wait until ringbuffer starts with the beginning of a potential message
 bool FrameBuffer::isSync()
 {
-    return ((mBuffer[0] == MAGIC_SYNC_MESSAGES[0][0] && mBuffer[1] == MAGIC_SYNC_MESSAGES[0][1])
-            || (mBuffer[0] == MAGIC_SYNC_MESSAGES[1][0] && mBuffer[1] == MAGIC_SYNC_MESSAGES[1][1])
-            || (mBuffer[0] == MAGIC_SYNC_MESSAGES[2][0] && mBuffer[1] == MAGIC_SYNC_MESSAGES[2][1]));
+    return ((mBuffer[0] == aquamqtt::message::HMI_MESSAGE_IDENTIFIER
+             && mBuffer[1] == aquamqtt::message::HMI_MESSAGE_LENGTH)
+            || (mBuffer[0] == aquamqtt::message::MAIN_MESSAGE_IDENTIFIER
+                && mBuffer[1] == aquamqtt::message::MAIN_MESSAGE_LENGTH)
+            || (mBuffer[0] == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER
+                && mBuffer[1] == aquamqtt::message::ENERGY_MESSAGE_LENGTH));
 }
 uint64_t FrameBuffer::getDroppedCount() const
 {

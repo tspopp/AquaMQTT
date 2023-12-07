@@ -98,17 +98,17 @@ public:
 
     bool copyFrame(uint8_t frameId, uint8_t* buffer)
     {
-        if (frameId != 194)
+        if (frameId != aquamqtt::message::HMI_MESSAGE_IDENTIFIER)
         {
             return aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer);
         }
 
-        bool has194 = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer);
-        if (has194 && aquamqtt::config::OPERATION_MODE == EOperationMode::MITM)
+        bool hasHmiMessage = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer);
+        if (hasHmiMessage && aquamqtt::config::OPERATION_MODE == EOperationMode::MITM)
         {
             applyHMIOverrides(buffer);
         }
-        return has194;
+        return hasHmiMessage;
     }
 
     void onOperationModeChanged(std::unique_ptr<message::HMIOperationMode> value) override
@@ -152,9 +152,9 @@ private:
     SemaphoreHandle_t mMutex;
 
     // since we do not have optionals, use nullptr if override is not set
-    std::unique_ptr<float>            mTargetTemperature;
+    std::unique_ptr<float>                     mTargetTemperature;
     std::unique_ptr<message::HMIOperationMode> mOperationMode;
-    std::unique_ptr<bool>             mTimerModeEnabled;
+    std::unique_ptr<bool>                      mTimerModeEnabled;
 };
 
 }  // namespace aquamqtt
