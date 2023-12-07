@@ -15,6 +15,8 @@ namespace aquamqtt
 {
 namespace config
 {
+constexpr char networkName[] = "aquamqtt";
+
 constexpr char timeZoneInfo[] =
         "CET-1CEST,M3.5.0,M10.5.0/3";  // Europe/Berlin https://gist.github.com/alwynallan/24d96091655391107939
 constexpr char ntpServer[] = "pool.ntp.org";

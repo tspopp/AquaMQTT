@@ -51,9 +51,9 @@ private:
     {
     }
 
+public:
     DHWState& operator=(const DHWState&) = delete;
 
-public:
     void setListener(TaskHandle_t handle)
     {
         if (!xSemaphoreTake(mMutex, portMAX_DELAY))

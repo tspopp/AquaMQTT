@@ -15,7 +15,7 @@ namespace aquamqtt
 using namespace mqtt;
 using namespace message;
 
-MQTTTask::MQTTTask() : mLastFullUpdate(0), mMQTTClient(128), mTransferBuffer{ 0 }
+MQTTTask::MQTTTask() : mLastFullUpdate(0), mMQTTClient(128), mTransferBuffer{ 0 }, mTaskHandle(nullptr)
 {
 }
 
@@ -105,8 +105,8 @@ void MQTTTask::setup()
     char payloadStr[20];
 
     mMQTTClient.begin(aquamqtt::config::brokerAddr, aquamqtt::config::brokerPort, mWiFiClient);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAWIN_LAST_WILL);
-    sprintf(payloadStr, "%S", AQUAWIN_LAST_WILL_OFFLINE);
+    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAMQTT_LAST_WILL);
+    sprintf(payloadStr, "%S", AQUAMQTT_LAST_WILL_OFFLINE);
 
     mMQTTClient.setWill(topic, payloadStr, true, 0);
     mMQTTClient.onMessage(MQTTTask::messageReceived);
@@ -123,7 +123,7 @@ void MQTTTask::setup()
     // TODO: add prefix!
     mMQTTClient.subscribe(aquamqtt::mqtt::CONTROL_TOPIC);
 
-    sprintf(payloadStr, "%S", AQUAWIN_LAST_WILL_ONLINE);
+    sprintf(payloadStr, "%S", AQUAMQTT_LAST_WILL_ONLINE);
     mMQTTClient.publish(topic, payloadStr, true, 0);
 
     Serial.println("[mqtt] is now connected");
@@ -194,17 +194,17 @@ void MQTTTask::updateStats()
     char topic[50];
     char payloadStr[20];
 
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAWIN_MODE);
+    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAMQTT_MODE);
     sprintf(payloadStr,
             "%S",
-            config::OPERATION_MODE == EOperationMode::LISTENER ? AQUAWIN_MODE_LISTENER : AQUAWIN_MODE_MITM);
+            config::OPERATION_MODE == EOperationMode::LISTENER ? AQUAMQTT_MODE_LISTENER : AQUAMQTT_MODE_MITM);
     mMQTTClient.publish(topic, payloadStr);
 
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAWIN_ADDR);
+    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAMQTT_ADDR);
     mMQTTClient.publish(topic, WiFi.localIP().toString());
 
     itoa(WiFi.RSSI(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAWIN_RSSI);
+    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAMQTT_RSSI);
     mMQTTClient.publish(topic, payloadStr);
 
     if (config::OPERATION_MODE == EOperationMode::LISTENER)

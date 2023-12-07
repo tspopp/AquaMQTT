@@ -15,7 +15,7 @@ ControllerTask::ControllerTask()
     , mLastStatisticsUpdate(0)
     , mTransferBuffer{ 0 }
     , mCRC()
-    , mMessagesSent(0){};
+    , mMessagesSent(0){}
 
 void ControllerTask::spawn()
 {
@@ -40,7 +40,7 @@ void ControllerTask::spawn()
     }
 }
 
-void ControllerTask::setup()
+void ControllerTask::setup() // NOLINT(*-convert-member-functions-to-static)
 {
     Serial2.begin(9550, SERIAL_8N2, aquamqtt::config::GPIO_MAIN_RX, aquamqtt::config::GPIO_MAIN_TX);
 }
@@ -123,7 +123,7 @@ void ControllerTask::loop()
         Serial.println(mBuffer.getDroppedCount());
 
         Serial.print("[main] stack size (words)");
-        Serial.println(uxTaskGetStackHighWaterMark(NULL));
+        Serial.println(uxTaskGetStackHighWaterMark(nullptr));
 
         mLastStatisticsUpdate = millis();
     }

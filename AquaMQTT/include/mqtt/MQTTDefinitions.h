@@ -81,16 +81,16 @@ const char STATE_HEAT_ELEMENT[] PROGMEM = { "stateElement" };
 const char STATE_EXT_BOILER[] PROGMEM   = { "stateExtBoiler" };
 const char STATE_DEFROST[] PROGMEM      = { "stateDefrost" };
 
-const char AQUAWIN_ADDR[] PROGMEM      = { "ipAddress" };
-const char AQUAWIN_RSSI[] PROGMEM      = { "rssiDb" };
-const char AQUAWIN_MODE[] PROGMEM      = { "aquawinMode" };
-const char AQUAWIN_LAST_WILL[] PROGMEM = { "lwlState" };
+const char AQUAMQTT_ADDR[] PROGMEM      = { "ipAddress" };
+const char AQUAMQTT_RSSI[] PROGMEM      = { "rssiDb" };
+const char AQUAMQTT_MODE[] PROGMEM      = { "aquamqttMode" };
+const char AQUAMQTT_LAST_WILL[] PROGMEM = { "lwlState" };
 
-const char AQUAWIN_LAST_WILL_ONLINE[] PROGMEM = { "online" };
-const char AQUAWIN_LAST_WILL_OFFLINE[] PROGMEM = { "offline" };
+const char AQUAMQTT_LAST_WILL_ONLINE[] PROGMEM = { "online" };
+const char AQUAMQTT_LAST_WILL_OFFLINE[] PROGMEM = { "offline" };
 
-const char AQUAWIN_MODE_LISTENER[] PROGMEM = { "listener" };
-const char AQUAWIN_MODE_MITM[] PROGMEM     = { "mitm" };
+const char AQUAMQTT_MODE_LISTENER[] PROGMEM = { "listener" };
+const char AQUAMQTT_MODE_MITM[] PROGMEM     = { "mitm" };
 
 }  // namespace mqtt
 }  // namespace aquamqtt

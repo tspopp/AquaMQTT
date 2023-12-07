@@ -39,7 +39,7 @@ void HMITask::spawn()
     }
 }
 
-void HMITask::setup()
+void HMITask::setup()  // NOLINT(*-convert-member-functions-to-static)
 {
     Serial1.begin(9550, SERIAL_8N2, aquamqtt::config::GPIO_HMI_RX, aquamqtt::config::GPIO_HMI_TX);
 }
@@ -123,7 +123,7 @@ void HMITask::loop()
         Serial.println(mBuffer.getDroppedCount());
 
         Serial.print("[hmi]: stack size (words)");
-        Serial.println(uxTaskGetStackHighWaterMark(NULL));
+        Serial.println(uxTaskGetStackHighWaterMark(nullptr));
         Serial.print("[general]: minimum ever heep ");
         Serial.println(xPortGetMinimumEverFreeHeapSize());
 

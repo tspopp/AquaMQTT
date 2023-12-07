@@ -8,10 +8,10 @@ namespace aquamqtt
 class IMQTTCallback
 {
 public:
-    // tortuga/aquawin/ctrl/operationMode + ENUM_OPERATION_MODE
+    // $prefix/aquamqtt/ctrl/operationMode + ENUM_OPERATION_MODE
     virtual void onOperationModeChanged(std::unique_ptr<message::HMIOperationMode> value) = 0;
 
-    // tortuga/aquawin/ctrl/waterTempTarget + float
+    // tortuga/aquamqtt/ctrl/waterTempTarget + float
     virtual void onWaterTempTargetChanged(std::unique_ptr<float> value) = 0;
 };
 }  // namespace aquamqtt

@@ -42,7 +42,7 @@ void setup()
     esp_task_wdt_init(WATCHDOG_TIMEOUT_S, true);
     esp_task_wdt_add(nullptr);
 
-    // connect to wifi
+    // connect to Wi-Fi
     WiFiClass::mode(WIFI_STA);
     WiFi.setAutoReconnect(true);
     WiFi.begin(aquamqtt::config::ssid, aquamqtt::config::psk);

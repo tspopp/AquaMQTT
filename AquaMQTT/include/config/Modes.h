@@ -13,7 +13,7 @@ enum EOperationMode
     LISTENER,
 
     /**
-     * AquaMqtt is acting as Man-In-The-Middle and is connected to two phsyical one-wire USART instances:
+     * AquaMqtt is acting as Man-In-The-Middle and is connected to two physical one-wire USART instances:
      * - Forwards data from the HMI Controller to the MAIN Controller
      * - Forwards data from the MAIN Controller to the HMI Controller
      * - Possibility to overwrite dedicated fields in the messages from HMI to Main Controller

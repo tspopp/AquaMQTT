@@ -39,9 +39,10 @@ private:
         , mOperationMode(nullptr)
         , mTargetTemperature(nullptr)
         , mTimerModeEnabled(nullptr){};
-    HMIStateProxy& operator=(const HMIStateProxy&) = delete;
 
 public:
+    HMIStateProxy& operator=(const HMIStateProxy&) = delete;
+
     void setListener(TaskHandle_t handle)
     {
         if (!xSemaphoreTake(mMutex, portMAX_DELAY))
