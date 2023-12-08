@@ -23,8 +23,10 @@ constexpr char ntpServer[] = "pool.ntp.org";
 
 constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
 
-constexpr uint8_t  WATCHDOG_TIMEOUT_S   = 5;
-constexpr uint16_t MQTT_STATS_UPDATE_MS = 5000;
+constexpr uint8_t  WATCHDOG_TIMEOUT_S    = 5;
+constexpr uint16_t MQTT_STATS_UPDATE_MS  = 5000;
+constexpr uint8_t  MQTT_MAX_TOPIC_SIZE   = 50;
+constexpr uint8_t  MQTT_MAX_PAYLOAD_SIZE = 50;
 
 // AquaMQTT Board Rev 1.0
 constexpr uint8_t GPIO_MAIN_RX = 2;

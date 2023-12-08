@@ -17,54 +17,25 @@ public:
 
     ~MainStatusMessage() = default;
 
-    float hotWaterTemp()
-    {
-        return (float) (((int16_t) mData[2] << 8) | mData[1]) / 10.0;
-    }
+    float hotWaterTemp();
 
-    float airTemp()
-    {
-        return (float) (((int16_t) mData[4] << 8) | mData[3]) / 10.0;
-    }
+    float airTemp();
 
-    float evaporatorLowerAirTemp()
-    {
-        return (float) (((int16_t) mData[6] << 8) | mData[5]) / 10.0;
-    }
+    float evaporatorLowerAirTemp();
 
-    float evaporatorUpperAirTemp()
-    {
-        return (float) (((int16_t) mData[8] << 8) | mData[7]) / 10.0;
-    }
+    float evaporatorUpperAirTemp();
 
-    uint16_t fanSpeed()
-    {
-        return ((uint16_t) mData[19] << 8) | (uint16_t) mData[18];
-    }
+    uint16_t fanSpeed();
 
-    bool stateHeatingElement()
-    {
-        return mData[17] & 0x01;
-    }
+    bool stateHeatingElement();
 
-    bool stateHeatpump()
-    {
-        return mData[17] & 0x02;
-    }
-    bool stateBoilerBackup()
-    {
-        return mData[17] & 0x04;
-    }
+    bool stateHeatpump();
 
-    bool stateFan()
-    {
-        return mData[17] & 0x08;
-    }
+    bool stateBoilerBackup();
 
-    bool stateDefrost()
-    {
-        return mData[17] & 0x20;
-    }
+    bool stateFan();
+
+    bool stateDefrost();
 
 private:
     uint8_t* mData;

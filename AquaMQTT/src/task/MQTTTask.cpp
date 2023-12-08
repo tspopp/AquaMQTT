@@ -1,5 +1,3 @@
-
-
 #include "task/MQTTTask.h"
 
 #include <WiFi.h>
@@ -15,7 +13,13 @@ namespace aquamqtt
 using namespace mqtt;
 using namespace message;
 
-MQTTTask::MQTTTask() : mLastFullUpdate(0), mMQTTClient(128), mTransferBuffer{ 0 }, mTaskHandle(nullptr)
+MQTTTask::MQTTTask()
+    : mLastFullUpdate(0)
+    , mMQTTClient(256)
+    , mTransferBuffer{ 0 }
+    , mTaskHandle(nullptr)
+    , mTopicBuffer{ 0 }
+    , mPayloadBuffer{ 0 }
 {
 }
 
@@ -33,31 +37,31 @@ void MQTTTask::messageReceived(String& topic, String& payload)
         if (strstr_P(payload.c_str(), ENUM_OPERATION_MODE_ABSENCE) != nullptr)
         {
             HMIStateProxy::getInstance().onOperationModeChanged(
-                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(ABSENCE)));
+                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(OM_ABSENCE)));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_OPERATION_MODE_BOOST) != nullptr)
         {
             HMIStateProxy::getInstance().onOperationModeChanged(
-                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(BOOST)));
+                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(OM_BOOST)));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_OPERATION_MODE_AUTO) != nullptr)
         {
             HMIStateProxy::getInstance().onOperationModeChanged(
-                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(AUTO)));
+                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(OM_AUTO)));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_OPERATION_MODE_ECO_ON) != nullptr)
         {
             HMIStateProxy::getInstance().onOperationModeChanged(
-                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(ECO_ACTIVE)));
+                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(OM_ECO_ACTIVE)));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_OPERATION_MODE_ECO_OFF) != nullptr)
         {
             HMIStateProxy::getInstance().onOperationModeChanged(
-                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(ECO_INACTIVE)));
+                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(OM_ECO_INACTIVE)));
         }
         else
         {
@@ -81,7 +85,7 @@ void MQTTTask::messageReceived(String& topic, String& payload)
 
 void MQTTTask::spawn()
 {
-    xTaskCreatePinnedToCore(MQTTTask::innerTask, "mqttTaskLoop", 8000, this, 3, &mTaskHandle, 1);
+    xTaskCreatePinnedToCore(MQTTTask::innerTask, "mqttTaskLoop", 9000, this, 3, &mTaskHandle, 1);
     esp_task_wdt_add(mTaskHandle);
     DHWState::getInstance().setListener(mTaskHandle);
     HMIStateProxy::getInstance().setListener(mTaskHandle);
@@ -99,16 +103,20 @@ void MQTTTask::spawn()
     }
 }
 
-void MQTTTask::setup()
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat"
+void                     MQTTTask::setup()
 {
-    char topic[50];
-    char payloadStr[20];
-
     mMQTTClient.begin(aquamqtt::config::brokerAddr, aquamqtt::config::brokerPort, mWiFiClient);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAMQTT_LAST_WILL);
-    sprintf(payloadStr, "%S", AQUAMQTT_LAST_WILL_OFFLINE);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            STATS_SUBTOPIC,
+            AQUAMQTT_LAST_WILL);
+    sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", AQUAMQTT_LAST_WILL_OFFLINE);
 
-    mMQTTClient.setWill(topic, payloadStr, true, 0);
+    mMQTTClient.setWill(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), true, 0);
     mMQTTClient.onMessage(MQTTTask::messageReceived);
 
     while (!mMQTTClient.connect(
@@ -120,11 +128,11 @@ void MQTTTask::setup()
         esp_task_wdt_reset();
     }
 
-    // TODO: add prefix!
-    mMQTTClient.subscribe(aquamqtt::mqtt::CONTROL_TOPIC);
+    sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", AQUAMQTT_LAST_WILL_ONLINE);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), true, 0);
 
-    sprintf(payloadStr, "%S", AQUAMQTT_LAST_WILL_ONLINE);
-    mMQTTClient.publish(topic, payloadStr, true, 0);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%S", config::mqttPrefix, CONTROL_TOPIC);
+    mMQTTClient.subscribe(reinterpret_cast<char*>(mTopicBuffer));
 
     Serial.println("[mqtt] is now connected");
 }
@@ -189,283 +197,482 @@ void MQTTTask::loop()
     mMQTTClient.loop();
 }
 
-void MQTTTask::updateStats()
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat"
+void                     MQTTTask::updateStats()
 {
-    char topic[50];
-    char payloadStr[20];
-
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAMQTT_MODE);
-    sprintf(payloadStr,
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            STATS_SUBTOPIC,
+            AQUAMQTT_MODE);
+    sprintf(reinterpret_cast<char*>(mPayloadBuffer),
             "%S",
-            config::OPERATION_MODE == EOperationMode::LISTENER ? AQUAMQTT_MODE_LISTENER : AQUAMQTT_MODE_MITM);
-    mMQTTClient.publish(topic, payloadStr);
+            config::OPERATION_MODE == EOperationMode::LISTENER ? ENUM_AQUAMQTT_MODE_LISTENER
+                                                               : ENUM_AQUAMQTT_MODE_MITM);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAMQTT_ADDR);
-    mMQTTClient.publish(topic, WiFi.localIP().toString());
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            STATS_SUBTOPIC,
+            AQUAMQTT_ADDR);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), WiFi.localIP().toString());
 
-    itoa(WiFi.RSSI(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, AQUAMQTT_RSSI);
-    mMQTTClient.publish(topic, payloadStr);
+    itoa(WiFi.RSSI(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            STATS_SUBTOPIC,
+            AQUAMQTT_RSSI);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     if (config::OPERATION_MODE == EOperationMode::LISTENER)
     {
         auto listenerStats = DHWState::getInstance().getFrameBufferStatistics(0);
 
-        ultoa(listenerStats.mshHandled, payloadStr, 10);
-        sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, STATS_MSG_HANDLED);
-        mMQTTClient.publish(topic, payloadStr);
+        ultoa(listenerStats.msgHandled, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                STATS_MSG_HANDLED);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        ultoa(listenerStats.msgUnhandled, payloadStr, 10);
-        sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, STATS_MSG_UNHANDLED);
-        mMQTTClient.publish(topic, payloadStr);
+        ultoa(listenerStats.msgUnhandled, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                STATS_MSG_UNHANDLED);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        ultoa(listenerStats.msgCRCFail, payloadStr, 10);
-        sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, STATS_MSG_CRC_NOK);
-        mMQTTClient.publish(topic, payloadStr);
+        ultoa(listenerStats.msgCRCFail, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                STATS_MSG_CRC_NOK);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        ultoa(listenerStats.droppedBytes, payloadStr, 10);
-        sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, STATS_DROPPED_BYTES);
-        mMQTTClient.publish(topic, payloadStr);
+        ultoa(listenerStats.droppedBytes, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                STATS_DROPPED_BYTES);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
     else
     {
         auto hmiStats = DHWState::getInstance().getFrameBufferStatistics(1);
 
-        ultoa(hmiStats.mshHandled, payloadStr, 10);
-        sprintf(topic, "%s%S%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_HANDLED);
-        mMQTTClient.publish(topic, payloadStr);
+        ultoa(hmiStats.msgHandled, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                HMI_SUBTOPIC,
+                STATS_MSG_HANDLED);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        ultoa(hmiStats.msgUnhandled, payloadStr, 10);
-        sprintf(topic,
+        ultoa(hmiStats.msgUnhandled, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%S%S%S%S",
                 config::mqttPrefix,
                 BASE_TOPIC,
                 STATS_SUBTOPIC,
                 HMI_SUBTOPIC,
                 STATS_MSG_UNHANDLED);
-        mMQTTClient.publish(topic, payloadStr);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        ultoa(hmiStats.msgCRCFail, payloadStr, 10);
-        sprintf(topic, "%s%S%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_CRC_NOK);
-        mMQTTClient.publish(topic, payloadStr);
+        ultoa(hmiStats.msgCRCFail, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                HMI_SUBTOPIC,
+                STATS_MSG_CRC_NOK);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        ultoa(hmiStats.droppedBytes, payloadStr, 10);
-        sprintf(topic,
+        ultoa(hmiStats.droppedBytes, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%S%S%S%S",
                 config::mqttPrefix,
                 BASE_TOPIC,
                 STATS_SUBTOPIC,
                 HMI_SUBTOPIC,
                 STATS_DROPPED_BYTES);
-        mMQTTClient.publish(topic, payloadStr);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        ultoa(hmiStats.msgSent, payloadStr, 10);
-        sprintf(topic, "%s%S%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_SENT);
-        mMQTTClient.publish(topic, payloadStr);
+        ultoa(hmiStats.msgSent, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                HMI_SUBTOPIC,
+                STATS_MSG_SENT);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
         auto mainStats = DHWState::getInstance().getFrameBufferStatistics(2);
 
-        ultoa(mainStats.mshHandled, payloadStr, 10);
-        sprintf(topic, "%s%S%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_HANDLED);
-        mMQTTClient.publish(topic, payloadStr);
+        ultoa(mainStats.msgHandled, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                MAIN_SUBTOPIC,
+                STATS_MSG_HANDLED);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        ultoa(mainStats.msgUnhandled, payloadStr, 10);
-        sprintf(topic,
+        ultoa(mainStats.msgUnhandled, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%S%S%S%S",
                 config::mqttPrefix,
                 BASE_TOPIC,
                 STATS_SUBTOPIC,
                 MAIN_SUBTOPIC,
                 STATS_MSG_UNHANDLED);
-        mMQTTClient.publish(topic, payloadStr);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        ultoa(mainStats.msgCRCFail, payloadStr, 10);
-        sprintf(topic, "%s%S%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_CRC_NOK);
-        mMQTTClient.publish(topic, payloadStr);
+        ultoa(mainStats.msgCRCFail, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                MAIN_SUBTOPIC,
+                STATS_MSG_CRC_NOK);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        ultoa(mainStats.droppedBytes, payloadStr, 10);
-        sprintf(topic,
+        ultoa(mainStats.droppedBytes, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%S%S%S%S",
                 config::mqttPrefix,
                 BASE_TOPIC,
                 STATS_SUBTOPIC,
                 MAIN_SUBTOPIC,
                 STATS_DROPPED_BYTES);
-        mMQTTClient.publish(topic, payloadStr);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        ultoa(mainStats.msgSent, payloadStr, 10);
-        sprintf(topic, "%s%S%S%S%S", config::mqttPrefix, BASE_TOPIC, STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_SENT);
-        mMQTTClient.publish(topic, payloadStr);
+        ultoa(mainStats.msgSent, reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                MAIN_SUBTOPIC,
+                STATS_MSG_SENT);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 }
+#pragma clang diagnostic pop
 
-void MQTTTask::updateMainStatus()
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat"
+void                     MQTTTask::updateMainStatus()
 {
     message::MainStatusMessage message(mTransferBuffer);
 
-    char topic[50];
-    char payloadStr[20];
+    dtostrf(message.hotWaterTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            HOT_WATER_TEMP);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    dtostrf(message.hotWaterTemp(), 3, 1, payloadStr);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, MAIN_SUBTOPIC, HOT_WATER_TEMP);
-    mMQTTClient.publish(topic, payloadStr);
+    dtostrf(message.airTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            SUPPLY_AIR_TEMP);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    dtostrf(message.airTemp(), 3, 1, payloadStr);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, MAIN_SUBTOPIC, SUPPLY_AIR_TEMP);
-    mMQTTClient.publish(topic, payloadStr);
+    dtostrf(message.evaporatorLowerAirTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            EVAPORATOR_AIR_TEMP_LOWER);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    dtostrf(message.evaporatorLowerAirTemp(), 3, 1, payloadStr);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, MAIN_SUBTOPIC, EVAPORATOR_AIR_TEMP_LOWER);
-    mMQTTClient.publish(topic, payloadStr);
+    dtostrf(message.evaporatorUpperAirTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            EVAPORATOR_AIR_TEMP_UPPER);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    dtostrf(message.evaporatorUpperAirTemp(), 3, 1, payloadStr);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, MAIN_SUBTOPIC, EVAPORATOR_AIR_TEMP_UPPER);
-    mMQTTClient.publish(topic, payloadStr);
+    ultoa(message.fanSpeed(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            FAN_SPEED);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    ultoa(message.fanSpeed(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, MAIN_SUBTOPIC, FAN_SPEED);
-    mMQTTClient.publish(topic, payloadStr);
+    itoa(message.stateHeatingElement(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            STATE_HEAT_ELEMENT);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    itoa(message.stateHeatingElement(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, MAIN_SUBTOPIC, STATE_HEAT_ELEMENT);
-    mMQTTClient.publish(topic, payloadStr);
+    itoa(message.stateHeatpump(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            STATE_HEATPUMP);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    itoa(message.stateHeatpump(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, MAIN_SUBTOPIC, STATE_HEATPUMP);
-    mMQTTClient.publish(topic, payloadStr);
+    itoa(message.stateBoilerBackup(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            STATE_EXT_BOILER);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    itoa(message.stateBoilerBackup(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, MAIN_SUBTOPIC, STATE_EXT_BOILER);
-    mMQTTClient.publish(topic, payloadStr);
+    itoa(message.stateFan(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            STATE_FAN);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    itoa(message.stateFan(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, MAIN_SUBTOPIC, STATE_FAN);
-    mMQTTClient.publish(topic, payloadStr);
-
-    itoa(message.stateDefrost(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, MAIN_SUBTOPIC, STATE_DEFROST);
-    mMQTTClient.publish(topic, payloadStr);
+    itoa(message.stateDefrost(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            STATE_DEFROST);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 }
 
-void MQTTTask::updateHMIStatus()
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat"
+void                     MQTTTask::updateHMIStatus()
 {
     message::HMIMessage message(mTransferBuffer);
 
-    char topic[50];
-    char payloadStr[20];
+    dtostrf(message.waterTempTarget(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
+            HOT_WATER_TEMP_TARGET);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    dtostrf(message.waterTempTarget(), 3, 1, payloadStr);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, HOT_WATER_TEMP_TARGET);
-    mMQTTClient.publish(topic, payloadStr);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
+            OPERATION_MODE);
+    mMQTTClient.publish(
+            reinterpret_cast<char*>(mTopicBuffer),
+            aquamqtt::message::operationModeStr(message.operationMode()));
 
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, OPERATION_MODE);
-    switch (message.operationMode())
-    {
-        case 0:
-            sprintf(payloadStr, "%S", ENUM_OPERATION_MODE_ABSENCE);
-            break;
-        case 1:
-            sprintf(payloadStr, "%S", ENUM_OPERATION_MODE_ECO_ON);
-            break;
-        case 2:
-            sprintf(payloadStr, "%S", ENUM_OPERATION_MODE_ECO_OFF);
-            break;
-        case 3:
-            sprintf(payloadStr, "%S", ENUM_OPERATION_MODE_BOOST);
-            break;
-        case 4:
-            sprintf(payloadStr, "%S", ENUM_OPERATION_MODE_AUTO);
-            break;
-        default:
-            sprintf(payloadStr, "%S", ENUM_UNKNOWN);
-            break;
-    }
-    mMQTTClient.publish(topic, payloadStr);
-
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, OPERATION_TYPE);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
+            OPERATION_TYPE);
     if (message.isTimerModeEnabled())
     {
-        sprintf(payloadStr, "%S", ENUM_OPERATION_TYPE_TIMER);
+        sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", ENUM_OPERATION_TYPE_TIMER);
     }
     else
     {
-        sprintf(payloadStr, "%S", ENUM_OPERATION_TYPE_ALWAYS_ON);
+        sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", ENUM_OPERATION_TYPE_ALWAYS_ON);
     }
-    mMQTTClient.publish(topic, payloadStr);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    sprintf(payloadStr, "%02d:%02d:%02d", message.timeHours(), message.timeMinutes(), message.timeSeconds());
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, TIME);
-    mMQTTClient.publish(topic, payloadStr);
+    sprintf(reinterpret_cast<char*>(mPayloadBuffer),
+            "%02d:%02d:%02d",
+            message.timeHours(),
+            message.timeMinutes(),
+            message.timeSeconds());
+    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, TIME);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    sprintf(payloadStr, "%d.%d.%d", message.dateDay(), message.dateMonth(), message.dateYear());
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, DATE);
-    mMQTTClient.publish(topic, payloadStr);
+    sprintf(reinterpret_cast<char*>(mPayloadBuffer),
+            "%d.%d.%d",
+            message.dateDay(),
+            message.dateMonth(),
+            message.dateYear());
+    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, DATE);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    itoa(message.isEmergencyModeEnabled(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, EMERGENCY_MODE);
-    mMQTTClient.publish(topic, payloadStr);
+    itoa(message.isEmergencyModeEnabled(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
+            EMERGENCY_MODE);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    itoa(message.isHeatingElementEnabled(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, HEATING_ELEMENT_ENABLED);
-    mMQTTClient.publish(topic, payloadStr);
+    itoa(message.isHeatingElementEnabled(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
+            HEATING_ELEMENT_ENABLED);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    itoa(message.antiLegionellaModePerMonth(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, LEGIONELLA);
-    mMQTTClient.publish(topic, payloadStr);
+    itoa(message.antiLegionellaModePerMonth(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
+            LEGIONELLA);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    itoa(message.airFlow(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, AIR_DUCT_CONFIG);
-    mMQTTClient.publish(topic, payloadStr);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
+            AIR_DUCT_CONFIG);
+    mMQTTClient.publish(
+            reinterpret_cast<char*>(mTopicBuffer),
+            aquamqtt::message::airDuctConfigStr(message.airDuctConfig()));
 
-    itoa(message.testMode(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, TEST_MODE);
-    mMQTTClient.publish(topic, payloadStr);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
+            TEST_MODE);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), testModeStr(message.testMode()));
 
-    // FIXME: get rid of string
-    sprintf(topic, "%s%S%S%s", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, "timerWindowA");
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
+            INSTALLATION_CONFIG);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), installationModeStr(message.installationMode()));
+
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
+            TIMER_WINDOW_A);
     auto msgA = message.timerWindowStr(true);
-    mMQTTClient.publish(topic, msgA.c_str());
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), msgA.c_str());
 
-    // FIXME: get rid of string
-    sprintf(topic, "%s%S%S%s", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, "timerWindowB");
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
+            TIMER_WINDOW_B);
     auto msgB = message.timerWindowStr(false);
-    mMQTTClient.publish(topic, msgB.c_str());
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), msgB.c_str());
 }
 
-void MQTTTask::updateEnergyStats()
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat"
+void                     MQTTTask::updateEnergyStats()
 {
     message::MainEnergyMessage message(mTransferBuffer);
 
-    char topic[50];
-    char payloadStr[20];
+    ultoa(message.totalHeatpumpHours(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            ENERGY_SUBTOPIC,
+            TOTAL_HEATPUMP_HOURS);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    ultoa(message.totalHeatpumpHours(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, ENERGY_SUBTOPIC, TOTAL_HEATPUMP_HOURS);
-    mMQTTClient.publish(topic, payloadStr);
+    ultoa(message.totalHeatingElemHours(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            ENERGY_SUBTOPIC,
+            TOTAL_HEATING_ELEM_HOURS);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    ultoa(message.totalHeatingElemHours(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, ENERGY_SUBTOPIC, TOTAL_HEATING_ELEM_HOURS);
-    mMQTTClient.publish(topic, payloadStr);
+    ultoa(message.totalHours(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            ENERGY_SUBTOPIC,
+            TOTAL_HOURS);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    ultoa(message.totalHours(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, ENERGY_SUBTOPIC, TOTAL_HOURS);
-    mMQTTClient.publish(topic, payloadStr);
+    ultoa(message.totalEnergyCounter(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            ENERGY_SUBTOPIC,
+            TOTAL_ENERGY_WH);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    ultoa(message.totalEnergyCounter(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, ENERGY_SUBTOPIC, TOTAL_ENERGY_WH);
-    mMQTTClient.publish(topic, payloadStr);
+    ultoa(message.powerHeatpump(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            ENERGY_SUBTOPIC,
+            POWER_HEATPUMP);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    ultoa(message.powerHeatpump(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, ENERGY_SUBTOPIC, POWER_HEATPUMP);
-    mMQTTClient.publish(topic, payloadStr);
+    ultoa(message.powerHeatElement(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            ENERGY_SUBTOPIC,
+            POWER_HEAT_ELEMENT);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-    ultoa(message.powerHeatElement(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, ENERGY_SUBTOPIC, POWER_HEAT_ELEMENT);
-    mMQTTClient.publish(topic, payloadStr);
-
-    ultoa(message.powerOverall(), payloadStr, 10);
-    sprintf(topic, "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, ENERGY_SUBTOPIC, POWER_TOTAL);
-    mMQTTClient.publish(topic, payloadStr);
+    ultoa(message.powerOverall(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            ENERGY_SUBTOPIC,
+            POWER_TOTAL);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 }
 
 }  // namespace aquamqtt

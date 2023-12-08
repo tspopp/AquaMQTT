@@ -4,7 +4,6 @@
 #include <Arduino.h>
 
 #include "TimeLib.h"
-#include "config/Modes.h"
 #include "message/HMIMessage.h"
 #include "mqtt/IMQTTCallback.h"
 #include "state/DHWState.h"
@@ -21,132 +20,27 @@ namespace aquamqtt
 class HMIStateProxy : public IMQTTCallback
 {
 public:
-    static HMIStateProxy& getInstance()
-    {
-        static HMIStateProxy instance;
-        return instance;
-    }
+    static HMIStateProxy& getInstance();
 
     virtual ~HMIStateProxy() = default;
 
     HMIStateProxy(const HMIStateProxy&) = delete;
 
 private:
-    HMIStateProxy()
-        : IMQTTCallback()
-        , mMutex(xSemaphoreCreateMutex())
-        , mNotify(nullptr)
-        , mOperationMode(nullptr)
-        , mTargetTemperature(nullptr)
-        , mTimerModeEnabled(nullptr){};
+    HMIStateProxy();;
 
 public:
     HMIStateProxy& operator=(const HMIStateProxy&) = delete;
 
-    void setListener(TaskHandle_t handle)
-    {
-        if (!xSemaphoreTake(mMutex, portMAX_DELAY))
-        {
-            return;
-        }
+    void setListener(TaskHandle_t handle);
 
-        mNotify = handle;
+    void applyHMIOverrides(uint8_t* buffer);
 
-        xSemaphoreGive(mMutex);
-    }
+    bool copyFrame(uint8_t frameId, uint8_t* buffer);
 
-    void applyHMIOverrides(uint8_t* buffer)
-    {
-        if (!xSemaphoreTake(mMutex, portMAX_DELAY))
-        {
-            return;
-        }
+    void onOperationModeChanged(std::unique_ptr<message::HMIOperationMode> value) override;
 
-        message::HMIMessage message(buffer);
-
-        if (mTargetTemperature != nullptr && *mTargetTemperature <= 62.0f && *mTargetTemperature >= 20.0f)
-        {
-            message.setWaterTempTarget(*mTargetTemperature);
-        }
-
-        if (mOperationMode != nullptr)
-        {
-            message.setOperationMode(*mOperationMode);
-
-            // Operation Mode BOOST overrides target temperature
-            if (*mOperationMode == message::HMIOperationMode::BOOST)
-            {
-                message.setWaterTempTarget(62.0);
-            }
-            else if (*mOperationMode == message::HMIOperationMode::ABSENCE)
-            {
-                message.setWaterTempTarget(20.0);
-            }
-        }
-
-        // if time has been set by rtc / ntp, override time and date in hmi message
-        if (timeStatus() == timeSet)
-        {
-            message.setTimeHours(hour());
-            message.setTimeMinutes(minute());
-            message.setTimeSeconds(second());
-            message.setDateDay(day());
-            message.setDateMonthAndYear(month(), year());
-        }
-
-        xSemaphoreGive(mMutex);
-    }
-
-    bool copyFrame(uint8_t frameId, uint8_t* buffer)
-    {
-        if (frameId != aquamqtt::message::HMI_MESSAGE_IDENTIFIER)
-        {
-            return aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer);
-        }
-
-        bool hasHmiMessage = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer);
-        if (hasHmiMessage && aquamqtt::config::OPERATION_MODE == EOperationMode::MITM)
-        {
-            applyHMIOverrides(buffer);
-        }
-        return hasHmiMessage;
-    }
-
-    void onOperationModeChanged(std::unique_ptr<message::HMIOperationMode> value) override
-    {
-        if (!xSemaphoreTake(mMutex, portMAX_DELAY))
-        {
-            return;
-        }
-
-        mOperationMode = std::move(value);
-
-        // message 194 has changed
-        if (mNotify != nullptr)
-        {
-            xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
-        }
-
-        xSemaphoreGive(mMutex);
-    }
-
-    void onWaterTempTargetChanged(std::unique_ptr<float> value) override
-    {
-        if (!xSemaphoreTake(mMutex, portMAX_DELAY))
-        {
-            return;
-        }
-
-        mTargetTemperature = std::move(value);
-
-        // message 194 has changed
-        if (mNotify != nullptr)
-        {
-            xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
-        }
-
-        xSemaphoreGive(mMutex);
-    }
+    void onWaterTempTargetChanged(std::unique_ptr<float> value) override;
 
 private:
     TaskHandle_t      mNotify;

@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #include "buffer/FrameBuffer.h"
+#include "message/MessageConstants.h"
 
 namespace aquamqtt
 {
@@ -27,7 +28,7 @@ private:
 private:
     FrameBuffer   mBuffer;
     unsigned long mLastStatisticsUpdate;
-    uint8_t       mTransferBuffer[40];
+    uint8_t       mTransferBuffer[message::HEATPUMP_MAX_FRAME_LENGTH];
     FastCRC16     mCRC;
     uint64_t      mMessagesSent;
 };

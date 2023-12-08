@@ -5,9 +5,11 @@
 #include <MQTT.h>
 #include <WiFiClient.h>
 
+#include "config/Configuration.h"
 #include "message/HMIMessage.h"
 #include "message/MainEnergyMessage.h"
 #include "message/MainStatusMessage.h"
+#include "message/MessageConstants.h"
 
 namespace aquamqtt
 {
@@ -35,7 +37,9 @@ private:
     void updateStats();
 
 private:
-    uint8_t       mTransferBuffer[40];
+    uint8_t       mTransferBuffer[message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t       mTopicBuffer[config::MQTT_MAX_TOPIC_SIZE];
+    uint8_t       mPayloadBuffer[config::MQTT_MAX_PAYLOAD_SIZE];
     unsigned long mLastFullUpdate;
     WiFiClient    mWiFiClient;
     MQTTClient    mMQTTClient;
