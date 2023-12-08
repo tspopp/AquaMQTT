@@ -1,5 +1,7 @@
 # MQTT
 
+TODO: Update this
+
 | Value                            |                       MQTT Topic | Format | Unit |                                Other Information |
 |----------------------------------|----------------------------------|--------|------|--------------------------------------------------|
 | Target Water Temperature         | `%prefix/waterTempTarget`        | float  |   °C |                                                  |
@@ -24,12 +26,3 @@
 | State: Heating Element On/Off    | `%prefix/stateElement`           | bool   |      |                                                  |
 | State: Boiler Backup On/Off      | `%prefix/stateExtBoiler`         | bool   |      |                                                  |
 | State: Defrost On/Off Date       | `%prefix/stateDefrost`           | bool   |      |                                                  |
-
-
-## Debug Messages
-
-| Value                     |         MQTT Topic |     Format |         Other Information |
-|---------------------------|--------------------|------------|---------------------------|
-| Payload of message 193    | `%prefix/dbg/193`  | hex string | Sent from main controller |
-| Payload of message 67     | `%prefix/dbg/67`   | hex string | Sent from main controller |
-| Payload of message 194    | `%prefix/dbg/194`  | hex string | Sent from HMI controller  |

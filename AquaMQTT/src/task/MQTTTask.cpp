@@ -32,7 +32,7 @@ void MQTTTask::messageReceived(String& topic, String& payload)
     // sending and receiving acknowledgments. Instead, change a global variable,
     // or push to a queue and handle it in the loop after calling `client.loop()`.
 
-    if (strstr_P(topic.c_str(), OPERATION_MODE) != nullptr)
+    if (strstr_P(topic.c_str(), HMI_OPERATION_MODE) != nullptr)
     {
         if (strstr_P(payload.c_str(), ENUM_OPERATION_MODE_ABSENCE) != nullptr)
         {
@@ -69,7 +69,7 @@ void MQTTTask::messageReceived(String& topic, String& payload)
         }
     }
 
-    else if (strstr_P(topic.c_str(), HOT_WATER_TEMP_TARGET) != nullptr)
+    else if (strstr_P(topic.c_str(), HMI_HOT_WATER_TEMP_TARGET) != nullptr)
     {
         if (payload.isEmpty())
         {
@@ -113,8 +113,8 @@ void                     MQTTTask::setup()
             config::mqttPrefix,
             BASE_TOPIC,
             STATS_SUBTOPIC,
-            AQUAMQTT_LAST_WILL);
-    sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", AQUAMQTT_LAST_WILL_OFFLINE);
+            STATS_AQUAMQTT_LAST_WILL);
+    sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", ENUM_LAST_WILL_OFFLINE);
 
     mMQTTClient.setWill(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), true, 0);
     mMQTTClient.onMessage(MQTTTask::messageReceived);
@@ -128,7 +128,7 @@ void                     MQTTTask::setup()
         esp_task_wdt_reset();
     }
 
-    sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", AQUAMQTT_LAST_WILL_ONLINE);
+    sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", ENUM_LAST_WILL_ONLINE);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), true, 0);
 
     sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%S", config::mqttPrefix, CONTROL_TOPIC);
@@ -206,7 +206,7 @@ void                     MQTTTask::updateStats()
             config::mqttPrefix,
             BASE_TOPIC,
             STATS_SUBTOPIC,
-            AQUAMQTT_MODE);
+            STATS_AQUAMQTT_MODE);
     sprintf(reinterpret_cast<char*>(mPayloadBuffer),
             "%S",
             config::OPERATION_MODE == EOperationMode::LISTENER ? ENUM_AQUAMQTT_MODE_LISTENER
@@ -218,7 +218,7 @@ void                     MQTTTask::updateStats()
             config::mqttPrefix,
             BASE_TOPIC,
             STATS_SUBTOPIC,
-            AQUAMQTT_ADDR);
+            STATS_AQUAMQTT_ADDR);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), WiFi.localIP().toString());
 
     itoa(WiFi.RSSI(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -227,7 +227,7 @@ void                     MQTTTask::updateStats()
             config::mqttPrefix,
             BASE_TOPIC,
             STATS_SUBTOPIC,
-            AQUAMQTT_RSSI);
+            STATS_AQUAMQTT_RSSI);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     if (config::OPERATION_MODE == EOperationMode::LISTENER)
@@ -391,7 +391,7 @@ void                     MQTTTask::updateMainStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             MAIN_SUBTOPIC,
-            HOT_WATER_TEMP);
+            MAIN_HOT_WATER_TEMP);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     dtostrf(message.airTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
@@ -400,7 +400,7 @@ void                     MQTTTask::updateMainStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             MAIN_SUBTOPIC,
-            SUPPLY_AIR_TEMP);
+            MAIN_SUPPLY_AIR_TEMP);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     dtostrf(message.evaporatorLowerAirTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
@@ -409,7 +409,7 @@ void                     MQTTTask::updateMainStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             MAIN_SUBTOPIC,
-            EVAPORATOR_AIR_TEMP_LOWER);
+            MAIN_EVAPORATOR_AIR_TEMP_LOWER);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     dtostrf(message.evaporatorUpperAirTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
@@ -418,7 +418,7 @@ void                     MQTTTask::updateMainStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             MAIN_SUBTOPIC,
-            EVAPORATOR_AIR_TEMP_UPPER);
+            MAIN_EVAPORATOR_AIR_TEMP_UPPER);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     ultoa(message.fanSpeed(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -427,7 +427,7 @@ void                     MQTTTask::updateMainStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             MAIN_SUBTOPIC,
-            FAN_SPEED);
+            MAIN_FAN_SPEED);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     itoa(message.stateHeatingElement(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -436,7 +436,7 @@ void                     MQTTTask::updateMainStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             MAIN_SUBTOPIC,
-            STATE_HEAT_ELEMENT);
+            MAIN_STATE_HEAT_ELEMENT);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     itoa(message.stateHeatpump(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -445,7 +445,7 @@ void                     MQTTTask::updateMainStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             MAIN_SUBTOPIC,
-            STATE_HEATPUMP);
+            MAIN_STATE_HEATPUMP);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     itoa(message.stateBoilerBackup(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -454,7 +454,7 @@ void                     MQTTTask::updateMainStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             MAIN_SUBTOPIC,
-            STATE_EXT_BOILER);
+            MAIN_STATE_EXT_BOILER);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     itoa(message.stateFan(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -463,7 +463,7 @@ void                     MQTTTask::updateMainStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             MAIN_SUBTOPIC,
-            STATE_FAN);
+            MAIN_STATE_FAN);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     itoa(message.stateDefrost(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -472,7 +472,7 @@ void                     MQTTTask::updateMainStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             MAIN_SUBTOPIC,
-            STATE_DEFROST);
+            MAIN_STATE_DEFROST);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 }
 
@@ -488,7 +488,7 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
-            HOT_WATER_TEMP_TARGET);
+            HMI_HOT_WATER_TEMP_TARGET);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
@@ -496,7 +496,7 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
-            OPERATION_MODE);
+            HMI_OPERATION_MODE);
     mMQTTClient.publish(
             reinterpret_cast<char*>(mTopicBuffer),
             aquamqtt::message::operationModeStr(message.operationMode()));
@@ -506,7 +506,7 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
-            OPERATION_TYPE);
+            HMI_OPERATION_TYPE);
     if (message.isTimerModeEnabled())
     {
         sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", ENUM_OPERATION_TYPE_TIMER);
@@ -522,7 +522,7 @@ void                     MQTTTask::updateHMIStatus()
             message.timeHours(),
             message.timeMinutes(),
             message.timeSeconds());
-    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, TIME);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, HMI_TIME);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     sprintf(reinterpret_cast<char*>(mPayloadBuffer),
@@ -530,7 +530,7 @@ void                     MQTTTask::updateHMIStatus()
             message.dateDay(),
             message.dateMonth(),
             message.dateYear());
-    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, DATE);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%S%S%S", config::mqttPrefix, BASE_TOPIC, HMI_SUBTOPIC, HMI_DATE);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     itoa(message.isEmergencyModeEnabled(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -539,7 +539,7 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
-            EMERGENCY_MODE);
+            HMI_EMERGENCY_MODE);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     itoa(message.isHeatingElementEnabled(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -548,7 +548,7 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
-            HEATING_ELEMENT_ENABLED);
+            HMI_HEATING_ELEMENT_ENABLED);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     itoa(message.antiLegionellaModePerMonth(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -557,7 +557,7 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
-            LEGIONELLA);
+            HMI_LEGIONELLA);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
@@ -565,7 +565,7 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
-            AIR_DUCT_CONFIG);
+            HMI_AIR_DUCT_CONFIG);
     mMQTTClient.publish(
             reinterpret_cast<char*>(mTopicBuffer),
             aquamqtt::message::airDuctConfigStr(message.airDuctConfig()));
@@ -575,7 +575,7 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
-            TEST_MODE);
+            HMI_TEST_MODE);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), testModeStr(message.testMode()));
 
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
@@ -583,7 +583,7 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
-            INSTALLATION_CONFIG);
+            HMI_INSTALLATION_CONFIG);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), installationModeStr(message.installationMode()));
 
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
@@ -591,7 +591,7 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
-            TIMER_WINDOW_A);
+            HMI_TIMER_WINDOW_A);
     auto msgA = message.timerWindowStr(true);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), msgA.c_str());
 
@@ -600,7 +600,7 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
-            TIMER_WINDOW_B);
+            HMI_TIMER_WINDOW_B);
     auto msgB = message.timerWindowStr(false);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), msgB.c_str());
 }
@@ -617,7 +617,7 @@ void                     MQTTTask::updateEnergyStats()
             config::mqttPrefix,
             BASE_TOPIC,
             ENERGY_SUBTOPIC,
-            TOTAL_HEATPUMP_HOURS);
+            ENERGY_TOTAL_HEATPUMP_HOURS);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     ultoa(message.totalHeatingElemHours(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -626,7 +626,7 @@ void                     MQTTTask::updateEnergyStats()
             config::mqttPrefix,
             BASE_TOPIC,
             ENERGY_SUBTOPIC,
-            TOTAL_HEATING_ELEM_HOURS);
+            ENERGY_TOTAL_HEATING_ELEM_HOURS);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     ultoa(message.totalHours(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -635,7 +635,7 @@ void                     MQTTTask::updateEnergyStats()
             config::mqttPrefix,
             BASE_TOPIC,
             ENERGY_SUBTOPIC,
-            TOTAL_HOURS);
+            ENERGY_TOTAL_HOURS);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     ultoa(message.totalEnergyCounter(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -644,7 +644,7 @@ void                     MQTTTask::updateEnergyStats()
             config::mqttPrefix,
             BASE_TOPIC,
             ENERGY_SUBTOPIC,
-            TOTAL_ENERGY_WH);
+            ENERGY_TOTAL_ENERGY_WH);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     ultoa(message.powerHeatpump(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -653,7 +653,7 @@ void                     MQTTTask::updateEnergyStats()
             config::mqttPrefix,
             BASE_TOPIC,
             ENERGY_SUBTOPIC,
-            POWER_HEATPUMP);
+            ENERGY_POWER_HEATPUMP);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     ultoa(message.powerHeatElement(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -662,7 +662,7 @@ void                     MQTTTask::updateEnergyStats()
             config::mqttPrefix,
             BASE_TOPIC,
             ENERGY_SUBTOPIC,
-            POWER_HEAT_ELEMENT);
+            ENERGY_POWER_HEAT_ELEMENT);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     ultoa(message.powerOverall(), reinterpret_cast<char*>(mPayloadBuffer), 10);
@@ -671,7 +671,7 @@ void                     MQTTTask::updateEnergyStats()
             config::mqttPrefix,
             BASE_TOPIC,
             ENERGY_SUBTOPIC,
-            POWER_TOTAL);
+            ENERGY_POWER_TOTAL);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 }
 
