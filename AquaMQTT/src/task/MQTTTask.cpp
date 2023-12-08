@@ -591,9 +591,17 @@ void                     MQTTTask::updateHMIStatus()
             config::mqttPrefix,
             BASE_TOPIC,
             HMI_SUBTOPIC,
+            HMI_SETUP_STATE);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), setupStr(message.setupMode()));
+
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            HMI_SUBTOPIC,
             HMI_TIMER_WINDOW_A);
-    auto msgA = message.timerWindowStr(true);
-    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), msgA.c_str());
+    message.timerWindowStr(true, reinterpret_cast<char*>(mPayloadBuffer));
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
             "%s%S%S%S",
@@ -601,8 +609,8 @@ void                     MQTTTask::updateHMIStatus()
             BASE_TOPIC,
             HMI_SUBTOPIC,
             HMI_TIMER_WINDOW_B);
-    auto msgB = message.timerWindowStr(false);
-    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), msgB.c_str());
+    message.timerWindowStr(false, reinterpret_cast<char*>(mPayloadBuffer));
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 }
 
 #pragma clang diagnostic push

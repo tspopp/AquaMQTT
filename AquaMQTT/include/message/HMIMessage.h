@@ -28,19 +28,19 @@ public:
 
     void setTimerModeEnabled(boolean enabled);
 
-    // TODO: sanity you cannot active emergency mode if heating element is disabled
     bool isEmergencyModeEnabled();
 
-    // TODO: you cannot disable heating elment if emergency mode is activated
+    void setEmergencyMode(bool enabled);
+
     bool isHeatingElementEnabled();
 
-    // TODO: implement
-    bool setupModeA();
+    void enableHeatingElement(bool enabled);
 
-    // TODO: implement
-    bool setupModeB();
+    HMISetup setupMode();
 
     uint8_t antiLegionellaModePerMonth();
+
+    void setAntiLegionellaModePerMonth(uint8_t value);
 
     HMIAirDuctConfig airDuctConfig();
 
@@ -48,11 +48,9 @@ public:
 
     HMITestMode testMode();
 
-    // TODO: sanity, timer window cannot exceed 14 hours (both a and b)
-    // 1st range duration: 4 hours < time < 14 hours;
-    // Total duration of the 2 ranges: 8 hours minimum and 14 hours maximum.
-    // FIXME: do not return string
-    std::string timerWindowStr(bool firstWindow);
+    void timerWindowStr(bool firstWindow, char* buffer);
+
+    void setTimeWindowByStr(bool firstWindow, char* buffer, uint8_t length);
 
     uint16_t timerWindowAStart();
 

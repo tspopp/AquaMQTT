@@ -139,6 +139,26 @@ static const char* installationModeStr(HMIInstallation installation)
     }
 }
 
+enum HMISetup
+{
+    COMPLETED,
+    INCOMPLETE,
+    RESET
+};
+
+static const char* setupStr(HMISetup installation)
+{
+    switch (installation)
+    {
+        case INCOMPLETE:
+            return reinterpret_cast<const char*>(mqtt::ENUM_SETUP_INCOMPLETE);
+        case RESET:
+            return reinterpret_cast<const char*>(mqtt::ENUM_SETUP_RESET);
+        default:
+            return reinterpret_cast<const char*>(mqtt::ENUM_SETUP_COMPLETED);
+    }
+}
+
 }  // namespace message
 }  // namespace aquamqtt
 

@@ -58,16 +58,22 @@ bool HMIMessage::isHeatingElementEnabled()
 {
     return mData[9] & 0x04;
 }
-bool HMIMessage::setupModeA()
+HMISetup HMIMessage::setupMode()
 {
-    // Fresh-Reset = 164 / 1010 0100? (nothing set)
-    return mData[9] & 0x80;
+    if (mData[9] & 0x80)
+    {
+        return HMISetup::RESET;
+    }
+    else if (mData[9] & 0x20)
+    {
+        return HMISetup::INCOMPLETE;
+    }
+    else
+    {
+        return HMISetup::COMPLETED;
+    }
 }
-bool HMIMessage::setupModeB()
-{
-    // Then 36             0010 0100 (umluftbetrieb set, rest missing
-    return mData[9] & 0x20;
-}
+
 uint8_t HMIMessage::antiLegionellaModePerMonth()
 {
     return (uint8_t) (mData[5] & 0x0F);
@@ -130,12 +136,11 @@ HMITestMode HMIMessage::testMode()
             return HMITestMode::TM_UNKNOWN;
     }
 }
-std::string HMIMessage::timerWindowStr(bool firstWindow)
+void HMIMessage::timerWindowStr(bool firstWindow, char* buffer)
 {
     uint16_t start    = firstWindow ? timerWindowAStart() : timerWindowBStart();
     uint16_t duration = firstWindow ? timerWindowALength() : timerWindowBLength();
 
-    char          beginStr[13];
     const uint8_t beginHours    = (start * 15) / 60;
     const uint8_t beginMinutes  = (start * 15) % 60;
     const uint8_t lengthHours   = (duration * 15) / 60;
@@ -143,8 +148,7 @@ std::string HMIMessage::timerWindowStr(bool firstWindow)
     const uint8_t endMinutes    = (beginMinutes + lengthMinutes) % 60;
     const uint8_t hourOverlap   = (beginMinutes + lengthMinutes) / 60;
     const uint8_t endHours      = (beginHours + lengthHours) % 24 + hourOverlap;
-    sprintf(beginStr, "%02d:%02d-%02d:%02d", beginHours, beginMinutes, endHours, endMinutes);
-    return beginStr;
+    sprintf(buffer, "%02d:%02d-%02d:%02d", beginHours, beginMinutes, endHours, endMinutes);
 }
 uint16_t HMIMessage::timerWindowAStart()
 {
@@ -209,5 +213,31 @@ void HMIMessage::setDateDay(uint8_t day)
 {
     mData[18] = (mData[18] & 0xE0) | (day & 0x1F);
 }
+
+// TODO: implement me
+// TODO: sanity you cannot active emergency mode if heating element is disabled
+void HMIMessage::setEmergencyMode(bool enabled)
+{
+}
+
+// TODO: implement me
+// TODO: you cannot disable heating element if emergency mode is activated
+void HMIMessage::enableHeatingElement(bool enabled)
+{
+}
+
+// TODO: implement me
+// TODO: sanity, timer window cannot exceed 14 hours (both a and b)
+// 1st range duration: 4 hours < time < 14 hours;
+// Total duration of the 2 ranges: 8 hours minimum and 14 hours maximum.
+void HMIMessage::setTimeWindowByStr(bool firstWindow, char* buffer, uint8_t length)
+{
+}
+
+// TODO: implement me
+void HMIMessage::setAntiLegionellaModePerMonth(uint8_t value)
+{
+}
+
 }  // namespace message
 }  // namespace aquamqtt

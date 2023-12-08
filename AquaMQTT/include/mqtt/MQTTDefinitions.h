@@ -52,6 +52,10 @@ const char ENUM_OPERATION_TYPE_TIMER[] PROGMEM     = { "TIME WINDOW" };
 const char ENUM_LAST_WILL_ONLINE[] PROGMEM  = { "ONLINE" };
 const char ENUM_LAST_WILL_OFFLINE[] PROGMEM = { "OFFLINE" };
 
+const char ENUM_SETUP_COMPLETED[] PROGMEM  = { "COMPLETE" };
+const char ENUM_SETUP_INCOMPLETE[] PROGMEM = { "INCOMPLETE" };
+const char ENUM_SETUP_RESET[] PROGMEM      = { "RESET" };
+
 // Subtopics
 const char MAIN_HOT_WATER_TEMP[] PROGMEM            = { "waterTemp" };
 const char MAIN_SUPPLY_AIR_TEMP[] PROGMEM           = { "supplyAirTemp" };
@@ -77,6 +81,7 @@ const char HMI_TIMER_WINDOW_B[] PROGMEM          = { "timerWindowB" };
 const char HMI_AIR_DUCT_CONFIG[] PROGMEM         = { "configAirduct" };
 const char HMI_INSTALLATION_CONFIG[] PROGMEM     = { "configInstallation" };
 const char HMI_TEST_MODE[] PROGMEM               = { "testModeStatus" };
+const char HMI_SETUP_STATE[] PROGMEM             = { "setupState" };
 
 const char ENERGY_TOTAL_HEATING_ELEM_HOURS[] PROGMEM = { "totalHeatingElemHours" };
 const char ENERGY_TOTAL_HEATPUMP_HOURS[] PROGMEM     = { "totalHeatpumpHours" };
