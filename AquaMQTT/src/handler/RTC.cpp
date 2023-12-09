@@ -7,7 +7,7 @@
 namespace aquamqtt
 {
 
-RTCHandler::RTCHandler() : mRTC(), mFoundRTC(false)
+RTCHandler::RTCHandler() : mRTC(), mFoundRTC(false), mLastNTPUpdate(0)
 {
 }
 
@@ -20,10 +20,13 @@ void RTCHandler::setup()
 
 void RTCHandler::loop()
 {
-    if (timeStatus() != timeSet)
+    if (timeStatus() != timeSet || (millis() - mLastNTPUpdate) >= 3600000)
     {
-        struct tm timeinfo{};
-        if (getLocalTime(&timeinfo))
+        mLastNTPUpdate = millis();
+        struct tm timeinfo
+        {
+        };
+        if (getLocalTime(&timeinfo, 1000))
         {
             setTime(timeinfo.tm_hour,
                     timeinfo.tm_min,

@@ -19,8 +19,9 @@ public:
     void loop();
 
 private:
-    bool       mFoundRTC;
-    RTC_DS3231 mRTC;
+    unsigned long mLastNTPUpdate;
+    bool          mFoundRTC;
+    RTC_DS3231    mRTC;
 };
 }  // namespace aquamqtt
 
