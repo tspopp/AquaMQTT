@@ -1,7 +1,7 @@
 #ifndef AQUAMQTT_CONFIGURATION_H
 #define AQUAMQTT_CONFIGURATION_H
 
-#define CUSTOM_CONFIGURATION 0
+//#define CUSTOM_CONFIGURATION
 
 #ifdef CUSTOM_CONFIGURATION
 #    include "CustomConfiguration.h"
