@@ -90,11 +90,11 @@ The main controller gives the HMI controller permission to send by emitting the 
 | 1 - 2       |   18 2  | Target Temp.     | See Temperature Table, 53°C |
 | 3           |     66  | OperationMode  | See Operation Mode Table |
 | 4           |    252  | ?                | - |
-| 5           |      0  | Anti-Legionella Mode + Luftführung | 0 == Off, 1 == 1/month, 2 == 2/month, 3 == 3/month, 4 == 4/month, // 0 == umluft, 16 == 1 kanal, 32 == 2 kanal |
-| 6           |    240  | Not-Betrieb                | Off: 240, On: 241 |
-| 7           |     17  | Installationsoptions                | WT, WP-Only: 0, WP+Heizkessel-Prio-Wärmepumpe: 1, Wp+Heizkessel-Opt-Wärmepumpe: 17 / 10001, Wp+Heizkelsse-Opt-Heizkessel: 33 / 100001, Wp+Heizkessel-Prio-Heizkessel: 49 // 110001, Wp+Solarthermie: 50 // 110010|
+| 5           |      0  | Anti-Legionella Mode / AirDuct Mode | 0 == Off, 1 == 1perMonth, 2 == 2perMonth, 3 == 3perMonth, 4 == 4/perMonth, // 0 == AirDuct INT/INT, 16 == AirDuct EXT/INT, 32 == AirDuct EXT/EXT |
+| 6           |    240  | Emergency-Mode                | Off == 240, On == 241 |
+| 7           |     17  | InstallationConfig                | WP-Only == 0, WP+ExtBoiler-Prio-WP == 1, Wp+ExtBoiler-Opt-WP == 17, Wp+ExtBoiler-Opt-ExtBoiler == 33 , Wp+ExtBoiler-Prio-ExtBoiler == 49 , WP + Solar == 50 |
 | 8           |    240  | ?                | - |
-| 9          |      4  | Heating-Element                | Automatic-Mode: 4, Disabled: 0, Fresh-Reset = 164 / 10100100? (nothing set) Then 36 00100100 (umluftbetrieb set, rest missing ) Then 4 (all is good starting)..? |
+| 9          |      4  | Heating-Element / SetupState              | Heating-Element Automatic-Mode == 4, Heating-Element Disabled == 0, Setup Factory Settings == 164, Setup Airduct Set == 36, Setup Finished == 4 |
 | 10          |     16  | Timer Mode: Window 1 Start | 16 = 04:00h, 12 = 03:00h |
 | 11          |     56  | Timer Mode: Window 1 Length  | 52 = 13h runtime, 56 = 14h runtime|
 | 12          |      0  | Timer Mode: Window 2 Start  | e.g. 52 = 13:00h - Value 0x00 0x00 is supported if Timer 2 is not set.  |
@@ -107,7 +107,7 @@ The main controller gives the HMI controller permission to send by emitting the 
 | 19          |     46  | Current Year, Half-Year | See Formula below  |
 | 20          |     11  | Current Time Minutes                | - |
 | 21          |     13  | Current Time Hour                | - |
-| 22          |      0  | TestMode (?)                | HeatingElement, Heatpump, Defrost, Fan Hi/Lo // HMI Entered TestMode = 1, HMI Left TestMode = 0; WP TestMode Running = 2; Heating-Element = 3, Fan TestMode Running (slow) = 4 , Fan TestMode Running (fast) = 5 , Defrost = 6, 
+| 22          |      0  | TestMode Status                | HMI Left TestMode == 0, HMI Entered TestMode == 1, Heatpump TestMode == 2, Heating-Element TestMode == 3, Fan-Slow TestMode == 4 , Fan-Fast TestMode == 5 , Defrost TestMode == 6, Heatpump + EXT Boiler TestMode == 8
 | 23          |      0  | ?                | - |
 | 24          |    255  | ?                | - |
 | 25          |      0  | ?                | - |

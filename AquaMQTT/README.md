@@ -8,15 +8,15 @@ Listener" and "Man-in-the-Middle."
 1. **Listener Mode:**
     - AquaMQTT acts as an observer, monitoring communication between a heat pump HMI controller and the heat pump main
       controller.
-    - It parses the serial messages exchanged between the two controllers and publishes relevant data to specified MQTT
-      topics (refer to [../MQTT.MD](../MQTT.MD)).
+    - Parses the serial messages exchanged between the two controllers and publishes relevant data to specified MQTT
+      topics (refer to [MQTT.md](../MQTT.md)).
 
 2. **Man-in-the-Middle Mode:**
     - AquaMQTT intercepts and sits between the communication channels of the HMI controller and the main heat pump
       controller. 
-    - It parses the serial messages exchanged between the two controllers and publishes relevant data to specified MQTT
-      topics (refer to [../MQTT.MD](../MQTT.MD)).
-    - This mode additionally enables the modification of communication messages in both directions, allowing for the alteration of
+    - Parses the serial messages exchanged between the two controllers and publishes relevant data to specified MQTT
+      topics (refer to [MQTT.md](../MQTT.md)).
+    - Enables the modification of communication messages in both directions, allowing for the alteration of
       various parameters such as operation mode, water target temperature, and more.
 
 ## Getting Started
@@ -32,6 +32,7 @@ Listener" and "Man-in-the-Middle."
 
    ```bash
    git clone https://github.com/tspopp/AquaMQTT.git
+   ```
 
 2. Configure WiFi and MQTT Settings:
 
@@ -72,12 +73,12 @@ Listener" and "Man-in-the-Middle."
 
 2. Build the project using
 
-   ```shell
+   ```bash
    pio run -e arduino_nano_esp32
    ```
 3. Connect the Arduino and upload the project to your microcontroller via USB
 
-   ```shell
+   ```bash
    pio run -t upload -e arduino_nano_esp32
    ```
 
