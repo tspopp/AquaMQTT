@@ -90,11 +90,11 @@ The main controller gives the HMI controller permission to send by emitting the 
 | 1 - 2       |   18 2  | Target Temp.     | See Temperature Table, 53°C |
 | 3           |     66  | OperationMode  | See Operation Mode Table |
 | 4           |    252  | ?                | - |
-| 5           |      0  | ?                | - |
-| 6           |    240  | ?                | - |
-| 7           |     17  | ?                | - |
+| 5           |      0  | Anti-Legionella Mode / AirDuct Mode | 0 == Off, 1 == 1perMonth, 2 == 2perMonth, 3 == 3perMonth, 4 == 4/perMonth, // 0 == AirDuct INT/INT, 16 == AirDuct EXT/INT, 32 == AirDuct EXT/EXT |
+| 6           |    240  | Emergency-Mode                | Off == 240, On == 241 |
+| 7           |     17  | InstallationConfig                | WP-Only == 0, WP+ExtBoiler-Prio-WP == 1, Wp+ExtBoiler-Opt-WP == 17, Wp+ExtBoiler-Opt-ExtBoiler == 33 , Wp+ExtBoiler-Prio-ExtBoiler == 49 , WP + Solar == 50 |
 | 8           |    240  | ?                | - |
-| 9          |      4  | ?                | - |
+| 9          |      4  | Heating-Element / SetupState              | Heating-Element Automatic-Mode == 4, Heating-Element Disabled == 0, Setup Factory Settings == 164, Setup Airduct Set == 36, Setup Finished == 4 |
 | 10          |     16  | Timer Mode: Window 1 Start | 16 = 04:00h, 12 = 03:00h |
 | 11          |     56  | Timer Mode: Window 1 Length  | 52 = 13h runtime, 56 = 14h runtime|
 | 12          |      0  | Timer Mode: Window 2 Start  | e.g. 52 = 13:00h - Value 0x00 0x00 is supported if Timer 2 is not set.  |
@@ -107,7 +107,7 @@ The main controller gives the HMI controller permission to send by emitting the 
 | 19          |     46  | Current Year, Half-Year | See Formula below  |
 | 20          |     11  | Current Time Minutes                | - |
 | 21          |     13  | Current Time Hour                | - |
-| 22          |      0  | TestMode (?)                | HeatingElement, Heatpump, Defrost, Fan Hi/Lo |
+| 22          |      0  | TestMode Status                | HMI Left TestMode == 0, HMI Entered TestMode == 1, Heatpump TestMode == 2, Heating-Element TestMode == 3, Fan-Slow TestMode == 4 , Fan-Fast TestMode == 5 , Defrost TestMode == 6, Heatpump + EXT Boiler TestMode == 8
 | 23          |      0  | ?                | - |
 | 24          |    255  | ?                | - |
 | 25          |      0  | ?                | - |
@@ -183,7 +183,7 @@ Example Table:
 
 ```
     uint16_t year  = 2000 + (payload[19] / 2);
-    uint8_t  month = 1 + (payload[18] >> 5) + ((payload[19] % 2) * 7);
+    uint8_t  month = (payload[18] >> 5) + ((payload[19] % 2) * 8);
     uint8_t  day   = payload[18] & 0x1F;
 ```
 
