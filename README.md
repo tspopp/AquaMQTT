@@ -53,8 +53,7 @@ To get started with monitoring and controlling your heat pump, follow these step
    - [Install AquaMQTT to your Arduino ESP32 using PlatformIO](AquaMQTT/README.md).
 
 3. **Wiring Instructions:**
-   - Follow the instructions in the [Wiring Guide](./WIRING.md) to integrate the AquaMQTT Board into your heat pump. This document includes details on connecting the PCB to the HMI controller and the main controller.
-
+   - Follow the instructions in [WIRING.md](./WIRING.md) to integrate the AquaMQTT Board into your heat pump. This document includes details on connecting the PCB to the HMI controller and the main controller.
 
 ## Why not using cozytouch / io-homecontrol?
 
