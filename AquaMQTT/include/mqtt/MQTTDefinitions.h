@@ -1,6 +1,8 @@
 #ifndef AQUAMQTT_MQTTDEFINITIONS_H
 #define AQUAMQTT_MQTTDEFINITIONS_H
 
+#include "pgmspace.h"
+
 namespace aquamqtt
 {
 namespace mqtt
@@ -100,6 +102,10 @@ const char STATS_MSG_UNHANDLED[] PROGMEM      = { "msgUnhandled" };
 const char STATS_MSG_SENT[] PROGMEM           = { "msgSent" };
 const char STATS_MSG_CRC_NOK[] PROGMEM        = { "msgCRCNOK" };
 const char STATS_DROPPED_BYTES[] PROGMEM      = { "droppedBytes" };
+const char STATS_ACTIVE_OVERRIDES[] PROGMEM   = { "activeOverrides" };
+
+// CTRL
+const char AQUAMQTT_RESET_OVERRIDES[] PROGMEM = { "reset" };
 
 }  // namespace mqtt
 }  // namespace aquamqtt

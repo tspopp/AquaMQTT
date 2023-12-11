@@ -15,8 +15,6 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 
 ### AquaMQTT / Statistics
 
-
-
 | Value                            |                            MQTT Topic | Format | Unit |                                Other Information |
 |----------------------------------|---------------------------------------|--------|------|--------------------------------------------------|
 | AquaMQTT Last Will               | `$root/stats/lwlState`                |   Enum |      |                                ONLINE, OFFLINE   |
@@ -27,6 +25,7 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 | AquaMQTT Messages IGNORED        | `$root/stats/$channel/msgUnhandled`   | uint64 |      |                                                  |
 | AquaMQTT Messages CRC NOK        | `$root/stats/$channel/msgCRCNOK`      | uint64 |      |                                                  |
 | AquaMQTT Dropped Bytes           | `$root/stats/$channel/droppedBytes`   | uint64 |      |                                                  |
+| AquaMQTT Active Overrides        | `$root/stats/$channel/activeOverrides` | ListOfEnum | |    e.g. "["operationMode", "waterTempTarget"]"   |
 
 `$channel` is either `hmi` and `main` or `listener` depending on the AquaMQTT operation mode.
 
@@ -82,7 +81,11 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 
 Using this topics you may override the HMI Controller in AquaMQTT OperationMode Man-In-The-Middle. Currently these are the only ones implemented:
 
-| Value                            |                       MQTT Topic | Format | Unit | Example Payload |                               Other Information |
+| Value / Action                           |                       MQTT Topic | Format | Unit | Example Payload |                               Other Information |
 |----------------------------------|----------------------------------|--------|------|-----------------|-------------------------------------------------|
 | Target Water Temperature         | `$root/ctrl/waterTempTarget`     | float  |   °C |        "`55.0`" | Overrides the water temperature target: Allowed range is from 20°C to 62°C. |
 | Operation Mode                   | `$root/ctrl/operationMode`       |   Enum |      |       "`BOOST`" | Overrides the operation mode, may affect the waterTempTarget. For example BOOST and ABSENCE will automatically set the waterTempTarget accordingly.  |
+| Reset Overrides                  | `$root/ctrl/reset`       |   Void |      |        | Removes all previous set overrides. |
+
+
+**Note:** Calling a `ctrl` topic with an empty payload `""` will reset individual override.

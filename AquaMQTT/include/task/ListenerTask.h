@@ -1,8 +1,6 @@
 #ifndef AQUAMQTT_LISTENERTASK_H
 #define AQUAMQTT_LISTENERTASK_H
 
-#include <Arduino.h>
-
 #include "buffer/FrameBuffer.h"
 
 namespace aquamqtt

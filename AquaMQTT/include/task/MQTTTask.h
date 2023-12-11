@@ -1,7 +1,6 @@
 #ifndef AQUAMQTT_MQTTTASK_H
 #define AQUAMQTT_MQTTTASK_H
 
-#include <Arduino.h>
 #include <MQTT.h>
 #include <WiFiClient.h>
 

@@ -26,7 +26,7 @@ public:
 
     bool isTimerModeEnabled();
 
-    void setTimerModeEnabled(boolean enabled);
+    void setTimerModeEnabled(bool enabled);
 
     bool isEmergencyModeEnabled();
 

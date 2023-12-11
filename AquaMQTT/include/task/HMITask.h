@@ -1,8 +1,6 @@
 #ifndef AQUAMQTT_HMITASK_H
 #define AQUAMQTT_HMITASK_H
 
-#include <Arduino.h>
-
 #include "buffer/FrameBuffer.h"
 #include "message/MessageConstants.h"
 

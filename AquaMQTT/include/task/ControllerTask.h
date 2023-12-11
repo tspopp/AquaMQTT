@@ -1,8 +1,6 @@
 #ifndef AQUAMQTT_CONTROLLERTASK_H
 #define AQUAMQTT_CONTROLLERTASK_H
 
-#include <Arduino.h>
-
 #include "buffer/FrameBuffer.h"
 #include "message/MessageConstants.h"
 
