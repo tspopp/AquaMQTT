@@ -1,8 +1,6 @@
 #ifndef AQUAMQTT_RTC_H
 #define AQUAMQTT_RTC_H
 
-#include <Arduino.h>
-
 #include "RTClib.h"
 
 namespace aquamqtt

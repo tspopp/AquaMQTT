@@ -1,8 +1,6 @@
 #ifndef AQUAMQTT_EXAMPLECONFIGURATION_H
 #define AQUAMQTT_EXAMPLECONFIGURATION_H
 
-#include "Arduino.h"
-
 namespace aquamqtt
 {
 namespace config

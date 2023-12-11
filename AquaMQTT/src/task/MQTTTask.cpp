@@ -81,6 +81,10 @@ void MQTTTask::messageReceived(String& topic, String& payload)
                     std::unique_ptr<float>(new float(atof(payload.c_str()))));
         }
     }
+    else if (strstr_P(topic.c_str(), AQUAMQTT_RESET_OVERRIDES) != nullptr)
+    {
+        HMIStateProxy::getInstance().onResetOverrides();
+    }
 }
 
 void MQTTTask::spawn()
@@ -375,6 +379,9 @@ void                     MQTTTask::updateStats()
                 MAIN_SUBTOPIC,
                 STATS_MSG_SENT);
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+
+        // TODO: implement active overrides here
     }
 }
 #pragma clang diagnostic pop

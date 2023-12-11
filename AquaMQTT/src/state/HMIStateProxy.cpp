@@ -17,7 +17,6 @@ HMIStateProxy::HMIStateProxy()
     , mNotify(nullptr)
     , mOperationMode(nullptr)
     , mTargetTemperature(nullptr)
-    , mTimerModeEnabled(nullptr)
 {
 }
 
@@ -125,4 +124,37 @@ void HMIStateProxy::onWaterTempTargetChanged(std::unique_ptr<float> value)
 
     xSemaphoreGive(mMutex);
 }
+
+void HMIStateProxy::onResetOverrides()
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mOperationMode     = std::unique_ptr<message::HMIOperationMode>(nullptr);
+    mTargetTemperature = std::unique_ptr<float>(nullptr);
+
+    // message 194 has changed
+    if (mNotify != nullptr)
+    {
+        xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
+    }
+
+    xSemaphoreGive(mMutex);
+}
+AquaMqttOverrides HMIStateProxy::getOverrides()
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return AquaMqttOverrides{};
+    }
+
+    auto retVal = AquaMqttOverrides{ mOperationMode != nullptr, mTargetTemperature != nullptr };
+
+    xSemaphoreGive(mMutex);
+
+    return retVal;
+}
+
 }  // namespace aquamqtt

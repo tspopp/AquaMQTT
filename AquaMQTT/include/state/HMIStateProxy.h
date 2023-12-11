@@ -1,8 +1,6 @@
 #ifndef AQUAMQTT_HMISTATEPROXY_H
 #define AQUAMQTT_HMISTATEPROXY_H
 
-#include <Arduino.h>
-
 #include "TimeLib.h"
 #include "message/HMIMessage.h"
 #include "mqtt/IMQTTCallback.h"
@@ -10,6 +8,12 @@
 
 namespace aquamqtt
 {
+
+struct AquaMqttOverrides
+{
+    bool operationMode;
+    bool waterTempTarget;
+};
 
 /**
  * HMIStateProxy accesses current HMI message from the DHW state
@@ -27,7 +31,7 @@ public:
     HMIStateProxy(const HMIStateProxy&) = delete;
 
 private:
-    HMIStateProxy();;
+    HMIStateProxy();
 
 public:
     HMIStateProxy& operator=(const HMIStateProxy&) = delete;
@@ -42,6 +46,10 @@ public:
 
     void onWaterTempTargetChanged(std::unique_ptr<float> value) override;
 
+    void onResetOverrides() override;
+
+    AquaMqttOverrides getOverrides();
+
 private:
     TaskHandle_t      mNotify;
     SemaphoreHandle_t mMutex;
@@ -49,7 +57,6 @@ private:
     // since we do not have optionals, use nullptr if override is not set
     std::unique_ptr<float>                     mTargetTemperature;
     std::unique_ptr<message::HMIOperationMode> mOperationMode;
-    std::unique_ptr<bool>                      mTimerModeEnabled;
 };
 
 }  // namespace aquamqtt

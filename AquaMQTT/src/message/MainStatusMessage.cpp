@@ -7,19 +7,19 @@ namespace message
 
 float message::MainStatusMessage::hotWaterTemp()
 {
-    return (float) (((int16_t) mData[2] << 8) | mData[1]) / 10.0;
+    return (float) (((short int) (mData[2] << 8) | mData[1]) / 10.0);
 }
 float MainStatusMessage::airTemp()
 {
-    return (float) (((int16_t) mData[4] << 8) | mData[3]) / 10.0;
+    return (float) (((short int) (mData[4] << 8) | mData[3]) / 10.0);
 }
 float MainStatusMessage::evaporatorLowerAirTemp()
 {
-    return (float) (((int16_t) mData[6] << 8) | mData[5]) / 10.0;
+    return (float) (((short int) (mData[6] << 8) | mData[5]) / 10.0);
 }
 float MainStatusMessage::evaporatorUpperAirTemp()
 {
-    return (float) (((int16_t) mData[8] << 8) | mData[7]) / 10.0;
+    return (float) (((short int) (mData[8] << 8) | mData[7]) / 10.0);
 }
 uint16_t MainStatusMessage::fanSpeed()
 {

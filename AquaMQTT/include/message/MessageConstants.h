@@ -1,7 +1,6 @@
 #ifndef AQUAMQTT_MESSAGECONSTANTS_H
 #define AQUAMQTT_MESSAGECONSTANTS_H
 
-#include "Arduino.h"
 #include "mqtt/MQTTDefinitions.h"
 
 namespace aquamqtt
@@ -107,15 +106,16 @@ static const char* testModeStr(HMITestMode config)
     }
 }
 
+
 enum HMIInstallation
 {
     INST_HP_UNKNOWN          = -1,
-    INST_HP_ONLY             = 0,
-    INST_HP_AND_EXT_PRIO_HP  = 1,
-    INST_HP_AND_EXT_OPT_HP   = 17,
-    INST_HP_AND_EXT_OPT_EXT  = 33,
-    INST_HP_AND_EXT_PRIO_EXT = 49,
-    INST_HP_AND_SOLAR        = 50,
+    INST_HP_ONLY             = 0,  // 0000 0000
+    INST_HP_AND_EXT_PRIO_HP  = 1,  // 0000 0001
+    INST_HP_AND_EXT_OPT_HP   = 17, // 0001 0001
+    INST_HP_AND_EXT_OPT_EXT  = 33, // 0010 0001
+    INST_HP_AND_EXT_PRIO_EXT = 49, // 0011 0001
+    INST_HP_AND_SOLAR        = 2,  // 0000 0010
 };
 
 static const char* installationModeStr(HMIInstallation installation)

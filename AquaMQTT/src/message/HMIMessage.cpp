@@ -1,5 +1,7 @@
 #include "message/HMIMessage.h"
 
+#include <cstdio>
+
 namespace aquamqtt
 {
 namespace message
@@ -10,12 +12,13 @@ HMIMessage::HMIMessage(uint8_t* data) : mData(data)
 }
 float HMIMessage::waterTempTarget()
 {
-    return (float) (((int16_t) mData[2] << 8) | mData[1]) / 10.0;
+    return (float) (((short int) (mData[2] << 8) | mData[1]) / 10.0);
 }
 void HMIMessage::setWaterTempTarget(float targetTemperature)
 {
-    mData[1] = (int) targetTemperature * 10 & 0xFF;
-    mData[2] = ((int) targetTemperature * 10 >> 8) & 0xFF;
+    short int rawValue = targetTemperature * 100 / 10;
+    mData[1]      = rawValue & 0xFF;
+    mData[2]      = (rawValue >> 8) & 0xFF;
 }
 HMIOperationMode HMIMessage::operationMode()
 {
@@ -46,7 +49,7 @@ bool HMIMessage::isTimerModeEnabled()
 {
     return mData[3] & 0x40;
 }
-void HMIMessage::setTimerModeEnabled(boolean enabled)
+void HMIMessage::setTimerModeEnabled(bool enabled)
 {
     mData[3] = (mData[3] & ~(1 << 6)) | (enabled << 6);
 }
@@ -94,24 +97,35 @@ HMIAirDuctConfig HMIMessage::airDuctConfig()
 }
 HMIInstallation HMIMessage::installationMode()
 {
-    switch (mData[7])
+    if (mData[7] & 0x02)
     {
-        case 0:
-            return HMIInstallation::INST_HP_ONLY;
-        case 1:
-            return HMIInstallation::INST_HP_AND_EXT_PRIO_HP;
-        case 17:
-            return HMIInstallation::INST_HP_AND_EXT_OPT_HP;
-        case 33:
-            return HMIInstallation::INST_HP_AND_EXT_OPT_EXT;
-        case 49:
+        return HMIInstallation::INST_HP_AND_SOLAR;
+    }
+    else if (mData[7] & 0x01)
+    {
+        if (mData[7] & 0x10 && mData[7] & 0x20)
+        {
             return HMIInstallation::INST_HP_AND_EXT_PRIO_EXT;
-        case 50:
-            return HMIInstallation::INST_HP_AND_SOLAR;
-        default:
-            return HMIInstallation::INST_HP_UNKNOWN;
+        }
+        else if (!(mData[7] & 0x10) && mData[7] & 0x20)
+        {
+            return HMIInstallation::INST_HP_AND_EXT_OPT_EXT;
+        }
+        else if (mData[7] & 0x10 && !(mData[7] & 0x20))
+        {
+            return HMIInstallation::INST_HP_AND_EXT_OPT_HP;
+        }
+        else
+        {
+            return HMIInstallation::INST_HP_AND_EXT_PRIO_HP;
+        }
+    }
+    else
+    {
+        return HMIInstallation::INST_HP_ONLY;
     }
 }
+
 HMITestMode HMIMessage::testMode()
 {
     switch (mData[22])

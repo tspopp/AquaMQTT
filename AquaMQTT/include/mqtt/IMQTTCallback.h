@@ -13,6 +13,9 @@ public:
 
     // $prefix/aquamqtt/ctrl/waterTempTarget + float
     virtual void onWaterTempTargetChanged(std::unique_ptr<float> value) = 0;
+
+    // $prefix/aquamqtt/ctrl/reset
+    virtual void onResetOverrides() = 0;
 };
 }  // namespace aquamqtt
 #endif  // AQUAMQTT_IMQTTCALLBACK_H
