@@ -153,7 +153,7 @@ void MQTTTask::loop()
 
     bool statsUpdate = (millis() - mLastFullUpdate) >= config::MQTT_STATS_UPDATE_MS;
 
-    auto notify = ulTaskNotifyTake(pdFALSE, mqttCycle);
+    auto notify = ulTaskNotifyTake(pdTRUE, mqttCycle);
 
     if ((notify & 1 << 8) != 0)
     {
@@ -161,8 +161,6 @@ void MQTTTask::loop()
         {
             updateHMIStatus();
         }
-        ulTaskNotifyValueClear(mTaskHandle, (1UL << 8UL));
-        return;
     }
 
     if ((notify & 1 << 7) != 0)
@@ -171,8 +169,6 @@ void MQTTTask::loop()
         {
             updateMainStatus();
         }
-        ulTaskNotifyValueClear(mTaskHandle, (1UL << 7UL));
-        return;
     }
 
     if ((notify & 1 << 6) != 0)
@@ -181,8 +177,6 @@ void MQTTTask::loop()
         {
             updateEnergyStats();
         }
-        ulTaskNotifyValueClear(mTaskHandle, (1UL << 6UL));
-        return;
     }
 
     if (statsUpdate)
