@@ -375,7 +375,25 @@ void                     MQTTTask::updateStats()
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
 
-        // TODO: implement active overrides here
+        auto overrides = HMIStateProxy::getInstance().getOverrides();
+        auto offset = sprintf(reinterpret_cast<char*>(mPayloadBuffer), "[");
+        if(overrides.operationMode){
+            offset += sprintf(reinterpret_cast<char*>(mPayloadBuffer) + offset, "\"%S\"", HMI_OPERATION_MODE);
+            if(overrides.waterTempTarget){
+                offset += sprintf(reinterpret_cast<char*>(mPayloadBuffer) + offset, ",");
+            }
+        }
+        if(overrides.waterTempTarget){
+            offset += sprintf(reinterpret_cast<char*>(mPayloadBuffer) + offset, "\"%S\"", HMI_HOT_WATER_TEMP_TARGET);
+        }
+        sprintf(reinterpret_cast<char*>(mPayloadBuffer) + offset, "]");
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                STATS_ACTIVE_OVERRIDES);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 }
 #pragma clang diagnostic pop
