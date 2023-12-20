@@ -4,6 +4,8 @@
 #include <memory>
 namespace aquamqtt
 {
+namespace mqtt
+{
 
 class IMQTTCallback
 {
@@ -17,5 +19,6 @@ public:
     // $prefix/aquamqtt/ctrl/reset
     virtual void onResetOverrides() = 0;
 };
+};  // namespace mqtt
 }  // namespace aquamqtt
 #endif  // AQUAMQTT_IMQTTCALLBACK_H

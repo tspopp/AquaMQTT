@@ -17,7 +17,7 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 
 | Value                            |                            MQTT Topic | Format | Unit |                                Other Information |
 |----------------------------------|---------------------------------------|--------|------|--------------------------------------------------|
-| AquaMQTT Last Will               | `$root/stats/lwlState`                |   Enum |      |                                ONLINE, OFFLINE   |
+| AquaMQTT Last Will               | `$root/stats/lwlState`                |   Enum |      |                                ONLINE, OFFLINE  -- retained|
 | AquaMQTT OperationMode           | `$root/stats/aquamqttMode`            |   Enum |      |                                 LISTENER, MITM   |
 | AquaMQTT IP Address              | `$root/stats/ipAddress`               | string |      |                            e.g. 192.168.188.62   |
 | AquaMQTT RSSI                    | `$root/stats/rssiDb`                  |    int |   dB |                                                  |
@@ -25,7 +25,7 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 | AquaMQTT Messages IGNORED        | `$root/stats/$channel/msgUnhandled`   | uint64 |      |                                                  |
 | AquaMQTT Messages CRC NOK        | `$root/stats/$channel/msgCRCNOK`      | uint64 |      |                                                  |
 | AquaMQTT Dropped Bytes           | `$root/stats/$channel/droppedBytes`   | uint64 |      |                                                  |
-| AquaMQTT Active Overrides        | `$root/stats/$channel/activeOverrides` | ListOfEnum | |    e.g. "["operationMode", "waterTempTarget"]"   |
+| AquaMQTT Active Overrides        | `$root/stats/$channel/activeOverrides` | ListOfEnum | |    e.g. "["time/date", "operationMode", "waterTempTarget"]"   |
 
 `$channel` is either `hmi` and `main` or `listener` depending on the AquaMQTT operation mode.
 
@@ -69,9 +69,9 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 
 | Value                            |                            MQTT Topic | Format | Unit |                                Other Information |
 |----------------------------------|---------------------------------------|--------|------|--------------------------------------------------|
-| Total Heatpump Hours             | `$root/energy/totalHeatpumpHours`     | uint32 |    h |                                                  |
-| Total Heating Element Hours      | `$root/energy/totalHeatingElemHours`  | uint32 |    h |                                                  |
-| Total Hours                      | `$root/energy/totalHours`             | uint32 |    h |                                                  |
+| Total Heatpump Hours             | `$root/energy/totalHeatpumpHours`     | uint32 |    h |                                 retained |
+| Total Heating Element Hours      | `$root/energy/totalHeatingElemHours`  | uint32 |    h |                                           retained       |
+| Total Hours                      | `$root/energy/totalHours`             | uint32 |    h |                                            retained      |
 | Total Energy                     | `$root/energy/totalEnergyWh`          | uint64 |   Wh |                                                  |
 | Current Power Heatpump           | `$root/energy/powerHeatpump`          | uint16 |    W |                                                  |
 | Current Power Heating Element    | `$root/energy/powerHeatingElem`       | uint16 |    W |                                                  |

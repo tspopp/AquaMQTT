@@ -21,7 +21,7 @@ struct AquaMqttOverrides
  * and overrides set using mqtt control topics
  */
 
-class HMIStateProxy : public IMQTTCallback
+class HMIStateProxy : public mqtt::IMQTTCallback
 {
 public:
     static HMIStateProxy& getInstance();

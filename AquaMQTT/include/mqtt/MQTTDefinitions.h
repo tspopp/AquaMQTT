@@ -75,6 +75,7 @@ const char HMI_OPERATION_MODE[] PROGMEM          = { "operationMode" };
 const char HMI_OPERATION_TYPE[] PROGMEM          = { "operationType" };
 const char HMI_TIME[] PROGMEM                    = { "time" };
 const char HMI_DATE[] PROGMEM                    = { "date" };
+const char HMI_TIME_AND_DATE[] PROGMEM           = { "time/date" };
 const char HMI_EMERGENCY_MODE[] PROGMEM          = { "emergencyMode" };
 const char HMI_HEATING_ELEMENT_ENABLED[] PROGMEM = { "heatingElementEnabled" };
 const char HMI_LEGIONELLA[] PROGMEM              = { "antiLegionellaPerMonth" };

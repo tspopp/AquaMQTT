@@ -59,7 +59,7 @@ Listener" and "Man-in-the-Middle."
 
    Ensure that the WiFi SSID, password, MQTT broker address, and other parameters are correctly set.
 
-   Additionally, set the operation mode within `config/Configuration.h` to either LISTENER, or MITM.
+   Additionally, set the operation mode within `config/Configuration.h` to either LISTENER or MITM, depending of your [Wiring Configuration](../WIRING.md).
 
    ```c++
    constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
@@ -81,6 +81,25 @@ Listener" and "Man-in-the-Middle."
    ```bash
    pio run -t upload -e arduino_nano_esp32
    ```
+
+### Over-The-Air Update
+
+1. Determine the IP-Address of your AquaMQTT device
+
+   **Note:** If you already have MQTT up and running, AquaMQTT will publish the IP-Address to `aquamqtt/stats/ipAddress`
+
+2. Adapt `platformio.ini` accordingly:
+   ```ini
+   # uncomment the below lines to use over the air update
+   upload_protocol = espota
+   upload_port = 192.168.188.62
+   ```
+
+3. Upload
+    ```bash
+   pio run -t upload -e arduino_nano_esp32
+      ```
+
 
 ## Contributions
 Contributions to the AquaMQTT project are welcome. Feel free to open issues, submit pull requests, or provide feedback.
