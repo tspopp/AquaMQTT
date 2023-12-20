@@ -62,13 +62,14 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer)
     }
 
     // if time has been set by rtc / ntp, override time and date in hmi message
-    if (timeStatus() == timeSet)
+    if (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM && timeStatus() != timeNotSet)
     {
-        message.setTimeHours(hour());
-        message.setTimeMinutes(minute());
-        message.setTimeSeconds(second());
-        message.setDateDay(day());
-        message.setDateMonthAndYear(month(), year());
+        auto time = now();
+        message.setTimeHours(hour(time));
+        message.setTimeMinutes(minute(time));
+        message.setTimeSeconds(second(time));
+        message.setDateDay(day(time));
+        message.setDateMonthAndYear(month(time), year(time));
     }
 
     xSemaphoreGive(mMutex);
@@ -82,7 +83,7 @@ bool HMIStateProxy::copyFrame(uint8_t frameId, uint8_t* buffer)
     }
 
     bool hasHmiMessage = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer);
-    if (hasHmiMessage && aquamqtt::config::OPERATION_MODE == EOperationMode::MITM)
+    if (hasHmiMessage && aquamqtt::config::OPERATION_MODE == config::EOperationMode::MITM)
     {
         applyHMIOverrides(buffer);
     }

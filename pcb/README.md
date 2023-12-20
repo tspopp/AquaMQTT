@@ -10,8 +10,8 @@ handle any time critical USART communication with the heat pumps hmi controller 
 
 <img src="../../media/board_back.png?raw=true" width=40% height=40%>
 
-Additionally, an optional DS3231 Real Time Clock might be added to the board which ensures a recovery with correct date
-and time after power outage (if using AquaMQTT to control the heatpump).
+Additionally, an optional DS3231 Real Time Clock might be added to the board. This might be handy in case AquaMQTT will be ever used without any HMI at all. It would ensure a recovery with correct date and time after power outage and without WiFi.
+**Adding a RTC Module is experimental and untested!**
 
 The board is designed using [Kicad](https://www.kicad.org/). You may need to install an
 additional [Arduino Kicad library](https://github.com/Alarm-Siren/arduino-kicad-library) before opening/editing the
@@ -19,7 +19,10 @@ project.
 
 ## Changelog
 
-1.0 Initial Design
+| Version |       Description |
+|---------|-------------------|
+| 1.0     |    Initial Design |
+
 
 ## BOM
 
@@ -29,7 +32,7 @@ project.
 | AquaMqtt PCB Board (e.g. via AISLER.net)                                                                                                                                               | 1x   | ~ 7 €         |
 | [Arduino Nano ESP32](https://docs.arduino.cc/hardware/nano-esp32)                                                                                                | 1x    | ~ 20 €         |
 | Cable 2x4 2,54mm (Socket-Housing, Contacts, Wiring)                                                                                                              | 1x    | ~ 10 €         |
-| [Real Time Clock RTC DS3231](https://www.az-delivery.de/products/ds3231-real-time-clock) *(optional)*                                                            | (1x)  | ~ 6 €          |
+| [Real Time Clock RTC DS3231](https://www.az-delivery.de/products/ds3231-real-time-clock) *(optional, experimental)*                                                            | (1x)  | ~ 6 €          |
 | [SparkFun Logic Level Converter](https://eckstein-shop.de/SparkFunLogicLevelConverter-Bi-DirectionaShifterPegelwandlerEN) - 3.3V to 5V Bi-Directional or similar | 1x    | ~ 4 €          |
 | 100k Resistance 0207 (Ø x L) 2.5 mm x 6.8 mm                                                                                                                     | 3x    | < 1 €          |
 | 10k Resistance 0207 (Ø x L) 2.5 mm x 6.8 mm                                                                                                                      | 3x    | < 1 €          |

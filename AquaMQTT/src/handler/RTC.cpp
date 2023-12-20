@@ -26,7 +26,7 @@ void RTCHandler::loop()
         struct tm timeinfo
         {
         };
-        if (getLocalTime(&timeinfo, 1000))
+        if (getLocalTime(&timeinfo, 5000))
         {
             setTime(timeinfo.tm_hour,
                     timeinfo.tm_min,
