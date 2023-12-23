@@ -18,6 +18,7 @@ public:
 
 private:
     unsigned long mLastNTPUpdate;
+    time_t        mLastStateUpdate;
     bool          mFoundRTC;
     RTC_DS3231    mRTC;
 };

@@ -17,6 +17,7 @@ HMIStateProxy::HMIStateProxy()
     , mNotify(nullptr)
     , mOperationMode(nullptr)
     , mTargetTemperature(nullptr)
+    , mTimeIsSet(false)
 {
 }
 
@@ -62,14 +63,13 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer)
     }
 
     // if time has been set by rtc / ntp, override time and date in hmi message
-    if (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM && timeStatus() != timeNotSet)
+    if (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM && mTimeIsSet)
     {
-        auto time = now();
-        message.setTimeHours(hour(time));
-        message.setTimeMinutes(minute(time));
-        message.setTimeSeconds(second(time));
-        message.setDateDay(day(time));
-        message.setDateMonthAndYear(month(time), year(time));
+        message.setTimeHours(mTimeHours);
+        message.setTimeMinutes(mTimeMinutes);
+        message.setTimeSeconds(mTimeSeconds);
+        message.setDateDay(mTimeDays);
+        message.setDateMonthAndYear(mTimeMonth, mTimeYear);
     }
 
     xSemaphoreGive(mMutex);
@@ -156,6 +156,29 @@ AquaMqttOverrides HMIStateProxy::getOverrides()
     xSemaphoreGive(mMutex);
 
     return retVal;
+}
+void HMIStateProxy::updateTime(
+        uint8_t  seconds,
+        uint8_t  minutes,
+        uint8_t  hours,
+        uint8_t  days,
+        uint8_t  month,
+        uint16_t year)
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mTimeSeconds = seconds;
+    mTimeMinutes = minutes;
+    mTimeHours   = hours;
+    mTimeDays    = days;
+    mTimeMonth   = month;
+    mTimeYear    = year;
+    mTimeIsSet   = true;
+
+    xSemaphoreGive(mMutex);
 }
 
 }  // namespace aquamqtt
