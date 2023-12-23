@@ -1,7 +1,6 @@
 #ifndef AQUAMQTT_HMISTATEPROXY_H
 #define AQUAMQTT_HMISTATEPROXY_H
 
-#include "TimeLib.h"
 #include "message/HMIMessage.h"
 #include "mqtt/IMQTTCallback.h"
 #include "state/DHWState.h"
@@ -50,9 +49,18 @@ public:
 
     AquaMqttOverrides getOverrides();
 
+    void updateTime(uint8_t seconds, uint8_t minutes, uint8_t hours, uint8_t days, uint8_t month, uint16_t year);
+
 private:
     TaskHandle_t      mNotify;
     SemaphoreHandle_t mMutex;
+    bool              mTimeIsSet;
+    uint8_t           mTimeSeconds;
+    uint8_t           mTimeMinutes;
+    uint8_t           mTimeHours;
+    uint8_t           mTimeDays;
+    uint8_t           mTimeMonth;
+    uint16_t          mTimeYear;
 
     // since we do not have optionals, use nullptr if override is not set
     std::unique_ptr<float>                     mTargetTemperature;

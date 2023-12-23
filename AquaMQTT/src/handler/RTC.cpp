@@ -3,11 +3,12 @@
 #include <TimeLib.h>
 
 #include "config/Configuration.h"
+#include "state/HMIStateProxy.h"
 
 namespace aquamqtt
 {
 
-RTCHandler::RTCHandler() : mRTC(), mFoundRTC(false), mLastNTPUpdate(0)
+RTCHandler::RTCHandler() : mRTC(), mFoundRTC(false), mLastNTPUpdate(0), mLastStateUpdate(0)
 {
 }
 
@@ -20,29 +21,43 @@ void RTCHandler::setup()
 
 void RTCHandler::loop()
 {
-    if (timeStatus() != timeSet || (millis() - mLastNTPUpdate) >= 3600000)
+    if (timeStatus() != timeSet)
     {
-        mLastNTPUpdate = millis();
-        struct tm timeinfo
+        if ((millis() - mLastNTPUpdate) >= 3600000)
         {
-        };
-        if (getLocalTime(&timeinfo, 5000))
-        {
-            setTime(timeinfo.tm_hour,
-                    timeinfo.tm_min,
-                    timeinfo.tm_sec,
-                    timeinfo.tm_mday,
-                    timeinfo.tm_mon + 1,
-                    timeinfo.tm_year + 1900);
-            if (mFoundRTC)
+            mLastNTPUpdate = millis();
+            struct tm timeinfo
             {
-                mRTC.adjust(DateTime(now()));
+            };
+            if (getLocalTime(&timeinfo, 5000))
+            {
+                setTime(timeinfo.tm_hour,
+                        timeinfo.tm_min,
+                        timeinfo.tm_sec,
+                        timeinfo.tm_mday,
+                        timeinfo.tm_mon + 1,
+                        timeinfo.tm_year + 1900);
+                if (mFoundRTC)
+                {
+                    mRTC.adjust(DateTime(now()));
+                }
+            }
+            else if (mFoundRTC)
+            {
+                setTime(mRTC.now().unixtime());
             }
         }
-        else if (mFoundRTC)
-        {
-            setTime(mRTC.now().unixtime());
-        }
+    }
+    else if (config::OVERRIDE_TIME_AND_DATE_IN_MITM && (millis() - mLastStateUpdate) > 500)
+    {
+        mLastStateUpdate = now();
+        aquamqtt::HMIStateProxy::getInstance().updateTime(
+                second(mLastStateUpdate),
+                minute(mLastStateUpdate),
+                hour(mLastStateUpdate),
+                day(mLastStateUpdate),
+                month(mLastStateUpdate),
+                year(mLastStateUpdate));
     }
 }
 
