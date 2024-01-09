@@ -11,7 +11,11 @@ AquaMQTT is a project designed to monitor and control your DHW heat pump locally
 - Automate the behavior of your heat pump according to your local energy production or energy availability.
 - Easily integrate AquaMQTT with smart home systems like [Home Assistant](https://www.home-assistant.io/).
 
-<img src="../media/homeassistant.png?raw=true" width=40% height=40%>
+<p float="left">
+   <img src="../media/homeassistant.png?raw=true" width=40% height=40%>
+   <img src="../media/aquamqtt.jpg?raw=true" width=55% height=55%>
+</p>
+
 
 ## Compatible Devices
 
@@ -48,8 +52,6 @@ To get started with monitoring and controlling your heat pump, follow these step
 
 1. **Hardware (AquaMQTT Board):**
    - Before proceeding, make sure to place an order for the custom PCB with a manufacturing company. You can locate the KiCad files and further instructions within the [pcb](/pcb) folder.
-
-<img src="../media/aquamqtt.jpg?raw=true" width=40% height=40%>
 
 2. **AquaMQTT Software:**
    - [Install AquaMQTT to your Arduino ESP32 using PlatformIO](AquaMQTT/README.md).
