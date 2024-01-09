@@ -48,7 +48,7 @@ Place the AquaMqtt Board to the back side of the hmi controller and connect the 
 
 ## Wiring
 
-Connect the original connector cable to the DHW Main Connector on the AquaMqtt Board:
+Connect the original connector cable to the DHW Main Connector on the AquaMqtt Board as shown here:
 
 <img src="../media/wired_up.jpg?raw=true" width=40% height=40%>
 
