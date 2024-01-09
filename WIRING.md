@@ -12,7 +12,7 @@
 
 ## Preparation
 
-**IMPORTANT: Turn of the heat pump and disconnect power supply.**
+**IMPORTANT: Turn off the heat pump and disconnect power supply.**
 
 Disassemble the heatpump as described within the chapter "**Opening the product for maintenance**" section from the [official manual](https://www.windhager.com/fileadmin/PDF_Documents/Produktprospekte/Bedienungsanleitung_AquaWIN_Air_273-203.pdf), pg 153:
 
@@ -25,16 +25,32 @@ Disassemble the heatpump as described within the chapter "**Opening the product 
 
 ## Overview
 
-TODO: HMI Controller PinOuts
-TODO: Main Controller Wire
+Once disassembled you can locate the connector on the back side of the HMI Controller...
+
+<img src="../media/hmi_controller_back.jpg?raw=true" width=40% height=40%>
+
+... which is connected to the following port of the Main Controller:
+
+<img src="../media/main_controller.jpg?raw=true" width=40% height=40%>
+
+- VCC 5V (green)
+- GND (red/brown)
+- TX/RX, Logical 5V (white)
+- Unknown (yellow)
+
+The AquaMQTT Board intercepts the data line (white) and is using the provided VCC/GND as power supply.
 
 ## Mounting
 
-TODO: Image AquaMQTT Board installed
+Place the AquaMqtt Board to the back side of the hmi controller and connect the DHW HMI Connector with the original HMI controller. Match the connections accordingly:
+
+<img src="../media/installed.jpg?raw=true" width=40% height=40%>
 
 ## Wiring
 
-TODO: Image AquaMQTT Board Wired Up
+Connect the original connector cable to the DHW Main Connector on the AquaMqtt Board:
+
+<img src="../media/wired_up.jpg?raw=true" width=40% height=40%>
 
 ### Man-In-The-Middle Mode
 
