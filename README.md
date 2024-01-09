@@ -49,6 +49,8 @@ To get started with monitoring and controlling your heat pump, follow these step
 1. **Hardware (AquaMQTT Board):**
    - Before proceeding, make sure to place an order for the custom PCB with a manufacturing company. You can locate the KiCad files and further instructions within the [pcb](/pcb) folder.
 
+<img src="../media/aquamqtt.jpg?raw=true" width=40% height=40%>
+
 2. **AquaMQTT Software:**
    - [Install AquaMQTT to your Arduino ESP32 using PlatformIO](AquaMQTT/README.md).
 
@@ -58,17 +60,5 @@ To get started with monitoring and controlling your heat pump, follow these step
 ## Why not using cozytouch / io-homecontrol?
 
 Unfortunately, I had no success pairing those solutions with my Windhager branded heatpump.
-
-## Roadmap
-
-- [x] HW prototype: arduino nano + esp8266
-- [x] SW prototype: Provide sensor data via MQTT
-- [x] Visualize data within HomeAssistant
-- [x] Prototype: Control the heat pump (replaces original HMI controller)
-- [x] Prototype: Control the heat pump (man in the middle)
-- [x] Final hardware, board layout and instructions
-- [x] AquaMQTT first release
-- [ ] Wiring Instructions
-- [ ] HomeAssistant configuration
 
 
