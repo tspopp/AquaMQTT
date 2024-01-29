@@ -122,6 +122,16 @@ void                     MQTTTask::setup()
 
     mMQTTClient.setWill(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), true, 0);
     mMQTTClient.onMessage(MQTTTask::messageReceived);
+}
+
+void MQTTTask::check_mqtt_connection()
+{
+    if (mMQTTClient.connected())
+    {
+        return;
+    }
+
+    Serial.println("[mqtt] is disconnected... trying to connect to mqtt broker");
 
     while (!mMQTTClient.connect(
             aquamqtt::config::brokerClientId,
@@ -131,6 +141,13 @@ void                     MQTTTask::setup()
         vTaskDelay(pdMS_TO_TICKS(1000));
         esp_task_wdt_reset();
     }
+
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            STATS_SUBTOPIC,
+            STATS_AQUAMQTT_LAST_WILL);
 
     sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", ENUM_LAST_WILL_ONLINE);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), true, 0);
@@ -143,11 +160,7 @@ void                     MQTTTask::setup()
 
 void MQTTTask::loop()
 {
-    if (!mMQTTClient.connected())
-    {
-        vTaskDelay(pdMS_TO_TICKS(1000));
-        return;
-    }
+    check_mqtt_connection();
 
     auto mqttCycle = pdMS_TO_TICKS(5);
 

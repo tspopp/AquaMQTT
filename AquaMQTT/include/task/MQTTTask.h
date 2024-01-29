@@ -28,6 +28,8 @@ private:
 
     void loop();
 
+    void check_mqtt_connection();
+
     static void messageReceived(String& topic, String& payload);
 
     void updateMainStatus();
