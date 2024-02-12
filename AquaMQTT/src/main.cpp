@@ -20,6 +20,22 @@ MQTTTask       mqttTask;
 OTAHandler     otaHandler;
 RTCHandler     rtcHandler;
 
+void wifiCallback(WiFiEvent_t event)
+{
+    switch (event)
+    {
+        case WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED:
+            Serial.println(F("ARDUINO_EVENT_WIFI_STA_CONNECTED"));
+            break;
+        case WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+            Serial.println(F("ARDUINO_EVENT_WIFI_STA_DISCONNECTED"));
+            WiFi.setAutoReconnect(true);
+            break;
+        default:
+            break;
+    }
+}
+
 void loop()
 {
     // watchdog
@@ -44,7 +60,7 @@ void setup()
 
     // connect to Wi-Fi
     WiFiClass::mode(WIFI_STA);
-    WiFi.setAutoReconnect(true);
+    WiFi.onEvent(wifiCallback);
     WiFi.begin(aquamqtt::config::ssid, aquamqtt::config::psk);
 
     // setup rtc module
@@ -71,5 +87,5 @@ void setup()
     }
 
     // provide the message information via mqtt and enables overrides via mqtt
-   mqttTask.spawn();
+    mqttTask.spawn();
 }
