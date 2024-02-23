@@ -12,8 +12,8 @@ AquaMQTT is a project designed to monitor and control your DHW heat pump locally
 - Easily integrate AquaMQTT with smart home systems like [Home Assistant](https://www.home-assistant.io/).
 
 <p float="left">
-   <img src="../media/homeassistant.png?raw=true" width=40% height=40%>
-   <img src="../media/aquamqtt.jpg?raw=true" width=55% height=55%>
+   <img src="../media/homeassistant.png?raw=true" width=35% height=35%>
+   <img src="../media/aquamqtt.jpg?raw=true" width=60% height=60%>
 </p>
 
 
