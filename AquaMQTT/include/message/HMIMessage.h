@@ -24,9 +24,9 @@ public:
 
     void setOperationMode(HMIOperationMode operationMode);
 
-    bool isTimerModeEnabled();
+    HMIOperationType getOperationType();
 
-    void setTimerModeEnabled(bool enabled);
+    void setOperationType(HMIOperationType operationType);
 
     bool isEmergencyModeEnabled();
 
@@ -81,6 +81,8 @@ public:
     uint8_t dateDay();
 
     void setDateDay(uint8_t day);
+
+    void setInstallationMode(HMIInstallation mode);
 
 private:
     uint8_t* mData;

@@ -16,8 +16,14 @@ HMIStateProxy::HMIStateProxy()
     , mMutex(xSemaphoreCreateMutex())
     , mNotify(nullptr)
     , mOperationMode(nullptr)
+    , mOperationType(nullptr)
     , mTargetTemperature(nullptr)
     , mTimeIsSet(false)
+    , mPVModeHeatPump(false)
+    , mPVModeHeatElement(false)
+    , mEmergencyModeEnabled(nullptr)
+    , mHeatingElementEnabled(nullptr)
+    , mInstallationMode(nullptr)
 {
 }
 
@@ -42,24 +48,78 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer)
 
     message::HMIMessage message(buffer);
 
-    if (mTargetTemperature != nullptr && *mTargetTemperature <= 62.0f && *mTargetTemperature >= 20.0f)
+    switch (currentOverrideMode())
     {
-        message.setWaterTempTarget(*mTargetTemperature);
-    }
-
-    if (mOperationMode != nullptr)
-    {
-        message.setOperationMode(*mOperationMode);
-
-        // Operation Mode BOOST overrides target temperature
-        if (*mOperationMode == message::HMIOperationMode::OM_BOOST)
-        {
+        case AM_MODE_PV_HP_ONLY:
+            message.setInstallationMode(message::HMIInstallation::INST_HP_ONLY);
+            message.setOperationType(message::HMIOperationType::ALWAYS_ON);
+            message.setOperationMode(message::HMIOperationMode::OM_ECO_INACTIVE);
             message.setWaterTempTarget(62.0);
-        }
-        else if (*mOperationMode == message::HMIOperationMode::OM_ABSENCE)
+            // do not use heat element
+            message.setEmergencyMode(false);
+            message.enableHeatingElement(false);
+            break;
+        case AM_MODE_PV_HE_ONLY:
+            message.setInstallationMode(message::HMIInstallation::INST_HP_ONLY);
+            message.setOperationType(message::HMIOperationType::ALWAYS_ON);
+            message.setOperationMode(message::HMIOperationMode::OM_ECO_INACTIVE);
+            message.setWaterTempTarget(62.0);
+            // just use heat element
+            message.enableHeatingElement(true);
+            message.setEmergencyMode(true);
+            break;
+        case AM_MODE_PV_FULL:
+            message.setInstallationMode(message::HMIInstallation::INST_HP_ONLY);
+            message.setOperationType(message::HMIOperationType::ALWAYS_ON);
+            message.setOperationMode(message::HMIOperationMode::OM_BOOST);
+            message.setWaterTempTarget(62.0);
+            break;
+        case AM_MODE_STANDARD:
         {
-            message.setWaterTempTarget(20.0);
+            // TODO: this sanity should be handled within message
+            if (mTargetTemperature != nullptr && *mTargetTemperature <= 62.0f && *mTargetTemperature >= 20.0f)
+            {
+                message.setWaterTempTarget(*mTargetTemperature);
+            }
+
+            if (mInstallationMode != nullptr)
+            {
+                message.setInstallationMode(*mInstallationMode);
+            }
+
+            if (mOperationMode != nullptr)
+            {
+                message.setOperationMode(*mOperationMode);
+
+                // Operation Mode BOOST overrides target temperature
+                if (*mOperationMode == message::HMIOperationMode::OM_BOOST)
+                {
+                    message.setWaterTempTarget(62.0);
+                }
+                else if (*mOperationMode == message::HMIOperationMode::OM_ABSENCE)
+                {
+                    message.setWaterTempTarget(20.0);
+                }
+            }
+
+            if (mOperationType != nullptr)
+            {
+                message.setOperationType(*mOperationType);
+            }
+
+            if (mHeatingElementEnabled != nullptr)
+            {
+                // sanity is taken care within message
+                message.enableHeatingElement(*mHeatingElementEnabled);
+            }
+
+            if (mEmergencyModeEnabled != nullptr)
+            {
+                // sanity is taken care within message
+                message.setEmergencyMode(*mEmergencyModeEnabled);
+            }
         }
+        break;
     }
 
     // if time has been set by rtc / ntp, override time and date in hmi message
@@ -126,15 +186,14 @@ void HMIStateProxy::onWaterTempTargetChanged(std::unique_ptr<float> value)
     xSemaphoreGive(mMutex);
 }
 
-void HMIStateProxy::onResetOverrides()
+void HMIStateProxy::onHeatingElementEnabledChanged(std::unique_ptr<bool> enabled)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
         return;
     }
 
-    mOperationMode     = std::unique_ptr<message::HMIOperationMode>(nullptr);
-    mTargetTemperature = std::unique_ptr<float>(nullptr);
+    mHeatingElementEnabled = std::move(enabled);
 
     // message 194 has changed
     if (mNotify != nullptr)
@@ -144,6 +203,85 @@ void HMIStateProxy::onResetOverrides()
 
     xSemaphoreGive(mMutex);
 }
+
+void HMIStateProxy::onEmergencyModeEnabledChanged(std::unique_ptr<bool> enabled)
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mEmergencyModeEnabled = std::move(enabled);
+
+    // message 194 has changed
+    if (mNotify != nullptr)
+    {
+        xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
+    }
+
+    xSemaphoreGive(mMutex);
+}
+
+void HMIStateProxy::onPVModeHeatpumpEnabled(bool enabled)
+{
+
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mPVModeHeatPump = enabled;
+
+    // message 194 has changed
+    if (mNotify != nullptr)
+    {
+        xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
+    }
+
+    xSemaphoreGive(mMutex);
+}
+
+void HMIStateProxy::onPVModeHeatElementEnabled(bool enabled)
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mPVModeHeatElement = enabled;
+
+    // message 194 has changed
+    if (mNotify != nullptr)
+    {
+        xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
+    }
+
+    xSemaphoreGive(mMutex);
+}
+
+void HMIStateProxy::onResetOverrides()
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mOperationMode         = std::unique_ptr<message::HMIOperationMode>(nullptr);
+    mTargetTemperature     = std::unique_ptr<float>(nullptr);
+    mOperationType         = std::unique_ptr<message::HMIOperationType>(nullptr);
+    mInstallationMode      = std::unique_ptr<message::HMIInstallation>(nullptr);
+    mEmergencyModeEnabled  = std::unique_ptr<bool>(nullptr);
+    mHeatingElementEnabled = std::unique_ptr<bool>(nullptr);
+
+    // message 194 has changed
+    if (mNotify != nullptr)
+    {
+        xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
+    }
+
+    xSemaphoreGive(mMutex);
+}
+
 AquaMqttOverrides HMIStateProxy::getOverrides()
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
@@ -151,12 +289,28 @@ AquaMqttOverrides HMIStateProxy::getOverrides()
         return AquaMqttOverrides{};
     }
 
-    auto retVal = AquaMqttOverrides{ mOperationMode != nullptr, mTargetTemperature != nullptr };
+    AquaMqttOverrides retVal{};
+    switch (currentOverrideMode())
+    {
+        case AM_MODE_STANDARD:
+            retVal = AquaMqttOverrides{ mOperationMode != nullptr,        mOperationType != nullptr,
+                                        mTargetTemperature != nullptr,    mHeatingElementEnabled != nullptr,
+                                        mEmergencyModeEnabled != nullptr, mInstallationMode != nullptr };
+            break;
+        case AM_MODE_PV_HP_ONLY:
+        case AM_MODE_PV_HE_ONLY:
+            retVal = AquaMqttOverrides{ true, true, true, true, true, true };
+            break;
+        case AM_MODE_PV_FULL:
+            retVal = AquaMqttOverrides{ true, true, true, false, false, true };
+            break;
+    }
 
     xSemaphoreGive(mMutex);
 
     return retVal;
 }
+
 void HMIStateProxy::updateTime(
         uint8_t  seconds,
         uint8_t  minutes,
@@ -179,6 +333,101 @@ void HMIStateProxy::updateTime(
     mTimeIsSet   = true;
 
     xSemaphoreGive(mMutex);
+}
+
+AquaMqttOverrideMode HMIStateProxy::currentOverrideMode() const
+{
+    if (mPVModeHeatElement && mPVModeHeatPump)
+    {
+        return AM_MODE_PV_FULL;
+    }
+    else if (!mPVModeHeatElement && mPVModeHeatPump)
+    {
+        return AM_MODE_PV_HP_ONLY;
+    }
+    else if (mPVModeHeatElement && !mPVModeHeatPump)
+    {
+        return AM_MODE_PV_HE_ONLY;
+    }
+    return AM_MODE_STANDARD;
+}
+
+void HMIStateProxy::onOperationTypeChanged(std::unique_ptr<message::HMIOperationType> type)
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mOperationType = std::move(type);
+
+    // message 194 has changed
+    if (mNotify != nullptr)
+    {
+        xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
+    }
+
+    xSemaphoreGive(mMutex);
+}
+
+void HMIStateProxy::onInstallationModeChanged(std::unique_ptr<message::HMIInstallation> mode)
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mInstallationMode = std::move(mode);
+
+    // message 194 has changed
+    if (mNotify != nullptr)
+    {
+        xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
+    }
+
+    xSemaphoreGive(mMutex);
+}
+
+AquaMqttOverrideMode HMIStateProxy::getOverrideMode()
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return AM_MODE_STANDARD;
+    }
+
+    auto retVal = currentOverrideMode();
+
+    xSemaphoreGive(mMutex);
+
+    return retVal;
+}
+
+bool HMIStateProxy::isPVModeHeatPumpEnabled()
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return false;
+    }
+
+    auto retVal = mPVModeHeatPump;
+
+    xSemaphoreGive(mMutex);
+
+    return retVal;
+}
+
+bool HMIStateProxy::isPVModeHeatElementEnabled()
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return false;
+    }
+
+    auto retVal = mPVModeHeatElement;
+
+    xSemaphoreGive(mMutex);
+
+    return retVal;
 }
 
 }  // namespace aquamqtt

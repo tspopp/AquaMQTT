@@ -17,8 +17,8 @@ float HMIMessage::waterTempTarget()
 void HMIMessage::setWaterTempTarget(float targetTemperature)
 {
     short int rawValue = targetTemperature * 100 / 10;
-    mData[1]      = rawValue & 0xFF;
-    mData[2]      = (rawValue >> 8) & 0xFF;
+    mData[1]           = rawValue & 0xFF;
+    mData[2]           = (rawValue >> 8) & 0xFF;
 }
 HMIOperationMode HMIMessage::operationMode()
 {
@@ -45,13 +45,25 @@ void HMIMessage::setOperationMode(HMIOperationMode operationMode)
         mData[3] = (mData[3] & 0xF0) | (operationMode & 0x0F);
     }
 }
-bool HMIMessage::isTimerModeEnabled()
+HMIOperationType HMIMessage::getOperationType()
 {
-    return mData[3] & 0x40;
+    if (mData[3] & 0x40)
+    {
+        return HMIOperationType::TIMER;
+    }
+    return HMIOperationType::ALWAYS_ON;
 }
-void HMIMessage::setTimerModeEnabled(bool enabled)
+
+void HMIMessage::setOperationType(HMIOperationType operationType)
 {
-    mData[3] = (mData[3] & ~(1 << 6)) | (enabled << 6);
+    if (operationType == HMIOperationType::TIMER)
+    {
+        mData[3] = (mData[3] & ~(1 << 6)) | (true << 6);
+    }
+    else
+    {
+        mData[3] = (mData[3] & ~(1 << 6)) | (false << 6);
+    }
 }
 bool HMIMessage::isEmergencyModeEnabled()
 {
@@ -123,6 +135,51 @@ HMIInstallation HMIMessage::installationMode()
     else
     {
         return HMIInstallation::INST_HP_ONLY;
+    }
+}
+
+void HMIMessage::setInstallationMode(HMIInstallation mode)
+{
+    switch (mode)
+    {
+        case INST_HP_ONLY:
+            mData[7] &= ~0x01;
+            mData[7] &= ~0x02;
+            mData[7] &= ~0x10;
+            mData[7] &= ~0x20;
+            break;
+        case INST_HP_AND_EXT_PRIO_HP:
+            mData[7] |= 0x01;
+            mData[7] &= ~0x02;
+            mData[7] &= ~0x10;
+            mData[7] &= ~0x20;
+            break;
+        case INST_HP_AND_EXT_OPT_HP:
+            mData[7] |= 0x01;
+            mData[7] &= ~0x02;
+            mData[7] |= 0x10;
+            mData[7] &= ~0x20;
+            break;
+        case INST_HP_AND_EXT_OPT_EXT:
+            mData[7] |= 0x01;
+            mData[7] &= ~0x02;
+            mData[7] &= ~0x10;
+            mData[7] |= 0x20;
+            break;
+        case INST_HP_AND_EXT_PRIO_EXT:
+            mData[7] |= 0x01;
+            mData[7] &= ~0x02;
+            mData[7] |= 0x10;
+            mData[7] |= 0x20;
+            break;
+        case INST_HP_AND_SOLAR:
+            mData[7] |= 0x02;
+            mData[7] &= ~0x01;
+            mData[7] &= ~0x10;
+            mData[7] &= ~0x20;
+            break;
+        default:
+            break;
     }
 }
 
@@ -228,16 +285,30 @@ void HMIMessage::setDateDay(uint8_t day)
     mData[18] = (mData[18] & 0xE0) | (day & 0x1F);
 }
 
-// TODO: implement me
-// TODO: sanity you cannot active emergency mode if heating element is disabled
 void HMIMessage::setEmergencyMode(bool enabled)
 {
+    // Sanity: You cannot activate emergency mode if heating element is disabled
+    if (enabled && isHeatingElementEnabled())
+    {
+        mData[6] |= 0x01;
+    }
+    else if (!enabled)
+    {
+        mData[6] &= ~0x01;
+    }
 }
 
-// TODO: implement me
-// TODO: you cannot disable heating element if emergency mode is activated
 void HMIMessage::enableHeatingElement(bool enabled)
 {
+    if (enabled)
+    {
+        mData[9] |= 0x04;
+    }
+    // Sanity: You cannot disable heating element if emergency mode is activated
+    else if (!isEmergencyModeEnabled())
+    {
+        mData[9] &= ~0x04;
+    }
 }
 
 // TODO: implement me

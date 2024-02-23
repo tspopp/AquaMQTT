@@ -45,12 +45,31 @@ static const char* operationModeStr(HMIOperationMode mode)
     }
 }
 
+enum HMIOperationType : bool
+{
+    ALWAYS_ON = false,
+    TIMER     = true
+};
+
+static const char* operationTypeStr(HMIOperationType type)
+{
+    switch (type)
+    {
+        case ALWAYS_ON:
+            return reinterpret_cast<const char*>(mqtt::ENUM_OPERATION_TYPE_ALWAYS_ON);
+        case TIMER:
+            return reinterpret_cast<const char*>(mqtt::ENUM_OPERATION_TYPE_TIMER);
+        default:
+            return reinterpret_cast<const char*>(mqtt::ENUM_UNKNOWN);
+    }
+}
+
 enum HMIAirDuctConfig : int
 {
     AD_UNKNOWN = -1,
     AD_INT_INT = 0,   // Umluft
     AD_INT_EXT = 16,  // 1 Kanal Luftanschluss
-    AD_EXT_EXT = 32   // 2 Kanal Luftamschluss
+    AD_EXT_EXT = 32   // 2 Kanal Luftanschluss
 };
 
 static const char* airDuctConfigStr(HMIAirDuctConfig config)
@@ -106,16 +125,15 @@ static const char* testModeStr(HMITestMode config)
     }
 }
 
-
 enum HMIInstallation
 {
     INST_HP_UNKNOWN          = -1,
-    INST_HP_ONLY             = 0,  // 0000 0000
-    INST_HP_AND_EXT_PRIO_HP  = 1,  // 0000 0001
-    INST_HP_AND_EXT_OPT_HP   = 17, // 0001 0001
-    INST_HP_AND_EXT_OPT_EXT  = 33, // 0010 0001
-    INST_HP_AND_EXT_PRIO_EXT = 49, // 0011 0001
-    INST_HP_AND_SOLAR        = 2,  // 0000 0010
+    INST_HP_ONLY             = 0,   // 0000 0000
+    INST_HP_AND_EXT_PRIO_HP  = 1,   // 0000 0001
+    INST_HP_AND_EXT_OPT_HP   = 17,  // 0001 0001
+    INST_HP_AND_EXT_OPT_EXT  = 33,  // 0010 0001
+    INST_HP_AND_EXT_PRIO_EXT = 49,  // 0011 0001
+    INST_HP_AND_SOLAR        = 2,   // 0000 0010
 };
 
 static const char* installationModeStr(HMIInstallation installation)
