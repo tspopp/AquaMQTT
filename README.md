@@ -57,4 +57,4 @@ Unfortunately, I had no success pairing those solutions with my Windhager brande
 
 - [Available MQTT Topics and Payloads](./MQTT.md)
 
-- [Utilize excess local energy using PV modes](/.README-PV.md)
+- [Utilize excess local energy using PV modes](./README-PV.md)
