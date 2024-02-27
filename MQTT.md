@@ -17,15 +17,19 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 
 | Value                            |                            MQTT Topic | Format | Unit |                                Other Information |
 |----------------------------------|---------------------------------------|--------|------|--------------------------------------------------|
-| AquaMQTT Last Will               | `$root/stats/lwlState`                |   Enum |      |                                ONLINE, OFFLINE  -- retained|
-| AquaMQTT OperationMode           | `$root/stats/aquamqttMode`            |   Enum |      |                                 LISTENER, MITM   |
-| AquaMQTT IP Address              | `$root/stats/ipAddress`               | string |      |                            e.g. 192.168.188.62   |
-| AquaMQTT RSSI                    | `$root/stats/rssiDb`                  |    int |   dB |                                                  |
-| AquaMQTT Messages OK             | `$root/stats/$channel/msgHandled`     | uint64 |      |                                                  |
-| AquaMQTT Messages IGNORED        | `$root/stats/$channel/msgUnhandled`   | uint64 |      |                                                  |
-| AquaMQTT Messages CRC NOK        | `$root/stats/$channel/msgCRCNOK`      | uint64 |      |                                                  |
-| AquaMQTT Dropped Bytes           | `$root/stats/$channel/droppedBytes`   | uint64 |      |                                                  |
-| AquaMQTT Active Overrides        | `$root/stats/$channel/activeOverrides` | ListOfEnum | |    e.g. "["time/date", "operationMode", "waterTempTarget"]"   |
+| Last Will               | `$root/stats/lwlState`                |   Enum |      |                                ONLINE, OFFLINE  -- retained|
+| OperationMode           | `$root/stats/aquamqttMode`            |   Enum |      |                                 LISTENER, MITM   |
+| Active Overrides        | `$root/stats/activeOverrides` | json | | Active Overrides are flagged either with 1 (overriden) or 0 (not overriden)  Example Payload:  `{ "operationMode": 0, "operationType": 0, "waterTempTarget": 0, "heatingElementEnabled": 0, "emergencyModeEnabled": 0, "configInstallation": 0 , "time/date": 1 }`   |
+| Override Modes         | `$root/stats/overrideMode` | Enum | | `STANDARD`, `PV HP`, `PV HE` or `PV BOOST`. See [README-PV.md](/README-PV.md) for additional information.   |
+| Flag PV heat pump      | `$root/stats/flagPVModeHeatPump` | bool | | Status of the pv heat pump flag. See [README-PV.md](/README-PV.md) for additional information.   |
+| Flag PV heat element   | `$root/stats/flagPVModeHeatElement` | bool | | Status of the pv heat element flag. See [README-PV.md](/README-PV.md) for additional information.   |
+| IP Address              | `$root/stats/ipAddress`               | string |      |                            e.g. 192.168.188.62   |
+| RSSI                    | `$root/stats/rssiDb`                  |    int |   dB |                                                  |
+| Messages OK             | `$root/stats/$channel/msgHandled`     | uint64 |      |                                                  |
+| Messages IGNORED        | `$root/stats/$channel/msgUnhandled`   | uint64 |      |                                                  |
+| Messages CRC NOK        | `$root/stats/$channel/msgCRCNOK`      | uint64 |      |                                                  |
+| Dropped Bytes           | `$root/stats/$channel/droppedBytes`   | uint64 |      |                                                  |
+
 
 `$channel` is either `hmi` and `main` or `listener` depending on the AquaMQTT operation mode.
 
@@ -73,8 +77,8 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 | Total Heating Element Hours      | `$root/energy/totalHeatingElemHours`  | uint32 |    h |                                           retained       |
 | Total Hours                      | `$root/energy/totalHours`             | uint32 |    h |                                            retained      |
 | Total Energy                     | `$root/energy/totalEnergyWh`          | uint64 |   Wh |                                                  |
-| Current Power Heatpump           | `$root/energy/powerHeatpump`          | uint16 |    W |                                                  |
-| Current Power Heating Element    | `$root/energy/powerHeatingElem`       | uint16 |    W |                                                  |
+| Current Power Heatpump           | `$root/energy/powerHeatpump`          | uint16 |    W | Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`                                                 |
+| Current Power Heating Element    | `$root/energy/powerHeatingElem`       | uint16 |    W | Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`                                                            |
 | Current Power Total              | `$root/energy/powerTotal`             | uint16 |    W |                                                  |
 
 ## Subscribe Topics
@@ -85,7 +89,12 @@ Using this topics you may override the HMI Controller in AquaMQTT OperationMode 
 |----------------------------------|----------------------------------|--------|------|-----------------|-------------------------------------------------|
 | Target Water Temperature         | `$root/ctrl/waterTempTarget`     | float  |   °C |        "`55.0`" | Overrides the water temperature target: Allowed range is from 20°C to 62°C. |
 | Operation Mode                   | `$root/ctrl/operationMode`       |   Enum |      |       "`BOOST`" | Overrides the operation mode, may affect the waterTempTarget. For example BOOST and ABSENCE will automatically set the waterTempTarget accordingly.  |
+| Operation Type                    | `$root/ctrl/operationType`       |   Enum |      |       "`ALWAYS ON`" | Overrides the operation type  |
+| Installation Config                   | `$root/ctrl/configInstallation`       |   Enum |      |       "`HEAT PUMP ONLY`", "`BOILER BACKUP / HEAT PUMP PRIORITY"`", "`...`" | Overrides the installation config  |
+| Enable or disable heating element | `$root/ctrl/heatingElementEnabled`       |   bool |      |       "`1`" | Allow the DHW heat pump to use the heating element if needed. Sanity: It is not possible to disable the heating element in case emergency mode is enabled.|
+| Enable or disable emergency mode  | `$root/ctrl/emergencyModeEnabled`       |   bool |      |       "`0`" | Forces the DHW heat pump to use only the heating element. Sanity: it is not possible to enable emergency mode if heating element has been disabled. |
+| Set PV Mode Heat Pump Flag                 | `$root/ctrl/flagPVModeHeatPump`       |   bool|      |  "`1`"       | See [README-PV.md](/README-PV.md) additional information. Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`  |
+| Set PV Mode Heat Element Flag                 | `$root/ctrl/flagPVModeHeatPump`       |   bool|      |   "`1`"      | See [README-PV.md](/README-PV.md) for additional information. Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`  |
 | Reset Overrides                  | `$root/ctrl/reset`       |   Void |      |        | Removes all previous set overrides. |
-
 
 **Note:** Calling a `ctrl` topic with an empty payload `""` will reset individual override.

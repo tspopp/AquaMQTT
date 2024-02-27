@@ -49,8 +49,8 @@ constexpr bool OVERRIDE_TIME_AND_DATE_IN_MITM = true;
  */
 constexpr uint8_t  WATCHDOG_TIMEOUT_S    = 60;
 constexpr uint16_t MQTT_STATS_UPDATE_MS  = 5000;
-constexpr uint8_t  MQTT_MAX_TOPIC_SIZE   = 50;
-constexpr uint8_t  MQTT_MAX_PAYLOAD_SIZE = 50;
+constexpr uint8_t  MQTT_MAX_TOPIC_SIZE   = 80;
+constexpr uint8_t  MQTT_MAX_PAYLOAD_SIZE = 255;
 
 /**
  * Pin assignments for AquaMQTT Board Rev 1.0

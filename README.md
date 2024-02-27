@@ -8,17 +8,16 @@ AquaMQTT is a project designed to monitor and control your DHW heat pump locally
 
 - Access sensor data and operational states from your heat pump.
 - Control the heat pump: Set operational states e.g. water temperature and operation modes.
-- Automate the behavior of your heat pump according to your local energy production or energy availability.
+- [Automate the behavior of your heat pump according to your local energy production or energy availability](/README-PV.md)
 - Easily integrate AquaMQTT with smart home systems like [Home Assistant](https://www.home-assistant.io/).
 
 <p float="left">
-   <img src="../media/homeassistant.png?raw=true" width=40% height=40%>
-   <img src="../media/aquamqtt.jpg?raw=true" width=55% height=55%>
+   <img src="../media/homeassistant.png?raw=true" width=35% height=35%>
+   <img src="../media/aquamqtt.jpg?raw=true" width=60% height=60%>
 </p>
 
 
 ## Compatible Devices
-
 
 AquaMQTT is designed and tested with the [Windhager AquaWin Air3](https://www.windhager.com/en/products/hot-water-tanks/aquawin-air3/) DHW heat pump. While specifically tailored to this model, it's highly likely that AquaMQTT is compatible with similar heat pumps manufactured by the [Groupe Atlantic](https://www.groupe-atlantic.fr/) and branded for various companies.
 
@@ -39,28 +38,23 @@ To achieve this communication interception, an Arduino-based microcontroller is 
 
 AquaMQTT not only monitors the heat pump's status but also provides the capability to control it by modifying the messages originating from the HMI controller. This allows you to set operational states, such as water temperature and operation modes, directly through AquaMQTT.
 
-In summary:
-- AquaMQTT intercepts and processes serial messages between controllers.
-- Extracted values are published via MQTT.
-- An Arduino-based microcontroller facilitates communication interception.
-- AquaMQTT can modify messages to control the heat pump's operational states.
-
-
 ## Getting Started
 
-To get started with monitoring and controlling your heat pump, follow these steps:
+- [Hardware Requirements](/pcb) 
 
-1. **Hardware (AquaMQTT Board):**
-   - Before proceeding, make sure to place an order for the custom PCB with a manufacturing company. You can locate the KiCad files and further instructions within the [pcb](/pcb) folder.
+- [Software Installation](AquaMQTT/README.md)
 
-2. **AquaMQTT Software:**
-   - [Install AquaMQTT to your Arduino ESP32 using PlatformIO](AquaMQTT/README.md).
+- [Heatpump Modification](./WIRING.md)
 
-3. **Wiring Instructions:**
-   - Follow the instructions in [WIRING.md](./WIRING.md) to integrate the AquaMQTT Board into your heat pump. This document includes details on connecting the PCB to the HMI controller and the main controller.
 
 ## Why not using cozytouch / io-homecontrol?
 
 Unfortunately, I had no success pairing those solutions with my Windhager branded heatpump.
 
+## Further Reading
 
+- [Heat pump serial protocol](./PROTOCOL.md)
+
+- [Available MQTT Topics and Payloads](./MQTT.md)
+
+- [Utilize excess local energy using PV modes](./README-PV.md)

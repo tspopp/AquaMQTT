@@ -68,7 +68,48 @@ void MQTTTask::messageReceived(String& topic, String& payload)
             HMIStateProxy::getInstance().onOperationModeChanged(std::unique_ptr<HMIOperationMode>(nullptr));
         }
     }
+    else if (strstr_P(topic.c_str(), HMI_OPERATION_TYPE) != nullptr)
+    {
+        if (strstr_P(payload.c_str(), ENUM_OPERATION_TYPE_TIMER) != nullptr)
+        {
+            HMIStateProxy::getInstance().onOperationTypeChanged(
+                    std::unique_ptr<HMIOperationType>(new HMIOperationType(TIMER)));
+        }
+        else if (strstr_P(payload.c_str(), ENUM_OPERATION_TYPE_ALWAYS_ON) != nullptr)
+        {
+            HMIStateProxy::getInstance().onOperationTypeChanged(
+                    std::unique_ptr<HMIOperationType>(new HMIOperationType(ALWAYS_ON)));
+        }
+        else
+        {
+            HMIStateProxy::getInstance().onOperationTypeChanged(std::unique_ptr<HMIOperationType>(nullptr));
+        }
+    }
 
+    else if (strstr_P(topic.c_str(), HMI_EMERGENCY_MODE) != nullptr)
+    {
+        if (payload.isEmpty())
+        {
+            HMIStateProxy::getInstance().onEmergencyModeEnabledChanged(std::unique_ptr<bool>(nullptr));
+        }
+        else
+        {
+            bool result = (strcmp(payload.c_str(), "1") == 0);
+            HMIStateProxy::getInstance().onEmergencyModeEnabledChanged(std::unique_ptr<bool>(new bool(result)));
+        }
+    }
+    else if (strstr_P(topic.c_str(), HMI_HEATING_ELEMENT_ENABLED) != nullptr)
+    {
+        if (payload.isEmpty())
+        {
+            HMIStateProxy::getInstance().onHeatingElementEnabledChanged(std::unique_ptr<bool>(nullptr));
+        }
+        else
+        {
+            bool result = (strcmp(payload.c_str(), "1") == 0);
+            HMIStateProxy::getInstance().onHeatingElementEnabledChanged(std::unique_ptr<bool>(new bool(result)));
+        }
+    }
     else if (strstr_P(topic.c_str(), HMI_HOT_WATER_TEMP_TARGET) != nullptr)
     {
         if (payload.isEmpty())
@@ -80,6 +121,68 @@ void MQTTTask::messageReceived(String& topic, String& payload)
             HMIStateProxy::getInstance().onWaterTempTargetChanged(
                     std::unique_ptr<float>(new float(atof(payload.c_str()))));
         }
+    }
+    else if (strstr_P(topic.c_str(), HMI_INSTALLATION_CONFIG) != nullptr)
+    {
+        if (strstr_P(payload.c_str(), ENUM_INSTALLATION_THERMODYNAMICS_ONLY) != nullptr)
+        {
+            HMIStateProxy::getInstance().onInstallationModeChanged(
+                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_ONLY)));
+        }
+        else if (strstr_P(payload.c_str(), ENUM_INSTALLATION_SOLAR_BACKUP) != nullptr)
+        {
+            HMIStateProxy::getInstance().onInstallationModeChanged(
+                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_AND_SOLAR)));
+        }
+
+        else if (strstr_P(payload.c_str(), ENUM_INSTALLATION_BOILER_BACKUP_EXT_OPT) != nullptr)
+        {
+            HMIStateProxy::getInstance().onInstallationModeChanged(
+                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_AND_EXT_OPT_EXT)));
+        }
+
+        else if (strstr_P(payload.c_str(), ENUM_INSTALLATION_BOILER_BACKUP_EXT_PRIO) != nullptr)
+        {
+            HMIStateProxy::getInstance().onInstallationModeChanged(
+                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_AND_EXT_PRIO_EXT)));
+        }
+
+        else if (strstr_P(payload.c_str(), ENUM_INSTALLATION_BOILER_BACKUP_HP_OPT) != nullptr)
+        {
+            HMIStateProxy::getInstance().onInstallationModeChanged(
+                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_AND_EXT_OPT_HP)));
+        }
+
+        else if (strstr_P(payload.c_str(), ENUM_INSTALLATION_BOILER_BACKUP_HP_PRIO) != nullptr)
+        {
+            HMIStateProxy::getInstance().onInstallationModeChanged(
+                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_AND_EXT_PRIO_HP)));
+        }
+        else
+        {
+            HMIStateProxy::getInstance().onInstallationModeChanged(std::unique_ptr<HMIInstallation>(nullptr));
+        }
+    }
+
+    else if (
+            (strlen(optionalSubscribeTopicSetPvHeatPumpFlag) != 0)
+            && strstr_P(topic.c_str(), optionalSubscribeTopicSetPvHeatPumpFlag) != nullptr)
+    {
+        HMIStateProxy::getInstance().onPVModeHeatpumpEnabled(strcmp(payload.c_str(), "1") == 0);
+    }
+    else if (strstr_P(topic.c_str(), STATS_ENABLE_FLAG_PV_HEATPUMP) != nullptr)
+    {
+        HMIStateProxy::getInstance().onPVModeHeatpumpEnabled(strcmp(payload.c_str(), "1") == 0);
+    }
+    else if (
+            (strlen(optionalSubscribeTopicSetPvHeatElementFlag) != 0)
+            && strstr_P(topic.c_str(), optionalSubscribeTopicSetPvHeatElementFlag) != nullptr)
+    {
+        HMIStateProxy::getInstance().onPVModeHeatElementEnabled(strcmp(payload.c_str(), "1") == 0);
+    }
+    else if (strstr_P(topic.c_str(), STATS_ENABLE_FLAG_PV_HEATELEMENT) != nullptr)
+    {
+        HMIStateProxy::getInstance().onPVModeHeatElementEnabled(strcmp(payload.c_str(), "1") == 0);
     }
     else if (strstr_P(topic.c_str(), AQUAMQTT_RESET_OVERRIDES) != nullptr)
     {
@@ -154,6 +257,18 @@ void MQTTTask::check_mqtt_connection()
 
     sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%S", config::mqttPrefix, CONTROL_TOPIC);
     mMQTTClient.subscribe(reinterpret_cast<char*>(mTopicBuffer));
+
+    if (strlen(optionalSubscribeTopicSetPvHeatPumpFlag) != 0)
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer), "%S", optionalSubscribeTopicSetPvHeatPumpFlag);
+        mMQTTClient.subscribe(reinterpret_cast<char*>(mTopicBuffer));
+    }
+
+    if (strlen(optionalSubscribeTopicSetPvHeatElementFlag) != 0)
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer), "%S", optionalSubscribeTopicSetPvHeatElementFlag);
+        mMQTTClient.subscribe(reinterpret_cast<char*>(mTopicBuffer));
+    }
 
     Serial.println("[mqtt] is now connected");
 }
@@ -388,36 +503,59 @@ void                     MQTTTask::updateStats()
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
         auto overrides = HMIStateProxy::getInstance().getOverrides();
-        auto offset    = sprintf(reinterpret_cast<char*>(mPayloadBuffer), "[");
-        if (overrides.operationMode)
-        {
-            offset += sprintf(reinterpret_cast<char*>(mPayloadBuffer) + offset, "\"%S\"", HMI_OPERATION_MODE);
-            if (overrides.waterTempTarget || aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM)
-            {
-                offset += sprintf(reinterpret_cast<char*>(mPayloadBuffer) + offset, ",");
-            }
-        }
 
-        if (overrides.waterTempTarget)
-        {
-            offset += sprintf(reinterpret_cast<char*>(mPayloadBuffer) + offset, "\"%S\"", HMI_HOT_WATER_TEMP_TARGET);
-            if (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM)
-            {
-                offset += sprintf(reinterpret_cast<char*>(mPayloadBuffer) + offset, ",");
-            }
-        }
+        sprintf(reinterpret_cast<char*>(mPayloadBuffer),
+                R"({ "%S": %s, "%S": %s, "%S": %s, "%S": %s, "%S": %s, "%S": %s , "%S": %s })",
+                HMI_OPERATION_MODE,
+                overrides.operationMode ? "1" : "0",
+                HMI_OPERATION_TYPE,
+                overrides.operationType ? "1" : "0",
+                HMI_HOT_WATER_TEMP_TARGET,
+                overrides.waterTempTarget ? "1" : "0",
+                HMI_HEATING_ELEMENT_ENABLED,
+                overrides.heatingElementEnabled ? "1" : "0",
+                HMI_EMERGENCY_MODE,
+                overrides.emergencyModeEnabled ? "1" : "0",
+                HMI_INSTALLATION_CONFIG,
+                overrides.installationMode ? "1" : "0",
+                HMI_TIME_AND_DATE,
+                aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM ? "1" : "0");
 
-        if (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM)
-        {
-            offset += sprintf(reinterpret_cast<char*>(mPayloadBuffer) + offset, "\"%S\"", HMI_TIME_AND_DATE);
-        }
-        sprintf(reinterpret_cast<char*>(mPayloadBuffer) + offset, "]");
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%S%S%S",
                 config::mqttPrefix,
                 BASE_TOPIC,
                 STATS_SUBTOPIC,
                 STATS_ACTIVE_OVERRIDES);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                STATS_AQUAMQTT_OVERRIDE_MODE);
+
+        mMQTTClient.publish(
+                reinterpret_cast<char*>(mTopicBuffer),
+                aquamqttOverrideStr(HMIStateProxy::getInstance().getOverrideMode()));
+
+        itoa(HMIStateProxy::getInstance().isPVModeHeatPumpEnabled(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                STATS_ENABLE_FLAG_PV_HEATPUMP);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+        itoa(HMIStateProxy::getInstance().isPVModeHeatElementEnabled(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                STATS_ENABLE_FLAG_PV_HEATELEMENT);
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 }
@@ -551,15 +689,8 @@ void                     MQTTTask::updateHMIStatus()
             BASE_TOPIC,
             HMI_SUBTOPIC,
             HMI_OPERATION_TYPE);
-    if (message.isTimerModeEnabled())
-    {
-        sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", ENUM_OPERATION_TYPE_TIMER);
-    }
-    else
-    {
-        sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%S", ENUM_OPERATION_TYPE_ALWAYS_ON);
-    }
-    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), operationTypeStr(message.getOperationType()));
 
     sprintf(reinterpret_cast<char*>(mPayloadBuffer),
             "%02d:%02d:%02d",
@@ -708,6 +839,12 @@ void                     MQTTTask::updateEnergyStats()
             ENERGY_POWER_HEATPUMP);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
+    if (strlen(optionalPublishTopicHeatPumpCurrentPower) != 0)
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s", optionalPublishTopicHeatPumpCurrentPower);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
+
     ultoa(message.powerHeatElement(), reinterpret_cast<char*>(mPayloadBuffer), 10);
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
             "%s%S%S%S",
@@ -716,6 +853,12 @@ void                     MQTTTask::updateEnergyStats()
             ENERGY_SUBTOPIC,
             ENERGY_POWER_HEAT_ELEMENT);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    if (strlen(optionalPublishTopicHeatElementCurrentPower) != 0)
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s", optionalPublishTopicHeatElementCurrentPower);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
 
     ultoa(message.powerOverall(), reinterpret_cast<char*>(mPayloadBuffer), 10);
     sprintf(reinterpret_cast<char*>(mTopicBuffer),

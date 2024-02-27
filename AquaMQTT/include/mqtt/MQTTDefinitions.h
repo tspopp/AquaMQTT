@@ -58,6 +58,11 @@ const char ENUM_SETUP_COMPLETED[] PROGMEM  = { "OK" };
 const char ENUM_SETUP_INCOMPLETE[] PROGMEM = { "PARTIAL RESET" };
 const char ENUM_SETUP_RESET[] PROGMEM      = { "FACTORY RESET" };
 
+const char ENUM_AQUAMQTT_OVERRIDE_MODE_DEFAULT[] PROGMEM = { "DEFAULT" };
+const char ENUM_AQUAMQTT_OVERRIDE_MODE_HP_ONLY[] PROGMEM = { "PV HP" };
+const char ENUM_AQUAMQTT_OVERRIDE_MODE_HE_ONLY[] PROGMEM = { "PV HE" };
+const char ENUM_AQUAMQTT_OVERRIDE_MODE_PV_FULL[] PROGMEM = { "PV BOOST" };
+
 // Subtopics
 const char MAIN_HOT_WATER_TEMP[] PROGMEM            = { "waterTemp" };
 const char MAIN_SUPPLY_AIR_TEMP[] PROGMEM           = { "supplyAirTemp" };
@@ -76,7 +81,7 @@ const char HMI_OPERATION_TYPE[] PROGMEM          = { "operationType" };
 const char HMI_TIME[] PROGMEM                    = { "time" };
 const char HMI_DATE[] PROGMEM                    = { "date" };
 const char HMI_TIME_AND_DATE[] PROGMEM           = { "time/date" };
-const char HMI_EMERGENCY_MODE[] PROGMEM          = { "emergencyMode" };
+const char HMI_EMERGENCY_MODE[] PROGMEM          = { "emergencyModeEnabled" };
 const char HMI_HEATING_ELEMENT_ENABLED[] PROGMEM = { "heatingElementEnabled" };
 const char HMI_LEGIONELLA[] PROGMEM              = { "antiLegionellaPerMonth" };
 const char HMI_TIMER_WINDOW_A[] PROGMEM          = { "timerWindowA" };
@@ -94,16 +99,19 @@ const char ENERGY_POWER_TOTAL[] PROGMEM              = { "powerTotal" };
 const char ENERGY_POWER_HEAT_ELEMENT[] PROGMEM       = { "powerHeatingElem" };
 const char ENERGY_POWER_HEATPUMP[] PROGMEM           = { "powerHeatpump" };
 
-const char STATS_AQUAMQTT_ADDR[] PROGMEM      = { "ipAddress" };
-const char STATS_AQUAMQTT_RSSI[] PROGMEM      = { "rssiDb" };
-const char STATS_AQUAMQTT_MODE[] PROGMEM      = { "aquamqttMode" };
-const char STATS_AQUAMQTT_LAST_WILL[] PROGMEM = { "lwlState" };
-const char STATS_MSG_HANDLED[] PROGMEM        = { "msgHandled" };
-const char STATS_MSG_UNHANDLED[] PROGMEM      = { "msgUnhandled" };
-const char STATS_MSG_SENT[] PROGMEM           = { "msgSent" };
-const char STATS_MSG_CRC_NOK[] PROGMEM        = { "msgCRCNOK" };
-const char STATS_DROPPED_BYTES[] PROGMEM      = { "droppedBytes" };
-const char STATS_ACTIVE_OVERRIDES[] PROGMEM   = { "activeOverrides" };
+const char STATS_AQUAMQTT_ADDR[] PROGMEM              = { "ipAddress" };
+const char STATS_AQUAMQTT_RSSI[] PROGMEM              = { "rssiDb" };
+const char STATS_AQUAMQTT_MODE[] PROGMEM              = { "aquamqttMode" };
+const char STATS_AQUAMQTT_OVERRIDE_MODE[] PROGMEM     = { "overrideMode" };
+const char STATS_AQUAMQTT_LAST_WILL[] PROGMEM         = { "lwlState" };
+const char STATS_MSG_HANDLED[] PROGMEM                = { "msgHandled" };
+const char STATS_MSG_UNHANDLED[] PROGMEM              = { "msgUnhandled" };
+const char STATS_MSG_SENT[] PROGMEM                   = { "msgSent" };
+const char STATS_MSG_CRC_NOK[] PROGMEM                = { "msgCRCNOK" };
+const char STATS_DROPPED_BYTES[] PROGMEM              = { "droppedBytes" };
+const char STATS_ACTIVE_OVERRIDES[] PROGMEM           = { "activeOverrides" };
+const char STATS_ENABLE_FLAG_PV_HEATPUMP[] PROGMEM    = { "flagPVModeHeatPump" };
+const char STATS_ENABLE_FLAG_PV_HEATELEMENT[] PROGMEM = { "flagPVModeHeatElement" };
 
 // CTRL
 const char AQUAMQTT_RESET_OVERRIDES[] PROGMEM = { "reset" };
