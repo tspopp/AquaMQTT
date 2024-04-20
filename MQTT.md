@@ -94,7 +94,7 @@ Using this topics you may override the HMI Controller in AquaMQTT OperationMode 
 | Enable or disable heating element | `$root/ctrl/heatingElementEnabled`       |   bool |      |       "`1`" | Allow the DHW heat pump to use the heating element if needed. Sanity: It is not possible to disable the heating element in case emergency mode is enabled.|
 | Enable or disable emergency mode  | `$root/ctrl/emergencyModeEnabled`       |   bool |      |       "`0`" | Forces the DHW heat pump to use only the heating element. Sanity: it is not possible to enable emergency mode if heating element has been disabled. |
 | Set PV Mode Heat Pump Flag                 | `$root/ctrl/flagPVModeHeatPump`       |   bool|      |  "`1`"       | See [README-PV.md](/README-PV.md) additional information. Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`  |
-| Set PV Mode Heat Element Flag                 | `$root/ctrl/flagPVModeHeatPump`       |   bool|      |   "`1`"      | See [README-PV.md](/README-PV.md) for additional information. Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`  |
+| Set PV Mode Heat Element Flag                 | `$root/ctrl/flagPVModeHeatElement`       |   bool|      |   "`1`"      | See [README-PV.md](/README-PV.md) for additional information. Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`  |
 | Reset Overrides                  | `$root/ctrl/reset`       |   Void |      |        | Removes all previous set overrides. |
 
 **Note:** Calling a `ctrl` topic with an empty payload `""` will reset individual override.
