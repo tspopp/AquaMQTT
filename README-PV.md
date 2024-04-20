@@ -78,7 +78,7 @@ The flags can be triggered using the [MQTT](./MQTT.md) control topics. The curre
 | Flag PV heat pump      | `$root/stats/flagPVModeHeatPump` | bool | Status of the pv heat pump flag  |
 | Flag PV heat element   | `$root/stats/flagPVModeHeatElement` | bool | Status of the pv heat element flag
 | Set PV Mode Heat Pump Flag                 | `$root/ctrl/flagPVModeHeatPump`       |   bool           | Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`  |
-| Set PV Mode Heat Element Flag                 | `$root/ctrl/flagPVModeHeatPump`       |   bool           |  Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`  |
+| Set PV Mode Heat Element Flag                 | `$root/ctrl/flagPVModeHeatElement`       |   bool           |  Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`  |
    |
 
 ## How to automate?
