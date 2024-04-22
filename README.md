@@ -19,9 +19,14 @@ AquaMQTT is a project designed to monitor and control your DHW heat pump locally
 
 ## Compatible Devices
 
-AquaMQTT is designed and tested with the [Windhager AquaWin Air3](https://www.windhager.com/en/products/hot-water-tanks/aquawin-air3/) DHW heat pump. While specifically tailored to this model, it's highly likely that AquaMQTT is compatible with similar heat pumps manufactured by the [Groupe Atlantic](https://www.groupe-atlantic.fr/) and branded for various companies.
+AquaMQTT has been designed and tested with the [Windhager AquaWin Air3](https://www.windhager.com/en/products/hot-water-tanks/aquawin-air3/) DHW heat pump. While specifically tailored to this model, it's highly likely that AquaMQTT is compatible with similar heat pumps manufactured by the [Groupe Atlantic](https://www.groupe-atlantic.fr/) and branded for various companies. 
 
-Potential compatible devices include, but are not limited to:
+### Proofen compatible devices:
+
+- [Atlantic Explorer V4](https://github.com/tspopp/AquaMQTT/issues/14)
+- [Windhager AquaWin Air3](https://www.windhager.com/en/products/hot-water-tanks/aquawin-air3/) 
+
+### Other potential compatible devices include, but are not limited to:
 
 - [Atlantic Explorer](https://www.atlantic-comfort.com/Water-Heaters/Heat-pump-water-heaters/Explorer)
 - [Austria Email Explorer](https://www.austria-email.de/produkte/waermepumpensysteme/waermepumpen-trinkwasser/explorer-evo-2/)
@@ -49,7 +54,7 @@ AquaMQTT not only monitors the heat pump's status but also provides the capabili
 
 ## Why not using cozytouch / io-homecontrol?
 
-Unfortunately, I had no success pairing those solutions with my Windhager branded heatpump.
+Unfortunately, I had no success pairing those solutions with my Windhager branded heatpump. Moreover, this solution is independent from any manufacturer backends and therefore running entirely within your private local area network. 
 
 ## Further Reading
 
