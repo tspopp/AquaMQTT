@@ -1,0 +1,513 @@
+mqtt:
+  binary_sensor:
+    - name: "Heating Element"
+      state_topic: "aquamqtt/main/stateElement"
+      payload_on: "1"
+      payload_off: "0"
+      icon: mdi:heating-coil
+      unique_id: atlantic_state_heatelement
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Heatpump"
+      state_topic: "aquamqtt/main/stateHeatpump"
+      payload_on: "1"
+      payload_off: "0"
+      icon: mdi:heat-pump-outline
+      unique_id: atlantic_state_heatpump
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Fan"
+      state_topic: "aquamqtt/main/stateFan"
+      payload_on: "1"
+      payload_off: "0"
+      icon: mdi:fan
+      unique_id: atlantic_state_fan
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "External Boiler"
+      state_topic: "aquamqtt/main/stateExtBoiler"
+      payload_on: "1"
+      payload_off: "0"
+      icon: mdi:water-boiler
+      unique_id: atlantic_state_extboiler
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Defrost"
+      state_topic: "aquamqtt/main/stateDefrost"
+      payload_on: "1"
+      payload_off: "0"
+      icon: mdi:snowflake-melt
+      unique_id: atlantic_state_defrost
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Active Override Operation Mode"
+      state_topic: "aquamqtt/stats/activeOverrides"
+      value_template: "{{ value_json.operationMode }}"
+      unique_id: atlantic_ctrl_activeoverrides_operationmode
+      icon: mdi:debug-step-over
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Active Override Operation Type"
+      state_topic: "aquamqtt/stats/activeOverrides"
+      value_template: "{{ value_json.operationType }}"
+      unique_id: atlantic_ctrl_activeoverrides_operationtype
+      icon: mdi:debug-step-over
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Active Override Target Temperature"
+      state_topic: "aquamqtt/stats/activeOverrides"
+      value_template: "{{ value_json.waterTempTarget }}"
+      unique_id: atlantic_ctrl_activeoverrides_target_temp
+      icon: mdi:debug-step-over
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Active Override Heating Element"
+      state_topic: "aquamqtt/stats/activeOverrides"
+      value_template: "{{ value_json.heatingElementEnabled }}"
+      unique_id: atlantic_ctrl_activeoverrides_heatelement
+      icon: mdi:debug-step-over
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Active Override Emergency Mode"
+      state_topic: "aquamqtt/stats/activeOverrides"
+      value_template: "{{ value_json.emergencyModeEnabled }}"
+      unique_id: atlantic_ctrl_activeoverrides_emergencymode
+      icon: mdi:debug-step-over
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1        
+    - name: "Active Override Configuration Installation"
+      state_topic: "aquamqtt/stats/activeOverrides"
+      value_template: "{{ value_json.configInstallation }}"
+      unique_id: atlantic_ctrl_activeoverrides_configinstallation
+      icon: mdi:debug-step-over
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1  
+    - name: "Active Override Time/Date"
+      state_topic: "aquamqtt/stats/activeOverrides"
+      value_template: "{{ value_json['time/date'] }}"
+      unique_id: atlantic_ctrl_activeoverrides_time
+      icon: mdi:debug-step-over
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1  
+        
+  sensor:
+    - name: "Status"
+      state_topic: "aquamqtt/stats/lwlState"
+      icon: mdi:information
+      unique_id: atlantic_state
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "IP Address"
+      state_topic: "aquamqtt/stats/ipAddress"
+      icon: mdi:ip-network
+      unique_id: atlantic_ip
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "RSSI"
+      state_topic: "aquamqtt/stats/rssiDb"
+      unit_of_measurement: "dB"
+      icon: mdi:signal-cellular-2
+      unique_id: atlantic_rssi
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Water Temperature"
+      state_topic: "aquamqtt/main/waterTemp"
+      unit_of_measurement: "°C"
+      state_class: measurement
+      icon: mdi:thermometer-water
+      unique_id: atlantic_state_watertemp
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Supply Air Temperature"
+      state_topic: "aquamqtt/main/supplyAirTemp"
+      unit_of_measurement: "°C"
+      state_class: measurement
+      unique_id: atlantic_state_supplyair_temp
+      icon: mdi:thermometer
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Evaporator Air Temperature"
+      state_topic: "aquamqtt/main/evaporatorAirTemp"
+      unit_of_measurement: "°C"
+      state_class: measurement
+      unique_id: atlantic_state_evaporatorair_temp
+      icon: mdi:thermometer
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Evaporator Air Temperature Lower"
+      state_topic: "aquamqtt/main/evaporatorAirTempLower"
+      unit_of_measurement: "°C"
+      icon: mdi:thermometer
+      state_class: measurement
+      unique_id: atlantic_state_evaporatorair_temp_lower
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Total Hours"
+      state_topic: "aquamqtt/energy/totalHours"
+      unit_of_measurement: "h"
+      state_class: total
+      unique_id: atlantic_state_total_hours
+      icon: mdi:counter
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Total Heating Element Hours"
+      state_topic: "aquamqtt/energy/totalHeatingElemHours"
+      unit_of_measurement: "h"
+      state_class: total
+      unique_id: atlantic_state_total_heatelement_hours
+      icon: mdi:counter
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Total Heat Pump Hours"
+      state_topic: "aquamqtt/energy/totalHeatpumpHours"
+      unit_of_measurement: "h"
+      state_class: total
+      unique_id: atlantic_state_total_heatpump_hours
+      icon: mdi:counter
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Total Energy"
+      state_topic: "aquamqtt/energy/totalEnergyWh"
+      unit_of_measurement: "Wh"
+      device_class: energy
+      state_class: total
+      unique_id: atlantic_state_total_energy
+      icon: mdi:lightning-bolt-circle
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Power Consumed Heatpump"
+      state_topic: "aquamqtt/energy/powerHeatpump"
+      unit_of_measurement: "W"
+      device_class: power
+      state_class: measurement
+      unique_id: atlantic_state_power_heatpump
+      icon: mdi:lightning-bolt
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Power Consumed Heating Element"
+      state_topic: "aquamqtt/energy/powerHeatingElem"
+      unit_of_measurement: "W"
+      device_class: power
+      state_class: measurement
+      unique_id: atlantic_state_power_heatelement
+      icon: mdi:lightning-bolt
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Power Consumed Total"
+      state_topic: "aquamqtt/energy/powerTotal"
+      unit_of_measurement: "W"
+      device_class: power
+      state_class: measurement
+      unique_id: atlantic_state_power_total
+      icon: mdi:lightning-bolt-outline
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Date"
+      state_topic: "aquamqtt/hmi/date"
+      unique_id: atlantic_state_date
+      icon: mdi:calendar-range
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Time"
+      state_topic: "aquamqtt/hmi/time"
+      unique_id: atlantic_state_time
+      icon: mdi:clock-time-eight
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Fan Speed"
+      unit_of_measurement: "rpm"
+      state_topic: "aquamqtt/main/fanSpeed"
+      unique_id: atlantic_state_fanspeed
+      icon: mdi:fan
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Override Mode"
+      state_topic: "aquamqtt/stats/overrideMode"
+      unique_id: atlantic_state_overridemode
+      icon: mdi:debug-step-over
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Timer Window A"
+      state_topic: "aquamqtt/hmi/timerWindowA"
+      unique_id: atlantic_state_time_windowa
+      icon: mdi:calendar-clock
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Timer Window B"
+      state_topic: "aquamqtt/hmi/timerWindowB"
+      unique_id: atlantic_state_time_windowb
+      icon: mdi:calendar-clock
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Anti-Legionella Mode"
+      state_topic: "aquamqtt/hmi/antiLegionellaPerMonth"
+      unique_id: atlantic_state_antilegionella
+      icon: mdi:virus-off
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Configuration AirDuct"
+      state_topic: "aquamqtt/hmi/configAirduct"
+      unique_id: atlantic_state_configairduct
+      icon: mdi:sign-direction
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "HMI Setup State"
+      state_topic: "aquamqtt/hmi/setupState"
+      unique_id: atlantic_state_hmi
+      icon: mdi:tablet-dashboard
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "AquaMQTT Mode"
+      state_topic: "aquamqtt/stats/aquamqttMode"
+      unique_id: atlantic_state_aquamqtt
+      icon: mdi:heat-pump
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+  button:
+    - name: "RESET"
+      command_topic: "aquamqtt/ctrl/reset"
+      payload_press: ""
+      qos: 0
+      retain: false
+      unique_id: atlantic_ctrl_reset
+      icon: mdi:restart
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+  number:
+    - name: "Target Temperature"
+      state_topic: aquamqtt/hmi/waterTempTarget
+      command_topic: aquamqtt/ctrl/waterTempTarget
+      min: 40
+      max: 62
+      step: 1
+      unit_of_measurement: "°C"
+      unique_id: atlantic_ctrl_watertemp_target
+      icon: mdi:thermometer-water
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+  switch:
+    - name: "PV Mode Heat Pump"
+      command_topic: "aquamqtt/ctrl/flagPVModeHeatPump"
+      state_topic: "aquamqtt/stats/flagPVModeHeatPump"
+      payload_on: "1"
+      payload_off: "0"
+      unique_id: atlantic_ctrl_pvmode_heatpump
+      icon: mdi:heat-pump
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "PV Mode Heating Element"
+      command_topic: "aquamqtt/ctrl/flagPVModeHeatElement"
+      state_topic: "aquamqtt/stats/flagPVModeHeatElement"
+      payload_on: "1"
+      payload_off: "0"
+      unique_id: atlantic_ctrl_pvmode_heatelement
+      icon: mdi:heating-coil
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Emergency Mode"
+      command_topic: "aquamqtt/ctrl/emergencyModeEnabled"
+      state_topic: "aquamqtt/hmi/emergencyModeEnabled"
+      payload_on: "1"
+      payload_off: "0"
+      unique_id: atlantic_ctrl_emergencymode
+      icon: mdi:car-brake-alert
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Heating Element Mode"
+      command_topic: "aquamqtt/ctrl/heatingElementEnabled"
+      state_topic: "aquamqtt/hmi/heatingElementEnabled"
+      payload_on: "1"
+      payload_off: "0"
+      unique_id: atlantic_ctrl_heatelementmode
+      icon: mdi:heating-coil
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+
+        
+  select:
+    - name: "Operation Mode"
+      command_topic: "aquamqtt/ctrl/operationMode"
+      state_topic: "aquamqtt/hmi/operationMode"
+      unique_id: atlantic_ctrl_operationmode
+      icon: mdi:list-box
+      options:
+      - "ABSENCE"
+      - "AUTO"
+      - "BOOST"
+      - "MAN ECO OFF"
+      - "MAN ECO ON"
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Operation Type"
+      command_topic: "aquamqtt/ctrl/operationType"
+      state_topic: "aquamqtt/hmi/operationType"
+      unique_id: atlantic_ctrl_operationtype
+      icon: mdi:timetable
+      options:
+      - "ALWAYS ON"
+      - "TIME WINDOW"
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1
+    - name: "Installation configuration"
+      command_topic: "aquamqtt/ctrl/configInstallation"
+      state_topic: "aquamqtt/hmi/configInstallation"
+      unique_id: atlantic_ctrl_configinstallation
+      icon: mdi:cog
+      options:
+      - "BOILER BACKUP / BOILER OPTIMIZED"
+      - "BOILER BACKUP / BOILER PRIORITY"
+      - "BOILER BACKUP / HEAT PUMP PRIORITY"
+      - "BOILER BACKUP / HEAT PUMP OPTIMIZED"
+      - "HEAT PUMP ONLY"
+      - "HEAT PUMP AND SOLAR BACKUP"
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT 
+        model: V1       
