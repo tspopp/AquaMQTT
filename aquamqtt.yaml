@@ -139,7 +139,7 @@ mqtt:
         manufacturer: tspopp
         name: AquaMQTT 
         model: V1  
-        
+  
   sensor:
     - name: "Status"
       state_topic: "aquamqtt/stats/lwlState"
@@ -463,7 +463,6 @@ mqtt:
         name: AquaMQTT 
         model: V1
 
-        
   select:
     - name: "Operation Mode"
       command_topic: "aquamqtt/ctrl/operationMode"
