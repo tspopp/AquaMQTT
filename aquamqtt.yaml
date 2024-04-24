@@ -349,8 +349,9 @@ mqtt:
         manufacturer: tspopp
         name: AquaMQTT 
         model: V1
-    - name: "Anti-Legionella Mode"
+    - name: "Anti-Legionella cycles per month"
       state_topic: "aquamqtt/hmi/antiLegionellaPerMonth"
+
       unique_id: atlantic_state_antilegionella
       icon: mdi:virus-off
       device:
