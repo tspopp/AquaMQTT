@@ -440,7 +440,8 @@ mqtt:
         manufacturer: tspopp
         name: AquaMQTT 
         model: V1
-    - name: "Emergency Mode"
+    - name: "Disable use of heat pump"
+
       command_topic: "aquamqtt/ctrl/emergencyModeEnabled"
       state_topic: "aquamqtt/hmi/emergencyModeEnabled"
       payload_on: "1"
