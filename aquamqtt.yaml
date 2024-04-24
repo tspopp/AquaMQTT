@@ -453,7 +453,8 @@ mqtt:
         manufacturer: tspopp
         name: AquaMQTT 
         model: V1
-    - name: "Heating Element Mode"
+    - name: "Enable use of heat element"
+
       command_topic: "aquamqtt/ctrl/heatingElementEnabled"
       state_topic: "aquamqtt/hmi/heatingElementEnabled"
       payload_on: "1"
