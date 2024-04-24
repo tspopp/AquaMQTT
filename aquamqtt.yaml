@@ -387,7 +387,8 @@ mqtt:
         name: AquaMQTT 
         model: V1
   button:
-    - name: "RESET"
+    - name: "Reset Overrides"
+
       command_topic: "aquamqtt/ctrl/reset"
       payload_press: ""
       qos: 0
