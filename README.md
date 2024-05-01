@@ -30,8 +30,10 @@ AquaMQTT has been designed and tested with the [Windhager AquaWin Air3](https://
 
 - [Atlantic Explorer](https://www.atlantic-comfort.com/Water-Heaters/Heat-pump-water-heaters/Explorer)
 - [Austria Email Explorer](https://www.austria-email.de/produkte/waermepumpensysteme/waermepumpen-trinkwasser/explorer-evo-2/)
-- [Thermor Aeromax](https://www.thermor.com/our-solutions/renewable-energy-solutions/heat-pump-water-heaters/aeromax-premium)
 - [Panasonic DHW270](https://www.aircon.panasonic.eu/CH_de/model/paw-dhw270f/)
+- [Sauter Confort Pagosa Green](https://www.confort-sauter.com/chauffe-eau/pagosa-green)
+- [Thermor Aeromax](https://www.thermor.com/our-solutions/renewable-energy-solutions/heat-pump-water-heaters/aeromax-premium)
+
 
 If you have a heat pump with similar characteristics or branding, AquaMQTT might be compatible. Feel free to explore and adapt the project for your specific device, and share your experience.
 
@@ -63,3 +65,9 @@ Unfortunately, I had no success pairing those solutions with my Windhager brande
 - [Available MQTT Topics and Payloads](./MQTT.md)
 
 - [Utilize excess local energy using PV modes](./README-PV.md)
+
+## Some references to AquaMQTT
+
+- 🇫🇷 https://forum.hacf.fr/t/integration-dun-chauffe-eau-atlantic-explorer-en-mqtt/40493/6
+- 🇳🇱 https://gathering.tweakers.net/forum/list_messages/2116816/78
+
