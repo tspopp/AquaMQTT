@@ -4,6 +4,8 @@
 #include <cstring>
 #include <memory>
 
+#include "MessageConstants.h"
+
 namespace aquamqtt
 {
 namespace message
@@ -36,6 +38,32 @@ public:
     bool stateFan();
 
     bool stateDefrost();
+
+    uint8_t settingPwmFirst();
+
+    uint8_t settingPwmSecond();
+
+    uint8_t settingPwmThird();
+
+    uint8_t settingMinTTarget();
+
+    uint8_t settingLegionellaTTarget();
+
+    uint16_t settingWattageHeatingElement();
+
+    uint16_t settingBoilerCapacity();
+
+    MAINBrands settingBrand();
+
+    bool settingHasHeatExchanger();
+
+    bool settingHasCirculation();
+
+    bool settingHasPVInput();
+
+    bool settingHasCommunication();
+
+    bool settingHasAntiTrockenheizung();
 
 private:
     uint8_t* mData;

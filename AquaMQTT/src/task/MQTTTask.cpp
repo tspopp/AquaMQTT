@@ -669,6 +669,123 @@ void                     MQTTTask::updateMainStatus()
         toHexStr(mTransferBuffer, MAIN_MESSAGE_LENGTH, reinterpret_cast<char*>(mPayloadBuffer));
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
+
+    itoa(message.settingPwmFirst(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_PWM_01);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    itoa(message.settingPwmSecond(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_PWM_02);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    itoa(message.settingPwmThird(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_PWM_03);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    itoa(message.settingMinTTarget(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_MIN_TEMP_TARGET);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    itoa(message.settingLegionellaTTarget(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_MIN_TEMP_LEGIONELLA);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    ultoa(message.settingWattageHeatingElement(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_PWR_HEATELEM);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    ultoa(message.settingBoilerCapacity(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_BOILER_CAP);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_BOILER_BRAND);
+
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), brandStr(message.settingBrand()));
+
+    itoa(message.settingHasHeatExchanger(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_HAS_HEAT_EXC);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    itoa(message.settingHasCirculation(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_HAS_CIRCULATION);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    itoa(message.settingHasPVInput(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_HAS_PV_INPUT);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    itoa(message.settingHasCommunication(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_HAS_EXT_COMM);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    itoa(message.settingHasAntiTrockenheizung(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            MAIN_SUBTOPIC,
+            MAIN_SETTING_HAS_ANTI_TRO);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 }
 
 #pragma clang diagnostic push
