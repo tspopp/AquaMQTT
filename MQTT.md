@@ -51,7 +51,7 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 | Configuration AirDuct            | `$root/hmi/configAirduct`            |   Enum |      |                       INT/INT, INT/EXT, EXT/EXT  |
 | Configuration Installation       | `$root/hmi/configInstallation`       |   Enum |      |                                                  |
 | HMI SetupState                   | `$root/hmi/setupState`               |   Enum |      |                OK, PARTIAL RESET, FACTORY RESET  |
-
+| Raw Message (Debug Mode Only)    | `$root/hmi/debug`                    | string |      |                                                  |
 
 ### Main Message
 
@@ -67,7 +67,8 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 | State: Heating Element On/Off    | `$root/main/stateElement`           | bool   |      |                                                  |
 | State: Boiler Backup On/Off      | `$root/main/stateExtBoiler`         | bool   |      |                                                  |
 | State: Defrost On/Off Date       | `$root/main/stateDefrost`           | bool   |      |                                                  |
-     
+| Raw Message (Debug Mode Only)    | `$root/main/debug`                  | string |      |                                                  |
+
 ### Energy Message
 
 
@@ -80,6 +81,7 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 | Current Power Heatpump           | `$root/energy/powerHeatpump`          | uint16 |    W | Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`                                                 |
 | Current Power Heating Element    | `$root/energy/powerHeatingElem`       | uint16 |    W | Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`                                                            |
 | Current Power Total              | `$root/energy/powerTotal`             | uint16 |    W |                                                  |
+| Raw Message (Debug Mode Only)    | `$root/energy/debug`                  | string |      |                                                  |
 
 ## Subscribe Topics
 
