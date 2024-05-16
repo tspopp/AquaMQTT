@@ -17,7 +17,9 @@ The original setup needs 4 of those pins, which are connected to the main contro
 - VCC 5V (green)
 - GND (red/brown)
 - TX/RX, Logical 5V (white)
-- Unknown (yellow)
+- Unknown/Unused(yellow)
+
+[*Depending on the heatpump, sometimes there are only three wires.*](https://github.com/tspopp/AquaMQTT/issues/18)
 
 ## Overview
 
@@ -89,18 +91,18 @@ The main controller gives the HMI controller permission to send by emitting the 
 | 0           |     35  | Length Field            | - |
 | 1 - 2       |   18 2  | Target Temp.     | See Temperature Table, 53°C |
 | 3           |     66  | OperationMode  | See Operation Mode Table |
-| 4           |    252  | ?                | - |
+| 4           |    252  | Command: Change PWM, Command: Change Anti-Trockenheizung                | See Commands |
 | 5           |      0  | Anti-Legionella Mode / AirDuct Mode | 0 == Off, 1 == 1perMonth, 2 == 2perMonth, 3 == 3perMonth, 4 == 4/perMonth, // 0 == AirDuct INT/INT, 16 == AirDuct EXT/INT, 32 == AirDuct EXT/EXT |
-| 6           |    240  | Emergency-Mode                | Off == 240, On == 241 |
+| 6           |    240  | Emergency-Mode, Command: Change Connectivity  | "Emergency Mode Off == 240, Emergency Mode On == 241", "Disabled Connectivity: No == 240, Disabled Connectivity: Yes == 16" |
 | 7           |     17  | InstallationConfig                | WP-Only == 0, WP+ExtBoiler-Prio-WP == 1, Wp+ExtBoiler-Opt-WP == 17, Wp+ExtBoiler-Opt-ExtBoiler == 33 , Wp+ExtBoiler-Prio-ExtBoiler == 49 , WP + Solar == 50 |
-| 8           |    240  | ?                | - |
+| 8           |    240  | Command: Change Heat-Exchanger           | See Commands |
 | 9          |      4  | Heating-Element / SetupState              | Heating-Element Automatic-Mode == 4, Heating-Element Disabled == 0, Setup Factory Settings == 164, Setup Airduct Set == 36, Setup Finished == 4 |
 | 10          |     16  | Timer Mode: Window 1 Start | 16 = 04:00h, 12 = 03:00h |
 | 11          |     56  | Timer Mode: Window 1 Length  | 52 = 13h runtime, 56 = 14h runtime|
 | 12          |      0  | Timer Mode: Window 2 Start  | e.g. 52 = 13:00h - Value 0x00 0x00 is supported if Timer 2 is not set.  |
 | 13          |      0  | Timer Mode: Window 2 Length | e.g. 16 = 04h runtime. Max allowed length of both timers in sum is 14h runtime|
-| 14          |    255  | ?                | - |
-| 15          |    255  | ?                | - |
+| 14          |    255  | Command: Change PV-Input, Change Circulation | - |
+| 15          |    255  | Command: Change Min Target Temperature       | Note: Range 40-50°C |
 | 16          |      0  | ?                | - |
 | 17          |     25  | Current Time Seconds | - |
 | 18          |    151  | Current Day, Current Month in Half-Year  | See Formula below |
@@ -109,23 +111,22 @@ The main controller gives the HMI controller permission to send by emitting the 
 | 21          |     13  | Current Time Hour                | - |
 | 22          |      0  | TestMode Status                | HMI Left TestMode == 0, HMI Entered TestMode == 1, Heatpump TestMode == 2, Heating-Element TestMode == 3, Fan-Slow TestMode == 4 , Fan-Fast TestMode == 5 , Defrost TestMode == 6, Heatpump + EXT Boiler TestMode == 8
 | 23          |      0  | ?                | - |
-| 24          |    255  | ?                | - |
+| 24          |    255  | Command: Change PWM Value, Contains PWM Setpoint                | - |
 | 25          |      0  | ?                | - |
 | 26          |      9  | ?                | - |
 | 27          |     66  | ?                | - |
 | 28          |      0  | ?                | - |
 | 29          |      0  | ?                | - |
-| 30          |    255  | ?                | - |
-| 31          |    255  | ?                | - |
-| 32          |    255  | ?                | - |
-| 33          |    255  | ?                | - |
-| 34          |    255  | ?                | - |
+| 30          |    255  | Command: Change Anti-Legionalla Temperature Target                | See Commands. Note: Valid Range 62-70°C |
+| 31          |    255  | Command: Change Installed Wattage Heat Element                | See Commands. Note: Valid Range 10-30 (1000 - 3000W) |
+| 32          |    255  | Command: Change Brand of Heat-Pump                | See Commands. |
+| 33 - 34         |    255 255  | Command: Change Boiler Capacity                 | See Commands. |
 
 ##### Byte No. 3: Operation Mode
 
-
+Findings...
 ```
-2dec  | 0000 0010:  AlwaysOn + ECO Inactive (?)
+2dec  | 0000 0010:  AlwaysOn + ECO Inactive
 3dec  | 0000 0011:  AlwaysOn + Boost
 64dec | 0100 0000:  TimerMode + Absence 
 65dec | 0100 0001:  TimerMode + ECO Active
@@ -134,19 +135,15 @@ The main controller gives the HMI controller permission to send by emitting the 
 68dec | 0100 0100:  TimerMode + AUTO
 ```
 
-Maybe:
-```
-Bit 3 - 0 interpreted as integer
-0: Absence
-1: Eco Active
-2: Eco Inactive
-3: Boost
-4: Auto
-```
 
-```
-Bit 6: TimerMode enabled
-```
+| Bit Number | Purpose/Function        | Other Information |
+|------------|-------------------------|-------------------|
+| 0 - 3         | Operation Mode | Interpreted as integer, 0 == Absence, 1 == Eco Active, 2 == Eco Inoactive, 3 == Boost, 4 == Auto |
+| 4           | ?        |  |
+| 5           | ?      |  |
+| 6           | TimerMode enabled            |  |
+| 7           | ?                    |  |
+
 
 ##### Temperature Values
 
@@ -197,7 +194,139 @@ Example Table (Byte 19):
 46dec	= 2023	(First Half)
 47dec	= 2023	(Second Half)
 ```
+#### Commands
 
+Commands are executed by the HMI as soon as placeholder fields/values are replaced by command values. The HMI Controller awaits the change of the Main controller and then resets the placeholder fields to the previous placeholder value.
+
+##### Change Capactiy
+
+- Affected Byte Positions: 33, 34
+
+Examples:
+```
+Noop: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+270l: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255  14   1
+200l: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 200   0
+```
+
+##### Change PWM
+
+- Affected Byte Positions: 4, 24
+- Allowed Range 50-100%
+
+Examples:
+
+```
+Noop:         35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+PWM 1 to 50:  35 18 2 65  60 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0  50 0 9 66 1 1 255 255 255 255 255
+PWM 1 to 65:  35 18 2 65  60 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0  65 0 9 66 1 1 255 255 255 255 255
+PWM 2 to 81:  35 18 2 65 124 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0  81 0 9 66 1 1 255 255 255 255 255
+PWM 2 to 60:  35 18 2 65 124 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0  60 0 9 66 1 1 255 255 255 255 255
+PWM 3 to 100: 35 18 2 65 188 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 100 0 9 66 1 1 255 255 255 255 255
+PWM 3 to 66:  35 18 2 65 188 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0  66 0 9 66 1 1 255 255 255 255 255
+```
+
+##### Change Brand
+
+- Affected Byte Positions: 32
+- 65dec = Atlantic
+- 78dec = NoName
+- 83dec = Sauter
+- 84dec = Thermor
+
+```
+Noop:     35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+Atlantic: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255  65 255 255
+NoName:   35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255  78 255 255
+Sauter:   35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255  83 255 255
+Thermor:  35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255  84 255 255
+```
+
+##### Enable/Disable Heat-Exchanger
+
+- Affected Byte Positions: 8
+```
+Noop: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+Yes:  35 18 2 65 252 0 240 32  16 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+No:   35 18 2 65 252 0 240 32   0 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+```
+
+##### Enable/Disable Communication
+
+- Affected Byte Positions: 6
+```
+Noop:         35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+Not Disabled: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+Disabled:     35 18 2 65 252 0 16  32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+```
+
+##### Enable/Disable Circulation
+
+- Affected Byte Positions: 14
+```
+Noop: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+No:   35 18 2 65 252 0 240 32 240 4 60 16 16 24 240 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+Yes:  35 18 2 65 252 0 240 32 240 4 60 16 16 24 241 255 0 x x x x x  0 0 255 0 9 66 1 1 255 255 255 255 255
+```
+
+##### Enable/Disable PV-Input
+
+- Affected Byte Positions: 14
+  
+```
+Noop: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+No:   35 18 2 65 252 0 240 32 240 4 60 16 16 24  16 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+Yes:  35 18 2 65 252 0 240 32 240 4 60 16 16 24  17 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+```
+
+
+##### Change Min Target Temperature
+
+- Affected Byte Positions: 16
+- Allowed Range 40-50°C
+
+```
+Noop:  35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+44°C:  35 18 2 65 252 0 240 32 240 4 60 16 16 24 255  44 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+40°C:  35 18 2 65 252 0 240 32 240 4 60 16 16 24 255  40 0 x x x x x  0 0 255 0 9 66 1 1 255 255 255 255 255
+```
+
+##### Enable/Disable Anti-Trockenheizung
+
+
+- Affected Byte Positions: 4
+
+```
+Noop:     35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+Enabled:  35 18 2 65 128 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+Disabled: 35 18 2 65 132 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+```
+
+##### Change Anti-Legionalle Target Temperature
+
+- Affected Byte Positions: 30
+- Range: 62-70°C
+
+Examples:
+```
+Noop: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+62°C: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1  62 255 255 255 255
+70°C: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1  70 255 255 255 255
+```
+
+##### Change Wattage of installed heat-element
+
+- Affected Byte Positions: 31
+- Range 1000 - 3000W
+- Value divided by 100
+
+```
+Noop:  35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255 255 255 255 255
+1000W: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255  10 255 255 255
+1600W: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255  16 255 255 255
+1700W: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255  17 255 255 255
+3000W: 35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 9 66 1 1 255  30 255 255 255
+```
 
 ### Send by the main controller
 
@@ -215,44 +344,46 @@ Example Table (Byte 19):
 | 11          |      0  | ?                | - |
 | 12          |      0  | ?                | - |
 | 13          |      1  | ?                | - |
-| 14          |    100  | ?                | - |
-| 15          |     65  | ?                | - |
-| 16          |     81  | ?                | - |
+| 14          |    100  | Setting: PWM Level 3 | Note: Range Allowed in HMI 50-100%, *Adjustable from HMI controller*|
+| 15          |     65  | Setting: PWM Level 1 | Note: Range Allowed in HMI 50-100%, *Adjustable from HMI controller* |
+| 16          |     81  | Setting: PWM Level 2 | Note: Range Allowed in HMI 50-100%, *Adjustable from HMI controller* |
 | 17          |  8 or 0 | Picture Bitmask     | See table below |
-| 18 - 19     |    0 0 | Fan-Speed        | Either 0 (off) or 650 (lowspeed) or 810 (highspeed) Maybe rpm?|
-| 20          |     50  | ?                | - |
-| 21          |     62  | ?                | - |
+| 18 - 19     |    0 0 | Fan-Speed        | Either 0 (off) or 650 (lowspeed) or 810 (highspeed) Maybe rpm? Does this reflect the PWM settings?|
+| 20          |     44  | Setting: Min T Target                | *Adjustable from HMI controller* |
+| 21          |     62  | Setting: Anti-Legionella T Target                | *Adjustable from HMI controller* |
 | 22          |      0  | ?                | - |
-| 23          |    255  | ?                | - |
-| 24          |    255  | ?                | - |
-| 25          |    255  | ?                | - |
+| 23          |    255  | Errors?          | In Error State this contains Error Code, eg. 7 |
+| 24          |    255  | Errors?          | In Error State this contains 0 |
+| 25          |    255  | Errors?          | In Error State this contains 0 |
 | 26          |     87  | ?                | - |
 | 27          |      9  | ?                | - |
 | 28          |     66  | ?                | - |
 | 29          |     88  | ?                | - |
 | 30          |      2  | ?                | - |
 | 31          |      0  | ?                | - |
-| 32          |     16  | ?                | - |
-| 33          |     14  | ?                | - |
-| 34          |      1  | ?                | - |
-| 35          |     78  | ?                | - |
-| 36          |     23  | ?                | - |
+| 32          |     16  | Setting: Wattage Heat-Element                | Note: Multiplied by 100 -> 1600W, *Adjustable from HMI controller* |
+| 33 - 34     |   14 1  | Setting: Boiler Capacity (l)  | '14 1' == 270l, '200 0' == 200l, *Adjustable from HMI controller* |
+| 35          |     78  | Setting: Brand            | 65 == Atlantic, 78 == NoName, 83 == Sauter, 84 == Thermor, *Adjustable from HMI controller* |
+| 36          |     21  | Setting: Bitflags                | See Table below, *Adjustable from HMI controller*|
 
 
 ##### Byte No 17: Picture Bitmask
 
+Findings...
 ```
-0dec  | 0000 0000: Nothing Shown on HMI
-8dec  | 0000 1000: Fan is turned on (observed via testmode)
-9dec  | 0000 1001: Heating Element
-10dec | 0000 1010: Heatpump
-11dec | 0000 1011: Heatpump + Heating Element
-14dec | 0000 1110: Heatpump + Boiler Backup
-15dec | 0000 1111: Heatpump + Heating Element + Boiler Backup
-32dec | 0010 0000: Defrost
-34dec | 0010 0010: Defrost + Heatpump
-40dec | 0010 1000: Defrost + Fan
-41dec | 0010 1001: Defrost + Fan + Heating Element
+0dec   | 0000 0000: Nothing Shown on HMI
+8dec   | 0000 1000: Fan is turned on (observed via testmode)
+9dec   | 0000 1001: Heating Element
+10dec  | 0000 1010: Heatpump
+11dec  | 0000 1011: Heatpump + Heating Element
+14dec  | 0000 1110: Heatpump + Boiler Backup
+15dec  | 0000 1111: Heatpump + Heating Element + Boiler Backup
+32dec  | 0010 0000: Defrost
+34dec  | 0010 0010: Defrost + Heatpump
+40dec  | 0010 1000: Defrost + Fan
+41dec  | 0010 1001: Defrost + Fan + Heating Element
+64dec  | 0100 0000: Unknown, Observed while triggering Error 7
+192dec | 1100 0000: Unknown, Observed while triggering Error 7
 ```
 
 | Bit Number | Purpose/Function        | Other Information |
@@ -265,6 +396,29 @@ Example Table (Byte 19):
 | 5           | Defrost On/Off         |  |
 | 6           | ?                      |  |
 | 7           | ?                      |  |
+
+##### Byte No 36: Settings Bitmask
+
+Findings...
+```
+5dec  | 0000 0101: Communication Enabled, PV enabled, No Circulation, Anti-Trockenheizung
+17dec | 0001 0001: Communication Enabled, PV disabled, Heat-Exchanger available, No Zirculation, No Anti-Trockenheizung
+20dec | 0001 0100: Communication Enabled, PV enabled, Heat Exchanger not available, No Zirculation, No Anti-Trockenheizung
+21dec | 0001 0101: Communication Enabled, PV enabled, No Circulation, No Anti-Trockenheizung
+23dec | 0001 0111: Communication Enabled, PV enabled, With Circulation Enabled, No Anti-Trockenheizung
+29dec | 0001 1101: Communication Disabled, PV enabled, Heat-Exchanger available, No Zirculation, No Anti-Trockenheizung
+```
+
+| Bit Number | Purpose/Function              | Other Information |
+|------------|-------------------------------|-------------------|
+| 0           | Heat-Exchanger Available     |  |
+| 1           | Circulation Enabled          |  |
+| 2           | PV Input Enabled             | If flag is set, pv input is enabled    |  
+| 3           | Communication Disabled       | If flag is set, io-homecontrol/cozytouch is disabled|
+| 4           | Anti-Trockenheizung Disabled | If flag is set, there is no anti-trockenheizung   |
+| 5           | ? / Unused                   |  |
+| 6           | ? / Unused                   |  |
+| 7           | ? / Unused                   |  |
 
 #### 67
 
