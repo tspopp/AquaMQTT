@@ -22,6 +22,11 @@ const char ENUM_UNKNOWN[] PROGMEM = { "UNKNOWN" };
 const char ENUM_AQUAMQTT_MODE_LISTENER[] PROGMEM = { "LISTENER" };
 const char ENUM_AQUAMQTT_MODE_MITM[] PROGMEM     = { "MITM" };
 
+const char ENUM_BRAND_ATLANTIC[] PROGMEM = { "Atlantic" };
+const char ENUM_BRAND_THERMOR[] PROGMEM  = { "Thermor" };
+const char ENUM_BRAND_SAUTER[] PROGMEM   = { "Sauter" };
+const char ENUM_BRAND_NONAME[] PROGMEM   = { "No Name" };
+
 const char ENUM_OPERATION_MODE_AUTO[] PROGMEM    = { "AUTO" };
 const char ENUM_OPERATION_MODE_ECO_OFF[] PROGMEM = { "MAN ECO OFF" };
 const char ENUM_OPERATION_MODE_ECO_ON[] PROGMEM  = { "MAN ECO ON" };
@@ -74,6 +79,20 @@ const char MAIN_STATE_HEATPUMP[] PROGMEM            = { "stateHeatpump" };
 const char MAIN_STATE_HEAT_ELEMENT[] PROGMEM        = { "stateElement" };
 const char MAIN_STATE_EXT_BOILER[] PROGMEM          = { "stateExtBoiler" };
 const char MAIN_STATE_DEFROST[] PROGMEM             = { "stateDefrost" };
+
+const char MAIN_SETTING_PWM_01[] PROGMEM              = { "settingPWM_1" };
+const char MAIN_SETTING_PWM_02[] PROGMEM              = { "settingPWM_2" };
+const char MAIN_SETTING_PWM_03[] PROGMEM              = { "settingPWM_3" };
+const char MAIN_SETTING_MIN_TEMP_TARGET[] PROGMEM     = { "settingMinTargetTemp" };
+const char MAIN_SETTING_MIN_TEMP_LEGIONELLA[] PROGMEM = { "settingMinLegionellaTemp" };
+const char MAIN_SETTING_PWR_HEATELEM[] PROGMEM        = { "settingWattageElement" };
+const char MAIN_SETTING_BOILER_CAP[] PROGMEM          = { "settingBoilerCapacity" };
+const char MAIN_SETTING_BOILER_BRAND[] PROGMEM        = { "settingBoilerBrand" };
+const char MAIN_SETTING_HAS_HEAT_EXC[] PROGMEM        = { "settingHasHeatExchanger" };
+const char MAIN_SETTING_HAS_CIRCULATION[] PROGMEM     = { "settingHasCirculation" };
+const char MAIN_SETTING_HAS_PV_INPUT[] PROGMEM        = { "settingHasPVInput" };
+const char MAIN_SETTING_HAS_EXT_COMM[] PROGMEM        = { "settingHasExtCom" };
+const char MAIN_SETTING_HAS_ANTI_TRO[] PROGMEM        = { "settingHasAntiTH" };
 
 const char HMI_HOT_WATER_TEMP_TARGET[] PROGMEM   = { "waterTempTarget" };
 const char HMI_OPERATION_MODE[] PROGMEM          = { "operationMode" };

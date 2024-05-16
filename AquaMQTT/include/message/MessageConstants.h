@@ -179,15 +179,42 @@ static const char* setupStr(HMISetup installation)
     }
 }
 
-static void toHexStr(uint8_t* data, uint8_t data_len, char* buffer){
+static void toHexStr(uint8_t* data, uint8_t data_len, char* buffer)
+{
 
     const size_t num_bytes = data_len / sizeof(uint8_t);
-    //char         hex_str[num_bytes * 2 + 1];
+    // char         hex_str[num_bytes * 2 + 1];
     for (size_t i = 0; i < num_bytes; i++)
     {
         sprintf(&buffer[i * 2], "%02X", data[i]);
     }
     buffer[num_bytes * 2] = '\0';
+}
+
+enum MAINBrands
+{
+    BR_ATLANTIC,
+    BR_NONAME,
+    BR_SAUTER,
+    BR_THERMOR,
+    BR_UNKNOWN
+};
+
+static const char* brandStr(MAINBrands brand)
+{
+    switch (brand)
+    {
+        case BR_ATLANTIC:
+            return reinterpret_cast<const char*>(mqtt::ENUM_BRAND_ATLANTIC);
+        case BR_NONAME:
+            return reinterpret_cast<const char*>(mqtt::ENUM_BRAND_NONAME);
+        case BR_SAUTER:
+            return reinterpret_cast<const char*>(mqtt::ENUM_BRAND_SAUTER);
+        case BR_THERMOR:
+            return reinterpret_cast<const char*>(mqtt::ENUM_BRAND_THERMOR);
+        default:
+            return reinterpret_cast<const char*>(mqtt::ENUM_UNKNOWN);
+    }
 }
 
 }  // namespace message
