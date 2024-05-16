@@ -113,6 +113,8 @@ const char STATS_ACTIVE_OVERRIDES[] PROGMEM           = { "activeOverrides" };
 const char STATS_ENABLE_FLAG_PV_HEATPUMP[] PROGMEM    = { "flagPVModeHeatPump" };
 const char STATS_ENABLE_FLAG_PV_HEATELEMENT[] PROGMEM = { "flagPVModeHeatElement" };
 
+const char DEBUG[] PROGMEM = { "debug" };
+
 // CTRL
 const char AQUAMQTT_RESET_OVERRIDES[] PROGMEM = { "reset" };
 

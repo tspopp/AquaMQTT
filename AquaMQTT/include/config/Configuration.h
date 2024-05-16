@@ -44,6 +44,12 @@ constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
  */
 constexpr bool OVERRIDE_TIME_AND_DATE_IN_MITM = true;
 
+
+/**
+ * Choose to publish raw messages represented as hex-string on debug mqtt topics
+ */
+constexpr bool DEBUG_RAW_SERIAL_MESSAGES = false;
+
 /**
  * Self explanatory internal settings: most probably you don't want to change them.
  */

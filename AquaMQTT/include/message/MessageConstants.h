@@ -1,6 +1,8 @@
 #ifndef AQUAMQTT_MESSAGECONSTANTS_H
 #define AQUAMQTT_MESSAGECONSTANTS_H
 
+#include <cstdio>
+
 #include "mqtt/MQTTDefinitions.h"
 
 namespace aquamqtt
@@ -175,6 +177,17 @@ static const char* setupStr(HMISetup installation)
         default:
             return reinterpret_cast<const char*>(mqtt::ENUM_SETUP_COMPLETED);
     }
+}
+
+static void toHexStr(uint8_t* data, uint8_t data_len, char* buffer){
+
+    const size_t num_bytes = data_len / sizeof(uint8_t);
+    //char         hex_str[num_bytes * 2 + 1];
+    for (size_t i = 0; i < num_bytes; i++)
+    {
+        sprintf(&buffer[i * 2], "%02X", data[i]);
+    }
+    buffer[num_bytes * 2] = '\0';
 }
 
 }  // namespace message

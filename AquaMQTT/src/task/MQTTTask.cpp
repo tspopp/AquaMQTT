@@ -656,6 +656,19 @@ void                     MQTTTask::updateMainStatus()
             MAIN_SUBTOPIC,
             MAIN_STATE_DEFROST);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    if (config::DEBUG_RAW_SERIAL_MESSAGES)
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                MAIN_SUBTOPIC,
+                DEBUG);
+
+        toHexStr(mTransferBuffer, MAIN_MESSAGE_LENGTH, reinterpret_cast<char*>(mPayloadBuffer));
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
 }
 
 #pragma clang diagnostic push
@@ -786,6 +799,19 @@ void                     MQTTTask::updateHMIStatus()
             HMI_TIMER_WINDOW_B);
     message.timerWindowStr(false, reinterpret_cast<char*>(mPayloadBuffer));
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    if (config::DEBUG_RAW_SERIAL_MESSAGES)
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                HMI_SUBTOPIC,
+                DEBUG);
+
+        toHexStr(mTransferBuffer, HMI_MESSAGE_LENGTH, reinterpret_cast<char*>(mPayloadBuffer));
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
 }
 
 #pragma clang diagnostic push
@@ -868,6 +894,19 @@ void                     MQTTTask::updateEnergyStats()
             ENERGY_SUBTOPIC,
             ENERGY_POWER_TOTAL);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    if (config::DEBUG_RAW_SERIAL_MESSAGES)
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ENERGY_SUBTOPIC,
+                DEBUG);
+
+        toHexStr(mTransferBuffer, ENERGY_MESSAGE_LENGTH, reinterpret_cast<char*>(mPayloadBuffer));
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
 }
 
 }  // namespace aquamqtt
