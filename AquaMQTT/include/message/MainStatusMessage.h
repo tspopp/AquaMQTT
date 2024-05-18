@@ -13,9 +13,7 @@ namespace message
 class MainStatusMessage
 {
 public:
-    explicit MainStatusMessage(uint8_t* data) : mData(data)
-    {
-    }
+    explicit MainStatusMessage(uint8_t* data);
 
     ~MainStatusMessage() = default;
 
@@ -65,8 +63,55 @@ public:
 
     bool settingHasAntiTrockenheizung();
 
+    void compareWith(uint8_t* data);
+
+    bool hotWaterTempChanged() const;
+
+    bool airTempChanged() const;
+
+    bool evaporatorLowerAirTempChanged() const;
+
+    bool evaporatorUpperAirTempChanged() const;
+
+    bool fanSpeedChanged() const;
+
+    bool statesChanged() const;
+
+    bool settingPwmFirstChanged() const;
+
+    bool settingPwmSecondChanged() const;
+
+    bool settingPwmThirdChanged() const;
+
+    bool settingMinTTargetChanged() const;
+
+    bool settingLegionellaTTargetChanged() const;
+
+    bool settingWattageHeatingElementChanged() const;
+
+    bool settingBoilerCapacityChanged() const;
+
+    bool settingBrandChanged() const;
+
+    bool settingCapabilitiesChanged() const;
+
 private:
     uint8_t* mData;
+    bool     mHotWaterTempChanged;
+    bool     mAirTempChanged;
+    bool     mEvaporatorLowerChanged;
+    bool     mEvaporatorUpperChanged;
+    bool     mFanSpeedChanged;
+    bool     mStatesChanged;
+    bool     mSettingMinTChanged;
+    bool     mSettingPwmFirstChanged;
+    bool     mSettingPwmSecondChanged;
+    bool     mSettingPwmThirdChanged;
+    bool     mSettingAntiLegionellaTargetChanged;
+    bool     mSettingWattageHeatElementChanged;
+    bool     mSettingBoilerCapacityChanged;
+    bool     mSettingBoilerBrandChanged;
+    bool     mSettingCapabilitiesChanged;
 };
 
 }  // namespace message

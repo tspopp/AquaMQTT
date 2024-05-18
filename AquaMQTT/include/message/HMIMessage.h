@@ -84,7 +84,43 @@ public:
 
     void setInstallationMode(HMIInstallation mode);
 
+    bool waterTempTargetChanged() const;
+
+    bool operationTypeOrModeChanged() const;
+
+    bool timeChanged() const;
+
+    bool dateChanged() const;
+
+    bool emergencyModeChanged() const;
+
+    bool heatingElemOrSetupStateChanged() const;
+
+    bool legionellaOrAirductChanged() const;
+
+    bool testModeChanged() const;
+
+    bool installationConfigChanged() const;
+
+    bool timerModeOneChanged() const;
+
+    bool timerModeTwoChanged() const;
+
+    void compareWith(uint8_t* data);
+
 private:
+    bool mTargetTempChanged;
+    bool mOperationModeChanged;
+    bool mLegionellaAirductChanged;
+    bool mEmergencyModeChanged;
+    bool mInstallConfigChanged;
+    bool mHeatingElemOrSetupStateChanged;
+    bool mTimerModeOneChanged;
+    bool mTimerModeTwoChanged;
+    bool mTimeChanged;
+    bool mDateChanged;
+    bool mTestModeChanged;
+
     uint8_t* mData;
 };
 

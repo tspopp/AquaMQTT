@@ -7,7 +7,19 @@ namespace aquamqtt
 namespace message
 {
 
-HMIMessage::HMIMessage(uint8_t* data) : mData(data)
+HMIMessage::HMIMessage(uint8_t* data)
+    : mData(data)
+    , mTargetTempChanged(false)
+    , mOperationModeChanged(false)
+    , mLegionellaAirductChanged(false)
+    , mEmergencyModeChanged(false)
+    , mInstallConfigChanged(false)
+    , mHeatingElemOrSetupStateChanged(false)
+    , mTimerModeOneChanged(false)
+    , mTimerModeTwoChanged(false)
+    , mTimeChanged(false)
+    , mDateChanged(false)
+    , mTestModeChanged(false)
 {
 }
 float HMIMessage::waterTempTarget()
@@ -322,6 +334,123 @@ void HMIMessage::setTimeWindowByStr(bool firstWindow, char* buffer, uint8_t leng
 // TODO: implement me
 void HMIMessage::setAntiLegionellaModePerMonth(uint8_t value)
 {
+}
+
+void HMIMessage::compareWith(uint8_t* data)
+{
+    if (data == nullptr)
+    {
+        mTargetTempChanged              = true;
+        mOperationModeChanged           = true;
+        mLegionellaAirductChanged       = true;
+        mEmergencyModeChanged           = true;
+        mInstallConfigChanged           = true;
+        mHeatingElemOrSetupStateChanged = true;
+        mTimerModeOneChanged            = true;
+        mTimerModeTwoChanged            = true;
+        mTimeChanged                    = true;
+        mDateChanged                    = true;
+        mTestModeChanged                = true;
+        return;
+    }
+
+    uint8_t diffIndices[HMI_MESSAGE_LENGTH] = { 0 };
+    size_t  numDiffs                        = 0;
+    compareBuffers(mData, data, HMI_MESSAGE_LENGTH, diffIndices, &numDiffs);
+
+    for (int i = 0; i < numDiffs; ++i)
+    {
+        auto indiceChanged = diffIndices[i];
+
+        switch (indiceChanged)
+        {
+            case 1:
+            case 2:
+                mTargetTempChanged = true;
+                break;
+            case 3:
+                mOperationModeChanged = true;
+                break;
+            case 5:
+                mLegionellaAirductChanged = true;
+                break;
+            case 6:
+                mEmergencyModeChanged = true;
+                break;
+            case 7:
+                mInstallConfigChanged = true;
+                break;
+            case 9:
+                mHeatingElemOrSetupStateChanged = true;
+                break;
+            case 10:
+            case 11:
+                mTimerModeOneChanged = true;
+                break;
+            case 12:
+            case 13:
+                mTimerModeTwoChanged = true;
+                break;
+            case 17:
+            case 20:
+            case 21:
+                mTimeChanged = true;
+                break;
+            case 18:
+            case 19:
+                mDateChanged = true;
+                break;
+            case 22:
+                mTestModeChanged = true;
+                break;
+            default:
+                break;
+        }
+    }
+}
+bool HMIMessage::waterTempTargetChanged() const
+{
+    return mTargetTempChanged;
+}
+bool HMIMessage::operationTypeOrModeChanged() const
+{
+    return mOperationModeChanged;
+}
+bool HMIMessage::timeChanged() const
+{
+    return mTimeChanged;
+}
+bool HMIMessage::dateChanged() const
+{
+    return mDateChanged;
+}
+bool HMIMessage::emergencyModeChanged() const
+{
+    return mEmergencyModeChanged;
+}
+bool HMIMessage::heatingElemOrSetupStateChanged() const
+{
+    return mHeatingElemOrSetupStateChanged;
+}
+bool HMIMessage::legionellaOrAirductChanged() const
+{
+    return mLegionellaAirductChanged;
+}
+bool HMIMessage::testModeChanged() const
+{
+    return mTestModeChanged;
+}
+bool HMIMessage::installationConfigChanged() const
+{
+    return mInstallConfigChanged;
+}
+bool HMIMessage::timerModeOneChanged() const
+{
+    return mTimerModeOneChanged;
+}
+bool HMIMessage::timerModeTwoChanged() const
+{
+    return mTimerModeTwoChanged;
 }
 
 }  // namespace message
