@@ -1,5 +1,7 @@
 #include "message/MainEnergyMessage.h"
 
+#include "message/MessageConstants.h"
+
 namespace aquamqtt
 {
 namespace message
@@ -38,5 +40,114 @@ uint16_t MainEnergyMessage::powerOverall()
 {
     return ((uint16_t) mData[8] << 8) | (uint16_t) mData[7];
 }
+void MainEnergyMessage::compareWith(uint8_t* data)
+{
+    if (data == nullptr)
+    {
+        mPowerHeatpumpChanged         = true;
+        mPowerHeatelementChanged      = true;
+        mPowerOverallChanged          = true;
+        mTotalHeatpumpHoursChanged    = true;
+        mTotalHeatElementHoursChanged = true;
+        mTotalHoursChanged            = true;
+        mTotalEnergyChanged           = true;
+        return;
+    }
+
+    uint8_t diffIndices[ENERGY_MESSAGE_LENGTH] = { 0 };
+    size_t  numDiffs                           = 0;
+    compareBuffers(mData, data, ENERGY_MESSAGE_LENGTH, diffIndices, &numDiffs);
+
+    for (int i = 0; i < numDiffs; ++i)
+    {
+        auto indiceChanged = diffIndices[i];
+
+        switch (indiceChanged)
+        {
+            case 1:
+            case 2:
+                mPowerHeatpumpChanged = true;
+                break;
+            case 3:
+            case 4:
+                mPowerHeatelementChanged = true;
+                break;
+            case 7:
+            case 8:
+                mPowerOverallChanged = true;
+                break;
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+                mTotalHeatpumpHoursChanged = true;
+                break;
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+                mTotalHeatElementHoursChanged = true;
+                break;
+            case 19:
+            case 20:
+            case 21:
+            case 22:
+                mTotalHoursChanged = true;
+                break;
+            case 23:
+            case 24:
+            case 25:
+            case 26:
+            case 27:
+            case 28:
+            case 29:
+            case 30:
+                mTotalEnergyChanged = true;
+                break;
+            default:
+                break;
+        }
+    }
+}
+MainEnergyMessage::MainEnergyMessage(uint8_t* data)
+    : mData(data)
+    , mPowerHeatpumpChanged(false)
+    , mPowerHeatelementChanged(false)
+    , mPowerOverallChanged(false)
+    , mTotalHeatpumpHoursChanged(false)
+    , mTotalHeatElementHoursChanged(false)
+    , mTotalHoursChanged(false)
+    , mTotalEnergyChanged(false)
+{
+}
+bool MainEnergyMessage::totalHeatpumpHoursChanged() const
+{
+    return mTotalHeatpumpHoursChanged;
+}
+bool MainEnergyMessage::totalHeatingElemHoursChanged() const
+{
+    return mTotalHeatElementHoursChanged;
+}
+bool MainEnergyMessage::totalHoursChanged() const
+{
+    return mTotalHoursChanged;
+}
+bool MainEnergyMessage::totalEnergyCounterChanged() const
+{
+    return mTotalEnergyChanged;
+}
+bool MainEnergyMessage::powerHeatpumpChanged() const
+{
+    return mPowerHeatpumpChanged;
+}
+bool MainEnergyMessage::powerHeatElementChanged() const
+{
+    return mPowerHeatelementChanged;
+}
+bool MainEnergyMessage::powerOverallChanged() const
+{
+    return mPowerOverallChanged;
+}
+
 }  // namespace message
 }  // namespace aquamqtt

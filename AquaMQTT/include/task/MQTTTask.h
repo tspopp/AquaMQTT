@@ -17,7 +17,7 @@ class MQTTTask
 public:
     MQTTTask();
 
-    virtual ~MQTTTask() = default;
+    virtual ~MQTTTask();
 
     void spawn();
 
@@ -45,6 +45,17 @@ private:
     WiFiClient    mWiFiClient;
     MQTTClient    mMQTTClient;
     TaskHandle_t  mTaskHandle;
+
+    uint8_t* mLastProcessedHMIMessage;
+    uint8_t* mLastProcessedEnergyMessage;
+    uint8_t* mLastProcessedMainMessage;
+
+    // helper to avoid code duplication
+    void publishFloat(const char* subtopic, const char* topic, float value, bool retained = false);
+    void publishString(const char* subtopic, const char* topic, const char* value, bool retained = false);
+    void publishi(const char* subtopic, const char* topic, int value, bool retained = false);
+    void publishul(const char* subtopic, const char* topic, unsigned long value, bool retained = false);
+    void publishul(const char* subtopic_1, const char* subtopic_2, const char* topic, unsigned long value, bool retained = false);
 };
 }  // namespace aquamqtt
 

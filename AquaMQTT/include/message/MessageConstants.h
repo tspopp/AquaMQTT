@@ -217,6 +217,23 @@ static const char* brandStr(MAINBrands brand)
     }
 }
 
+void static compareBuffers(
+        const uint8_t* buffer1,
+        const uint8_t* buffer2,
+        size_t         length,
+        uint8_t*       diffIndices,
+        size_t*        numDiffs)
+{
+    *numDiffs = 0;
+    for (size_t i = 0; i < length; i++)
+    {
+        if (buffer1[i] != buffer2[i])
+        {
+            diffIndices[(*numDiffs)++] = i;
+        }
+    }
+}
+
 }  // namespace message
 }  // namespace aquamqtt
 
