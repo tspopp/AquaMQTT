@@ -14,7 +14,7 @@ HMIMessage::HMIMessage(uint8_t* data)
     , mLegionellaAirductChanged(false)
     , mEmergencyModeChanged(false)
     , mInstallConfigChanged(false)
-    , mHeatingElemOrSetupStateChanged(false)
+    , mHeatingElemOrSetupStateOrPVActiveChanged(false)
     , mTimerModeOneChanged(false)
     , mTimerModeTwoChanged(false)
     , mTimeChanged(false)
@@ -85,6 +85,12 @@ bool HMIMessage::isHeatingElementEnabled()
 {
     return mData[9] & 0x04;
 }
+
+bool HMIMessage::isPVInputActivated()
+{
+    return mData[9] & 0x02;
+}
+
 HMISetup HMIMessage::setupMode()
 {
     if (mData[9] & 0x80)
@@ -340,17 +346,17 @@ void HMIMessage::compareWith(uint8_t* data)
 {
     if (data == nullptr)
     {
-        mTargetTempChanged              = true;
-        mOperationModeChanged           = true;
-        mLegionellaAirductChanged       = true;
-        mEmergencyModeChanged           = true;
-        mInstallConfigChanged           = true;
-        mHeatingElemOrSetupStateChanged = true;
-        mTimerModeOneChanged            = true;
-        mTimerModeTwoChanged            = true;
-        mTimeChanged                    = true;
-        mDateChanged                    = true;
-        mTestModeChanged                = true;
+        mTargetTempChanged                        = true;
+        mOperationModeChanged                     = true;
+        mLegionellaAirductChanged                 = true;
+        mEmergencyModeChanged                     = true;
+        mInstallConfigChanged                     = true;
+        mHeatingElemOrSetupStateOrPVActiveChanged = true;
+        mTimerModeOneChanged                      = true;
+        mTimerModeTwoChanged                      = true;
+        mTimeChanged                              = true;
+        mDateChanged                              = true;
+        mTestModeChanged                          = true;
         return;
     }
 
@@ -381,7 +387,7 @@ void HMIMessage::compareWith(uint8_t* data)
                 mInstallConfigChanged = true;
                 break;
             case 9:
-                mHeatingElemOrSetupStateChanged = true;
+                mHeatingElemOrSetupStateOrPVActiveChanged = true;
                 break;
             case 10:
             case 11:
@@ -428,9 +434,9 @@ bool HMIMessage::emergencyModeChanged() const
 {
     return mEmergencyModeChanged;
 }
-bool HMIMessage::heatingElemOrSetupStateChanged() const
+bool HMIMessage::heatingElemOrSetupStateOrPVActiveChanged() const
 {
-    return mHeatingElemOrSetupStateChanged;
+    return mHeatingElemOrSetupStateOrPVActiveChanged;
 }
 bool HMIMessage::legionellaOrAirductChanged() const
 {
