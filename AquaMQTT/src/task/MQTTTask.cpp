@@ -501,11 +501,11 @@ void                     MQTTTask::updateMainStatus()
     }
     if (message.settingCapabilitiesChanged())
     {
-        publishi(MAIN_SUBTOPIC, MAIN_SETTING_HAS_HEAT_EXC, message.settingHasHeatExchanger());
-        publishi(MAIN_SUBTOPIC, MAIN_SETTING_HAS_CIRCULATION, message.settingHasCirculation());
-        publishi(MAIN_SUBTOPIC, MAIN_SETTING_HAS_PV_INPUT, message.settingHasPVInput());
-        publishi(MAIN_SUBTOPIC, MAIN_SETTING_HAS_EXT_COMM, message.settingHasCommunication());
-        publishi(MAIN_SUBTOPIC, MAIN_SETTING_HAS_ANTI_TRO, message.settingHasAntiTrockenheizung());
+        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_HEAT_EXC, message.capabilityHasHeatExchanger());
+        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_CIRCULATION, message.capabilityHasCirculation());
+        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_PV_INPUT, message.capabilityHasPVInput());
+        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_EXT_COMM, message.capabilityHasCommunication());
+        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_DRY_HEATING, message.capabilityHasAntiDryHeating());
     }
 
     if (config::DEBUG_RAW_SERIAL_MESSAGES)

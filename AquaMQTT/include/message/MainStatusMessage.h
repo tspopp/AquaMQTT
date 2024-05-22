@@ -53,15 +53,15 @@ public:
 
     MAINBrands settingBrand();
 
-    bool settingHasHeatExchanger();
+    bool capabilityHasHeatExchanger();
 
-    bool settingHasCirculation();
+    bool capabilityHasCirculation();
 
-    bool settingHasPVInput();
+    bool capabilityHasPVInput();
 
-    bool settingHasCommunication();
+    bool capabilityHasCommunication();
 
-    bool settingHasAntiTrockenheizung();
+    bool capabilityHasAntiDryHeating();
 
     void compareWith(uint8_t* data);
 
