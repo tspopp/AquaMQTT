@@ -49,7 +49,7 @@ void ControllerTask::loop()
 {
     bool printSerialStats = (millis() - mLastStatisticsUpdate) >= 5000;
 
-    vTaskDelay(pdMS_TO_TICKS(50));
+    vTaskDelay(pdMS_TO_TICKS(5));
     while (Serial2.available())
     {
         int valRead = Serial2.read();
