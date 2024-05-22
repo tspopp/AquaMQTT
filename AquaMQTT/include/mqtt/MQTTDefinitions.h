@@ -79,6 +79,7 @@ const char MAIN_STATE_HEATPUMP[] PROGMEM            = { "stateHeatpump" };
 const char MAIN_STATE_HEAT_ELEMENT[] PROGMEM        = { "stateElement" };
 const char MAIN_STATE_EXT_BOILER[] PROGMEM          = { "stateExtBoiler" };
 const char MAIN_STATE_DEFROST[] PROGMEM             = { "stateDefrost" };
+const char MAIN_STATE_PV[] PROGMEM                  = { "statePV" };
 
 const char MAIN_SETTING_PWM_01[] PROGMEM              = { "settingPWM_1" };
 const char MAIN_SETTING_PWM_02[] PROGMEM              = { "settingPWM_2" };
@@ -109,6 +110,7 @@ const char HMI_AIR_DUCT_CONFIG[] PROGMEM         = { "configAirduct" };
 const char HMI_INSTALLATION_CONFIG[] PROGMEM     = { "configInstallation" };
 const char HMI_TEST_MODE[] PROGMEM               = { "testModeStatus" };
 const char HMI_SETUP_STATE[] PROGMEM             = { "setupState" };
+const char HMM_PV_INPUT_ACTIVATED[] PROGMEM      = { "pvInputActivated" };
 
 const char ENERGY_TOTAL_HEATING_ELEM_HOURS[] PROGMEM = { "totalHeatingElemHours" };
 const char ENERGY_TOTAL_HEATPUMP_HOURS[] PROGMEM     = { "totalHeatpumpHours" };

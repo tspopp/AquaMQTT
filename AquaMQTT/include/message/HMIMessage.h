@@ -36,6 +36,8 @@ public:
 
     void enableHeatingElement(bool enabled);
 
+    bool isPVInputActivated();
+
     HMISetup setupMode();
 
     uint8_t antiLegionellaModePerMonth();
@@ -94,7 +96,7 @@ public:
 
     bool emergencyModeChanged() const;
 
-    bool heatingElemOrSetupStateChanged() const;
+    bool heatingElemOrSetupStateOrPVActiveChanged() const;
 
     bool legionellaOrAirductChanged() const;
 
@@ -114,7 +116,7 @@ private:
     bool mLegionellaAirductChanged;
     bool mEmergencyModeChanged;
     bool mInstallConfigChanged;
-    bool mHeatingElemOrSetupStateChanged;
+    bool mHeatingElemOrSetupStateOrPVActiveChanged;
     bool mTimerModeOneChanged;
     bool mTimerModeTwoChanged;
     bool mTimeChanged;

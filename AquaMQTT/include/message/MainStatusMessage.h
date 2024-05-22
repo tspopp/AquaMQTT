@@ -37,6 +37,8 @@ public:
 
     bool stateDefrost();
 
+    bool statePV();
+
     uint8_t settingPwmFirst();
 
     uint8_t settingPwmSecond();
@@ -77,6 +79,8 @@ public:
 
     bool statesChanged() const;
 
+    bool statePVChanged() const;
+
     bool settingPwmFirstChanged() const;
 
     bool settingPwmSecondChanged() const;
@@ -112,6 +116,7 @@ private:
     bool     mSettingBoilerCapacityChanged;
     bool     mSettingBoilerBrandChanged;
     bool     mSettingCapabilitiesChanged;
+    bool     mPVStateChanged;
 };
 
 }  // namespace message

@@ -467,6 +467,11 @@ void                     MQTTTask::updateMainStatus()
         publishi(MAIN_SUBTOPIC, MAIN_STATE_FAN, message.stateFan());
         publishi(MAIN_SUBTOPIC, MAIN_STATE_DEFROST, message.stateDefrost());
     }
+
+    if(message.statePVChanged()){
+        publishi(MAIN_SUBTOPIC, MAIN_STATE_PV, message.statePV());
+    }
+
     if (message.settingPwmFirstChanged())
     {
         publishi(MAIN_SUBTOPIC, MAIN_SETTING_PWM_01, message.settingPwmFirst());
@@ -578,9 +583,10 @@ void                     MQTTTask::updateHMIStatus()
         publishi(HMI_SUBTOPIC, HMI_EMERGENCY_MODE, message.isEmergencyModeEnabled());
     }
 
-    if (message.heatingElemOrSetupStateChanged())
+    if (message.heatingElemOrSetupStateOrPVActiveChanged())
     {
         publishi(HMI_SUBTOPIC, HMI_HEATING_ELEMENT_ENABLED, message.isHeatingElementEnabled());
+        publishi(HMI_SUBTOPIC, HMM_PV_INPUT_ACTIVATED, message.isPVInputActivated());
         publishString(HMI_SUBTOPIC, HMI_SETUP_STATE, setupStr(message.setupMode()));
     }
 

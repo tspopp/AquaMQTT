@@ -45,6 +45,12 @@ bool MainStatusMessage::stateDefrost()
 {
     return mData[17] & 0x20;
 }
+
+bool MainStatusMessage::statePV()
+{
+    return mData[22] & 0x20;
+}
+
 uint8_t MainStatusMessage::settingMinTTarget()
 {
     return mData[20];
@@ -129,6 +135,7 @@ void MainStatusMessage::compareWith(uint8_t* data)
         mSettingBoilerCapacityChanged       = true;
         mSettingBoilerBrandChanged          = true;
         mSettingCapabilitiesChanged         = true;
+        mPVStateChanged                     = true;
         return;
     }
 
@@ -180,6 +187,9 @@ void MainStatusMessage::compareWith(uint8_t* data)
             case 21:
                 mSettingAntiLegionellaTargetChanged = true;
                 break;
+            case 22:
+                mPVStateChanged = true;
+                break;
             case 32:
                 mSettingWattageHeatElementChanged = true;
                 break;
@@ -215,6 +225,7 @@ MainStatusMessage::MainStatusMessage(uint8_t* data)
     , mSettingBoilerCapacityChanged(false)
     , mSettingBoilerBrandChanged(false)
     , mSettingCapabilitiesChanged(false)
+    , mPVStateChanged(false)
 {
 }
 bool MainStatusMessage::hotWaterTempChanged() const
@@ -276,6 +287,10 @@ bool MainStatusMessage::settingBrandChanged() const
 bool MainStatusMessage::settingCapabilitiesChanged() const
 {
     return mSettingCapabilitiesChanged;
+}
+bool MainStatusMessage::statePVChanged() const
+{
+    return mPVStateChanged;
 }
 }  // namespace message
 }  // namespace aquamqtt
