@@ -90,24 +90,23 @@ MAINBrands MainStatusMessage::settingBrand()
     }
 }
 
-// TODO: rename this thing to capabilities
-bool MainStatusMessage::settingHasHeatExchanger()
+bool MainStatusMessage::capabilityHasHeatExchanger()
 {
     return mData[36] & 0x01;
 }
-bool MainStatusMessage::settingHasCirculation()
+bool MainStatusMessage::capabilityHasCirculation()
 {
     return mData[36] & 0x02;
 }
-bool MainStatusMessage::settingHasPVInput()
+bool MainStatusMessage::capabilityHasPVInput()
 {
     return mData[36] & 0x04;
 }
-bool MainStatusMessage::settingHasCommunication()
+bool MainStatusMessage::capabilityHasCommunication()
 {
     return !(mData[36] & 0x08);
 }
-bool MainStatusMessage::settingHasAntiTrockenheizung()
+bool MainStatusMessage::capabilityHasAntiDryHeating()
 {
     return (mData[36] & 0x20);
 }

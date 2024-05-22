@@ -88,11 +88,11 @@ const char MAIN_SETTING_MIN_TEMP_LEGIONELLA[] PROGMEM = { "settingMinLegionellaT
 const char MAIN_SETTING_PWR_HEATELEM[] PROGMEM        = { "settingWattageElement" };
 const char MAIN_SETTING_BOILER_CAP[] PROGMEM          = { "settingBoilerCapacity" };
 const char MAIN_SETTING_BOILER_BRAND[] PROGMEM        = { "settingBoilerBrand" };
-const char MAIN_SETTING_HAS_HEAT_EXC[] PROGMEM        = { "settingHasHeatExchanger" };
-const char MAIN_SETTING_HAS_CIRCULATION[] PROGMEM     = { "settingHasCirculation" };
-const char MAIN_SETTING_HAS_PV_INPUT[] PROGMEM        = { "settingHasPVInput" };
-const char MAIN_SETTING_HAS_EXT_COMM[] PROGMEM        = { "settingHasExtCom" };
-const char MAIN_SETTING_HAS_ANTI_TRO[] PROGMEM        = { "settingHasAntiTH" };
+const char MAIN_CAPABILITY_HEAT_EXC[] PROGMEM         = { "capabilityHeatExchanger" };
+const char MAIN_CAPABILITY_CIRCULATION[] PROGMEM      = { "capabilityCirculation" };
+const char MAIN_CAPABILITY_PV_INPUT[] PROGMEM         = { "capabilityPVInput" };
+const char MAIN_CAPABILITY_EXT_COMM[] PROGMEM         = { "capabilityCommunication" };
+const char MAIN_CAPABILITY_DRY_HEATING[] PROGMEM      = { "capabilityAntiDryHeating" };
 
 const char HMI_HOT_WATER_TEMP_TARGET[] PROGMEM   = { "waterTempTarget" };
 const char HMI_OPERATION_MODE[] PROGMEM          = { "operationMode" };
