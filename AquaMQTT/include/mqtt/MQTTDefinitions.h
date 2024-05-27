@@ -14,6 +14,7 @@ const char CONTROL_TOPIC[] PROGMEM = { "aquamqtt/ctrl/#" };
 const char HMI_SUBTOPIC[] PROGMEM    = { "hmi/" };
 const char MAIN_SUBTOPIC[] PROGMEM   = { "main/" };
 const char ENERGY_SUBTOPIC[] PROGMEM = { "energy/" };
+const char ERROR_SUBTOPIC[] PROGMEM  = { "error/" };
 const char STATS_SUBTOPIC[] PROGMEM  = { "stats/" };
 
 // Enum Types
@@ -69,6 +70,7 @@ const char ENUM_AQUAMQTT_OVERRIDE_MODE_HE_ONLY[] PROGMEM = { "PV HE" };
 const char ENUM_AQUAMQTT_OVERRIDE_MODE_PV_FULL[] PROGMEM = { "PV BOOST" };
 
 // Subtopics
+const char MAIN_ERROR_CODE[] PROGMEM                = { "errorCode" };
 const char MAIN_HOT_WATER_TEMP[] PROGMEM            = { "waterTemp" };
 const char MAIN_SUPPLY_AIR_TEMP[] PROGMEM           = { "supplyAirTemp" };
 const char MAIN_EVAPORATOR_AIR_TEMP_UPPER[] PROGMEM = { "evaporatorAirTemp" };
@@ -119,6 +121,8 @@ const char ENERGY_TOTAL_ENERGY_WH[] PROGMEM          = { "totalEnergyWh" };
 const char ENERGY_POWER_TOTAL[] PROGMEM              = { "powerTotal" };
 const char ENERGY_POWER_HEAT_ELEMENT[] PROGMEM       = { "powerHeatingElem" };
 const char ENERGY_POWER_HEATPUMP[] PROGMEM           = { "powerHeatpump" };
+
+const char ERROR_ERROR_NUMBER[] PROGMEM = { "errorNumber" };
 
 const char STATS_AQUAMQTT_ADDR[] PROGMEM              = { "ipAddress" };
 const char STATS_AQUAMQTT_RSSI[] PROGMEM              = { "rssiDb" };

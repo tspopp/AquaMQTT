@@ -14,9 +14,11 @@ DHWState::DHWState()
     , mHasEnergyMessage(false)
     , mHasMainMessage(false)
     , mHasHmiMessage(false)
+    , mHasErrorMessage(false)
     , mMessageHmi{ 0 }
     , mMessageMain{ 0 }
     , mMessageEnergy{ 0 }
+    , mMessageError{ 0 }
     , mHmiStats{ 0, 0, 0, 0, 0 }
     , mMainStats{ 0, 0, 0, 0, 0 }
     , mListenerStats{ 0, 0, 0, 0, 0 }
@@ -74,6 +76,19 @@ void DHWState::storeFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* paylo
         if (mNotify != nullptr)
         {
             xTaskNotifyIndexed(mNotify, 0, (1UL << 6UL), eSetBits);
+        }
+    }
+    else if (
+            frameId == aquamqtt::message::ERROR_MESSAGE_IDENTIFIER
+            && payloadLength == aquamqtt::message::ERROR_MESSAGE_LENGTH
+            && memcmp(mMessageError, payload, payloadLength) != 0)
+    {
+        memcpy(mMessageError, payload, payloadLength);
+        mHasErrorMessage = true;
+
+        if (mNotify != nullptr)
+        {
+            xTaskNotifyIndexed(mNotify, 0, (1UL << 5UL), eSetBits);
         }
     }
 
@@ -147,6 +162,11 @@ bool DHWState::copyFrame(uint8_t frameId, uint8_t* buffer)
     else if (frameId == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER && mHasEnergyMessage)
     {
         memcpy(buffer, mMessageEnergy, aquamqtt::message::ENERGY_MESSAGE_LENGTH);
+        handled = true;
+    }
+    else if (frameId == aquamqtt::message::ERROR_MESSAGE_IDENTIFIER && mHasErrorMessage)
+    {
+        memcpy(buffer, mMessageError, aquamqtt::message::ERROR_MESSAGE_LENGTH);
         handled = true;
     }
 

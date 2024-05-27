@@ -81,6 +81,8 @@ public:
 
     bool statePVChanged() const;
 
+    uint8_t errorCode() const;
+
     bool settingPwmFirstChanged() const;
 
     bool settingPwmSecondChanged() const;
@@ -98,6 +100,14 @@ public:
     bool settingBrandChanged() const;
 
     bool settingCapabilitiesChanged() const;
+
+    bool errorCodeChanged() const;
+
+    void changeUnknownStateA(bool b);
+
+    void changeUnknownStateB(bool b);
+
+    void     hackError();
 
 private:
     uint8_t* mData;
@@ -117,6 +127,7 @@ private:
     bool     mSettingBoilerBrandChanged;
     bool     mSettingCapabilitiesChanged;
     bool     mPVStateChanged;
+    bool     mErrorCodeChanged;
 };
 
 }  // namespace message

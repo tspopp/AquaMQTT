@@ -4,6 +4,7 @@
 #include <esp_task_wdt.h>
 
 #include "config/Configuration.h"
+#include "message/ErrorMessage.h"
 #include "mqtt/MQTTDefinitions.h"
 #include "state/HMIStateProxy.h"
 
@@ -335,6 +336,14 @@ void MQTTTask::loop()
         }
     }
 
+    if ((notify & 1 << 5) != 0)
+    {
+        if (DHWState::getInstance().copyFrame(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER, mTransferBuffer))
+        {
+            updateErrorStatus();
+        }
+    }
+
     if (statsUpdate)
     {
         updateStats();
@@ -468,7 +477,8 @@ void                     MQTTTask::updateMainStatus()
         publishi(MAIN_SUBTOPIC, MAIN_STATE_DEFROST, message.stateDefrost());
     }
 
-    if(message.statePVChanged()){
+    if (message.statePVChanged())
+    {
         publishi(MAIN_SUBTOPIC, MAIN_STATE_PV, message.statePV());
     }
 
@@ -511,6 +521,11 @@ void                     MQTTTask::updateMainStatus()
         publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_PV_INPUT, message.capabilityHasPVInput());
         publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_EXT_COMM, message.capabilityHasCommunication());
         publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_DRY_HEATING, message.capabilityHasAntiDryHeating());
+    }
+
+    if (message.errorCodeChanged())
+    {
+        publishi(MAIN_SUBTOPIC, MAIN_ERROR_CODE, message.errorCode());
     }
 
     if (config::DEBUG_RAW_SERIAL_MESSAGES)
@@ -630,6 +645,20 @@ void                     MQTTTask::updateHMIStatus()
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 
+    // publish the error number to the request id
+    if (message.errorRequestChanged() && message.errorRequestId() != 0)
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%u/%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                message.errorRequestId(),
+                ERROR_ERROR_NUMBER);
+        itoa(message.errorNumberRequested(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
+
     if (config::DEBUG_RAW_SERIAL_MESSAGES)
     {
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
@@ -703,6 +732,131 @@ void                     MQTTTask::updateEnergyStats()
                 DEBUG);
 
         toHexStr(mTransferBuffer, ENERGY_MESSAGE_LENGTH, reinterpret_cast<char*>(mPayloadBuffer));
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
+}
+
+void MQTTTask::updateErrorStatus()
+{
+    message::ErrorMessage message(mTransferBuffer);
+
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%S%S%u/%S",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            ERROR_SUBTOPIC,
+            message.errorRequestId(),
+            MAIN_ERROR_CODE);
+    itoa(message.errorCode(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+    if (!message.isEmpty())
+    {
+        sprintf(reinterpret_cast<char*>(mPayloadBuffer),
+                "%d.%d.%d",
+                message.dateDay(),
+                message.dateMonth(),
+                message.dateYear());
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%u/%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                message.errorRequestId(),
+                HMI_DATE);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+        sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%02d:%02d", message.timeHours(), message.timeMinutes());
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%u/%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                message.errorRequestId(),
+                HMI_TIME);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+        dtostrf(message.hotWaterTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%u/%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                message.errorRequestId(),
+                MAIN_HOT_WATER_TEMP);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+        dtostrf(message.airTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%u/%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                message.errorRequestId(),
+                MAIN_SUPPLY_AIR_TEMP);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+        dtostrf(message.evaporatorLowerAirTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%u/%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                message.errorRequestId(),
+                MAIN_EVAPORATOR_AIR_TEMP_LOWER);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+        dtostrf(message.evaporatorUpperAirTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%u/%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                message.errorRequestId(),
+                MAIN_EVAPORATOR_AIR_TEMP_UPPER);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+        dtostrf(message.fanSpeedPwm(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%u/%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                message.errorRequestId(),
+                MAIN_FAN_PWM);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+        ultoa(message.totalHeatpumpHours(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%u/%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                message.errorRequestId(),
+                ENERGY_TOTAL_HEATPUMP_HOURS);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
+        ultoa(message.totalHeatingElemHours(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%u/%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                message.errorRequestId(),
+                ENERGY_TOTAL_HEATING_ELEM_HOURS);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
+
+    if (config::DEBUG_RAW_SERIAL_MESSAGES)
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                DEBUG);
+
+        toHexStr(mTransferBuffer, ERROR_MESSAGE_LENGTH, reinterpret_cast<char*>(mPayloadBuffer));
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 }
