@@ -25,7 +25,7 @@ public:
 
     float evaporatorUpperAirTemp();
 
-    uint16_t fanSpeed();
+    float fanSpeedPwm();
 
     bool stateHeatingElement();
 

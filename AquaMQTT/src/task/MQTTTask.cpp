@@ -457,7 +457,7 @@ void                     MQTTTask::updateMainStatus()
     }
     if (message.fanSpeedChanged())
     {
-        publishul(MAIN_SUBTOPIC, MAIN_FAN_SPEED, message.fanSpeed());
+        publishFloat(MAIN_SUBTOPIC, MAIN_FAN_PWM, message.fanSpeedPwm());
     }
     if (message.statesChanged())
     {
