@@ -21,10 +21,12 @@ float MainStatusMessage::evaporatorUpperAirTemp()
 {
     return (float) (((short int) (mData[8] << 8) | mData[7]) / 10.0);
 }
-uint16_t MainStatusMessage::fanSpeed()
+
+float MainStatusMessage::fanSpeedPwm()
 {
-    return ((uint16_t) mData[19] << 8) | (uint16_t) mData[18];
+    return (float) (((short int) (mData[19] << 8) | mData[18]) / 10.0);
 }
+
 bool MainStatusMessage::stateHeatingElement()
 {
     return mData[17] & 0x01;
