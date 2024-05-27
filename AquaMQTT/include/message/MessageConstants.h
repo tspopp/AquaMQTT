@@ -17,6 +17,8 @@ constexpr uint8_t MAIN_MESSAGE_IDENTIFIER   = 193;
 constexpr uint8_t MAIN_MESSAGE_LENGTH       = 37;
 constexpr uint8_t ENERGY_MESSAGE_IDENTIFIER = 67;
 constexpr uint8_t ENERGY_MESSAGE_LENGTH     = 31;
+constexpr uint8_t ERROR_MESSAGE_IDENTIFIER  = 74;
+constexpr uint8_t ERROR_MESSAGE_LENGTH      = 35;
 
 enum HMIOperationMode : int
 {

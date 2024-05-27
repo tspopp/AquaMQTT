@@ -9,7 +9,7 @@ namespace aquamqtt
 {
 
 HMITask::HMITask()
-    : mBuffer(true, false, false, "hmi")
+    : mBuffer(true, false, false, false, "hmi")
     , mLastStatisticsUpdate(0)
     , mTransferBuffer{ 0 }
     , mCRC()

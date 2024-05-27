@@ -9,7 +9,7 @@ namespace aquamqtt
 {
 
 ControllerTask::ControllerTask()
-    : mBuffer(false, true, true, "controller")
+    : mBuffer(false, true, true, true, "controller")
     , mFlagSeen193(false)
     , mFlagSeen67(false)
     , mLastStatisticsUpdate(0)

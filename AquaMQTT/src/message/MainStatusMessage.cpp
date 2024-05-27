@@ -138,6 +138,7 @@ void MainStatusMessage::compareWith(uint8_t* data)
         mSettingBoilerBrandChanged          = true;
         mSettingCapabilitiesChanged         = true;
         mPVStateChanged                     = true;
+        mErrorCodeChanged                   = true;
         return;
     }
 
@@ -192,6 +193,9 @@ void MainStatusMessage::compareWith(uint8_t* data)
             case 22:
                 mPVStateChanged = true;
                 break;
+            case 23:
+                mErrorCodeChanged = true;
+                break;
             case 32:
                 mSettingWattageHeatElementChanged = true;
                 break;
@@ -228,6 +232,7 @@ MainStatusMessage::MainStatusMessage(uint8_t* data)
     , mSettingBoilerBrandChanged(false)
     , mSettingCapabilitiesChanged(false)
     , mPVStateChanged(false)
+    , mErrorCodeChanged(false)
 {
 }
 bool MainStatusMessage::hotWaterTempChanged() const
@@ -293,6 +298,19 @@ bool MainStatusMessage::settingCapabilitiesChanged() const
 bool MainStatusMessage::statePVChanged() const
 {
     return mPVStateChanged;
+}
+bool MainStatusMessage::errorCodeChanged() const
+{
+    return mErrorCodeChanged;
+}
+
+uint8_t MainStatusMessage::errorCode() const
+{
+    if (mData[23] == UINT8_MAX)
+    {
+        return 0;
+    }
+    return mData[23];
 }
 }  // namespace message
 }  // namespace aquamqtt

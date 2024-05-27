@@ -110,6 +110,12 @@ public:
 
     void compareWith(uint8_t* data);
 
+    uint8_t errorRequestId() const;
+
+    uint8_t errorNumberRequested() const;
+
+    bool errorRequestChanged() const;
+
 private:
     bool mTargetTempChanged;
     bool mOperationModeChanged;
@@ -122,6 +128,7 @@ private:
     bool mTimeChanged;
     bool mDateChanged;
     bool mTestModeChanged;
+    bool mErrorRequestChanged;
 
     uint8_t* mData;
 };

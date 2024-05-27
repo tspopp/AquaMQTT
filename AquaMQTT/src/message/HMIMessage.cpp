@@ -20,6 +20,7 @@ HMIMessage::HMIMessage(uint8_t* data)
     , mTimeChanged(false)
     , mDateChanged(false)
     , mTestModeChanged(false)
+    , mErrorRequestChanged(false)
 {
 }
 float HMIMessage::waterTempTarget()
@@ -342,6 +343,15 @@ void HMIMessage::setAntiLegionellaModePerMonth(uint8_t value)
 {
 }
 
+uint8_t HMIMessage::errorRequestId() const
+{
+    return mData[29];
+}
+uint8_t HMIMessage::errorNumberRequested() const
+{
+    return mData[28];
+}
+
 void HMIMessage::compareWith(uint8_t* data)
 {
     if (data == nullptr)
@@ -357,6 +367,7 @@ void HMIMessage::compareWith(uint8_t* data)
         mTimeChanged                              = true;
         mDateChanged                              = true;
         mTestModeChanged                          = true;
+        mErrorRequestChanged                      = true;
         return;
     }
 
@@ -409,6 +420,10 @@ void HMIMessage::compareWith(uint8_t* data)
             case 22:
                 mTestModeChanged = true;
                 break;
+            case 27:
+            case 28:
+                mErrorRequestChanged = true;
+                break;
             default:
                 break;
         }
@@ -457,6 +472,11 @@ bool HMIMessage::timerModeOneChanged() const
 bool HMIMessage::timerModeTwoChanged() const
 {
     return mTimerModeTwoChanged;
+}
+
+bool HMIMessage::errorRequestChanged() const
+{
+    return mErrorRequestChanged;
 }
 
 }  // namespace message

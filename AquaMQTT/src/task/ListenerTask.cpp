@@ -8,7 +8,7 @@
 namespace aquamqtt
 {
 
-ListenerTask::ListenerTask() : mBuffer(true, true, true, "listener"), mLastStatisticsUpdate(0){}
+ListenerTask::ListenerTask() : mBuffer(true, true, true, true, "listener"), mLastStatisticsUpdate(0){}
 
 void ListenerTask::spawn()
 {

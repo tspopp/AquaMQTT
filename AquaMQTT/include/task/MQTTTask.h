@@ -35,6 +35,7 @@ private:
     void updateMainStatus();
     void updateHMIStatus();
     void updateEnergyStats();
+    void updateErrorStatus();
     void updateStats();
 
 private:

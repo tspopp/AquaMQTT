@@ -5,10 +5,11 @@
 #define FRAME_ID_LEN_BYTES 1
 #define CRC_LEN_BYTES      2
 
-FrameBuffer::FrameBuffer(bool handle194, bool handle193, bool handle67, std::string name)
+FrameBuffer::FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74, std::string name)
     : mHandle194(handle194)
     , mHandle193(handle193)
     , mHandle67(handle67)
+    , mHandle74(handle74)
     , mName(std::move(name))
     , mDroppedCount(0)
     , mCRCFailCount(0)
@@ -85,7 +86,8 @@ int FrameBuffer::handleFrame()
         {
             if ((frameId == aquamqtt::message::HMI_MESSAGE_IDENTIFIER && mHandle194)
                 || (frameId == aquamqtt::message::MAIN_MESSAGE_IDENTIFIER && mHandle193)
-                || (frameId == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER && mHandle67))
+                || (frameId == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER && mHandle67)
+                || (frameId == aquamqtt::message::ERROR_MESSAGE_IDENTIFIER && mHandle74))
             {
                 aquamqtt::DHWState::getInstance().storeFrame(frameId, payloadLength, mTransferBuffer);
                 mHandledCount++;
@@ -110,7 +112,9 @@ bool FrameBuffer::isSync()
             || (mBuffer[0] == aquamqtt::message::MAIN_MESSAGE_IDENTIFIER
                 && mBuffer[1] == aquamqtt::message::MAIN_MESSAGE_LENGTH)
             || (mBuffer[0] == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER
-                && mBuffer[1] == aquamqtt::message::ENERGY_MESSAGE_LENGTH));
+                && mBuffer[1] == aquamqtt::message::ENERGY_MESSAGE_LENGTH)
+            || (mBuffer[0] == aquamqtt::message::ERROR_MESSAGE_IDENTIFIER
+                && mBuffer[1] == aquamqtt::message::ERROR_MESSAGE_LENGTH));
 }
 uint64_t FrameBuffer::getDroppedCount() const
 {

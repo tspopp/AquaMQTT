@@ -55,10 +55,12 @@ private:
     bool mHasHmiMessage;
     bool mHasMainMessage;
     bool mHasEnergyMessage;
+    bool mHasErrorMessage;
 
     uint8_t mMessageHmi[aquamqtt::message::HMI_MESSAGE_LENGTH];
     uint8_t mMessageMain[aquamqtt::message::MAIN_MESSAGE_LENGTH];
     uint8_t mMessageEnergy[aquamqtt::message::ENERGY_MESSAGE_LENGTH];
+    uint8_t mMessageError[aquamqtt::message::ERROR_MESSAGE_LENGTH];
 
     BufferStatistics mHmiStats;
     BufferStatistics mMainStats;

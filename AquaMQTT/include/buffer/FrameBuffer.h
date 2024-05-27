@@ -9,7 +9,7 @@
 class FrameBuffer
 {
 public:
-    explicit FrameBuffer(bool handle194, bool handle193, bool handle67, std::string name);
+    explicit FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74, std::string name);
 
     ~FrameBuffer() = default;
 
@@ -36,6 +36,7 @@ private:
     bool        mHandle194;
     bool        mHandle193;
     bool        mHandle67;
+    bool        mHandle74;
     std::string mName;
 
     uint64_t mDroppedCount;
