@@ -118,7 +118,7 @@ within the message reflect the state when the error has been created.
 ## Subscribe Topics
 
 Using this topics you may override the HMI Controller in AquaMQTT OperationMode Man-In-The-Middle. Currently these are
-the only ones implemented. If you need more overrides, feel free to raise an issue or even PR.
+the only ones implemented. If you need more overrides, feel free to raise an issue or even provide an PR.
 
 | Value / Action                    | MQTT Topic                         | Format | Unit | Example Payload                                                      | Other Information                                                                                                                                                        |
 |-----------------------------------|------------------------------------|--------|------|----------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

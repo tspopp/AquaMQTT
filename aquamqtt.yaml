@@ -312,10 +312,10 @@ mqtt:
         manufacturer: tspopp
         name: AquaMQTT 
         model: V1
-    - name: "Fan Speed"
-      unit_of_measurement: "rpm"
-      state_topic: "aquamqtt/main/fanSpeed"
-      unique_id: atlantic_state_fanspeed
+    - name: "Fan PWM"
+      unit_of_measurement: "%"
+      state_topic: "aquamqtt/main/fanPWM"
+      unique_id: atlantic_state_fanpwm
       icon: mdi:fan
       device:
         identifiers: AquaMQTT
