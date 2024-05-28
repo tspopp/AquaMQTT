@@ -32,9 +32,9 @@ private:
 
     static void messageReceived(String& topic, String& payload);
 
-    void updateMainStatus();
-    void updateHMIStatus();
-    void updateEnergyStats();
+    void updateMainStatus(bool triggerFullUpdate);
+    void updateHMIStatus(bool triggerFullUpdate);
+    void updateEnergyStats(bool triggerFullUpdate);
     void updateErrorStatus();
     void updateStats();
 
@@ -42,6 +42,7 @@ private:
     uint8_t       mTransferBuffer[message::HEATPUMP_MAX_FRAME_LENGTH];
     uint8_t       mTopicBuffer[config::MQTT_MAX_TOPIC_SIZE];
     uint8_t       mPayloadBuffer[config::MQTT_MAX_PAYLOAD_SIZE];
+    unsigned long mLastStatsUpdate;
     unsigned long mLastFullUpdate;
     WiFiClient    mWiFiClient;
     MQTTClient    mMQTTClient;
@@ -56,7 +57,12 @@ private:
     void publishString(const char* subtopic, const char* topic, const char* value, bool retained = false);
     void publishi(const char* subtopic, const char* topic, int value, bool retained = false);
     void publishul(const char* subtopic, const char* topic, unsigned long value, bool retained = false);
-    void publishul(const char* subtopic_1, const char* subtopic_2, const char* topic, unsigned long value, bool retained = false);
+    void publishul(
+            const char*   subtopic_1,
+            const char*   subtopic_2,
+            const char*   topic,
+            unsigned long value,
+            bool          retained = false);
 };
 }  // namespace aquamqtt
 

@@ -11,7 +11,8 @@ ErrorMessage::ErrorMessage(uint8_t* data) : mData(data)
 
 bool ErrorMessage::isEmpty()
 {
-    for (int i = 0; i < ERROR_MESSAGE_LENGTH; ++i)
+    // i == 1, since we skip the first byte which is length field and always != 0
+    for (int i = 1; i < ERROR_MESSAGE_LENGTH; ++i)
     {
         if (mData[i] != 0)
             return false;

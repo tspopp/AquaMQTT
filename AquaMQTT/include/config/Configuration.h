@@ -51,10 +51,19 @@ constexpr bool OVERRIDE_TIME_AND_DATE_IN_MITM = true;
 constexpr bool DEBUG_RAW_SERIAL_MESSAGES = false;
 
 /**
+ * Change the time interval where all known attributes are published to the MQTT broker.
+ */
+constexpr uint32_t MQTT_FULL_UPDATE_MS = 1000*60*30;
+
+/**
+ * Change the fixed time interval where the attributes published to the stats topic are updated.
+ */
+constexpr uint16_t MQTT_STATS_UPDATE_MS  = 5000;
+
+/**
  * Self explanatory internal settings: most probably you don't want to change them.
  */
 constexpr uint8_t  WATCHDOG_TIMEOUT_S    = 60;
-constexpr uint16_t MQTT_STATS_UPDATE_MS  = 5000;
 constexpr uint8_t  MQTT_MAX_TOPIC_SIZE   = 80;
 constexpr uint8_t  MQTT_MAX_PAYLOAD_SIZE = 255;
 

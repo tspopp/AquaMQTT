@@ -11,6 +11,8 @@ namespace message
 {
 constexpr uint8_t HEATPUMP_MAX_FRAME_LENGTH = 40;
 
+constexpr uint8_t MESSAGE_PERIOD_MS = 100;
+
 constexpr uint8_t HMI_MESSAGE_IDENTIFIER    = 194;
 constexpr uint8_t HMI_MESSAGE_LENGTH        = 35;
 constexpr uint8_t MAIN_MESSAGE_IDENTIFIER   = 193;

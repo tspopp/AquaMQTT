@@ -72,17 +72,17 @@ void setup()
     // if listener mode is set in configuration, just read the DHW traffic from a single One-Wire USART instance
     if (OPERATION_MODE == LISTENER)
     {
-        // reads 194, 193 and 67 message and notifies the mqtt task
+        // reads 194, 193, 67 and 74 message and notifies the mqtt task
         listenerTask.spawn();
     }
     // if man-in-the-middle mode is set in configuration, there are two physical One-Wire USART instances
     // and AquaMQTT forwards (modified) messages from one to another
     else
     {
-        // reads 194 message from the hmi controller, writes 193 and 67 to the hmi controller
+        // reads 194 message from the hmi controller, writes 193, 67 and 74 to the hmi controller
         hmiTask.spawn();
 
-        // reads 193 and 67 from the main controller, writes 194 to the main controller
+        // reads 193, 67 and 74 from the main controller, writes 194 to the main controller
         controllerTask.spawn();
     }
 

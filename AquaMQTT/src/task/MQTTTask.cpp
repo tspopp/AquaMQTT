@@ -15,7 +15,8 @@ using namespace mqtt;
 using namespace message;
 
 MQTTTask::MQTTTask()
-    : mLastFullUpdate(0)
+    : mLastStatsUpdate(0)
+    , mLastFullUpdate(0)
     , mMQTTClient(256)
     , mTransferBuffer{ 0 }
     , mTaskHandle(nullptr)
@@ -290,15 +291,17 @@ void MQTTTask::loop()
 
     auto mqttCycle = pdMS_TO_TICKS(5);
 
-    bool statsUpdate = (millis() - mLastFullUpdate) >= config::MQTT_STATS_UPDATE_MS;
+    bool fullUpdate = (millis() - mLastFullUpdate) >= config::MQTT_FULL_UPDATE_MS;
+
+    bool statsUpdate = (millis() - mLastStatsUpdate) >= config::MQTT_STATS_UPDATE_MS;
 
     auto notify = ulTaskNotifyTake(pdTRUE, mqttCycle);
 
-    if ((notify & 1 << 8) != 0)
+    if ((notify & 1 << 8) != 0 || fullUpdate)
     {
         if (HMIStateProxy::getInstance().copyFrame(aquamqtt::message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
-            updateHMIStatus();
+            updateHMIStatus(fullUpdate);
 
             if (mLastProcessedHMIMessage == nullptr)
             {
@@ -308,11 +311,11 @@ void MQTTTask::loop()
         }
     }
 
-    if ((notify & 1 << 7) != 0)
+    if ((notify & 1 << 7) != 0 || fullUpdate)
     {
         if (DHWState::getInstance().copyFrame(aquamqtt::message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
-            updateMainStatus();
+            updateMainStatus(fullUpdate);
 
             if (mLastProcessedMainMessage == nullptr)
             {
@@ -322,11 +325,11 @@ void MQTTTask::loop()
         }
     }
 
-    if ((notify & 1 << 6) != 0)
+    if ((notify & 1 << 6) != 0 || fullUpdate)
     {
         if (DHWState::getInstance().copyFrame(aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
-            updateEnergyStats();
+            updateEnergyStats(fullUpdate);
 
             if (mLastProcessedEnergyMessage == nullptr)
             {
@@ -352,9 +355,14 @@ void MQTTTask::loop()
     if (statsUpdate)
     {
         Serial.println("[mqtt] stat update");
-        mLastFullUpdate = millis();
+        mLastStatsUpdate = millis();
         Serial.print("[mqtt]: stack size (words)");
         Serial.println(uxTaskGetStackHighWaterMark(nullptr));
+    }
+
+    if (fullUpdate)
+    {
+        mLastFullUpdate = millis();
     }
 
     mMQTTClient.loop();
@@ -415,7 +423,10 @@ void                     MQTTTask::updateStats()
                 HMI_INSTALLATION_CONFIG,
                 overrides.installationMode ? "1" : "0",
                 HMI_TIME_AND_DATE,
-                aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM ? "1" : "0");
+                (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM
+                 && aquamqtt::config::OPERATION_MODE != aquamqtt::config::EOperationMode::LISTENER)
+                        ? "1"
+                        : "0");
 
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%S%S%S",
@@ -443,10 +454,10 @@ void                     MQTTTask::updateStats()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat"
-void                     MQTTTask::updateMainStatus()
+void                     MQTTTask::updateMainStatus(bool fullUpdate)
 {
     message::MainStatusMessage message(mTransferBuffer);
-    message.compareWith(mLastProcessedMainMessage);
+    message.compareWith(fullUpdate ? nullptr : mLastProcessedMainMessage);
 
     if (message.hotWaterTempChanged())
     {
@@ -544,10 +555,10 @@ void                     MQTTTask::updateMainStatus()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat"
-void                     MQTTTask::updateHMIStatus()
+void                     MQTTTask::updateHMIStatus(bool fullUpdate)
 {
     message::HMIMessage message(mTransferBuffer);
-    message.compareWith(mLastProcessedHMIMessage);
+    message.compareWith(fullUpdate ? nullptr : mLastProcessedHMIMessage);
 
     if (message.waterTempTargetChanged())
     {
@@ -675,10 +686,10 @@ void                     MQTTTask::updateHMIStatus()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat"
-void                     MQTTTask::updateEnergyStats()
+void                     MQTTTask::updateEnergyStats(bool fullUpdate)
 {
     message::MainEnergyMessage message(mTransferBuffer);
-    message.compareWith(mLastProcessedEnergyMessage);
+    message.compareWith(fullUpdate ? nullptr : mLastProcessedEnergyMessage);
 
     if (message.totalHeatpumpHoursChanged())
     {
@@ -739,6 +750,11 @@ void                     MQTTTask::updateEnergyStats()
 void MQTTTask::updateErrorStatus()
 {
     message::ErrorMessage message(mTransferBuffer);
+
+    if (message.isEmpty())
+    {
+        return;
+    }
 
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
             "%s%S%S%u/%S",

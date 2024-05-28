@@ -3,6 +3,8 @@
 #include <esp_task_wdt.h>
 
 #include "config/Configuration.h"
+#include "message/ErrorMessage.h"
+#include "message/MessageConstants.h"
 #include "state/HMIStateProxy.h"
 
 namespace aquamqtt
@@ -10,9 +12,12 @@ namespace aquamqtt
 
 HMITask::HMITask()
     : mBuffer(true, false, false, false, "hmi")
+    , mLastEmittedRequestId(UINT8_MAX)
     , mLastStatisticsUpdate(0)
+    , mLastMessageSent(0)
     , mTransferBuffer{ 0 }
     , mCRC()
+    , mState(HMITaskState::REQUESTING_194)
     , mMessagesSent(0)
 {
 }
@@ -46,59 +51,81 @@ void HMITask::setup()  // NOLINT(*-convert-member-functions-to-static)
 
 void HMITask::loop()
 {
-    bool printSerialStats = (millis() - mLastStatisticsUpdate) >= 5000;
-
-    // request 194 from hmi
-    Serial1.write(aquamqtt::message::HMI_MESSAGE_IDENTIFIER);
-    Serial1.flush();
-    vTaskDelay(pdMS_TO_TICKS(60));
+    bool printSerialStats   = (millis() - mLastStatisticsUpdate) >= 5000;
+    bool performStateChange = (millis() - mLastMessageSent) >= aquamqtt::message::MESSAGE_PERIOD_MS;
 
     while (Serial1.available())
     {
         mBuffer.pushByte(Serial1.read());
     }
 
-    // as soon as we have a valid message from the main controller, forward it
-    if (DHWState::getInstance().copyFrame(aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
+    switch (mState)
     {
-        uint16_t crc = mCRC.ccitt(mTransferBuffer, aquamqtt::message::ENERGY_MESSAGE_LENGTH);
-        Serial1.write(aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER);
-        Serial1.write(mTransferBuffer, aquamqtt::message::ENERGY_MESSAGE_LENGTH);
-        Serial1.write((uint8_t) (crc >> 8));
-        Serial1.write((uint8_t) (crc & 0xFF));
-        Serial1.flush();
-        mMessagesSent++;
+        case HMITaskState::REQUESTING_194:
+            Serial1.write(aquamqtt::message::HMI_MESSAGE_IDENTIFIER);
+            Serial1.flush();
+            mState           = HMITaskState::SLEEP_194;
+            mLastMessageSent = millis();
+            break;
+        case HMITaskState::SLEEP_194:
+            if (performStateChange)
+            {
+                mState = HMITaskState::SENDING_67;
+            }
+            else
+            {
+                vTaskDelay(pdMS_TO_TICKS(5));
+            }
+            break;
+        case HMITaskState::SENDING_67:
+            sendMessage67();
+            flushReadBuffer();
+            mState           = HMITaskState::SLEEP_67;
+            mLastMessageSent = millis();
+            break;
+        case HMITaskState::SLEEP_67:
+            if (performStateChange)
+            {
+                mState = HMITaskState::SENDING_193;
+            }
+            else
+            {
+                vTaskDelay(pdMS_TO_TICKS(5));
+            }
+            break;
+        case HMITaskState::SENDING_193:
+            sendMessage193();
+            flushReadBuffer();
+            mState           = HMITaskState::SLEEP_193;
+            mLastMessageSent = millis();
+            break;
+        case HMITaskState::SLEEP_193:
+            if (performStateChange)
+            {
+                mState = HMITaskState::SENDING_74;
+            }
+            else
+            {
+                vTaskDelay(pdMS_TO_TICKS(5));
+            }
+            break;
+        case HMITaskState::SENDING_74:
+            sendMessage74();
+            flushReadBuffer();
+            mState           = HMITaskState::SLEEP_74;
+            mLastMessageSent = millis();
+            break;
+        case HMITaskState::SLEEP_74:
+            if (performStateChange)
+            {
+                mState = HMITaskState::REQUESTING_194;
+            }
+            else
+            {
+                vTaskDelay(pdMS_TO_TICKS(5));
+            }
+            break;
     }
-    else
-    {
-        Serial.println("[hmi] no energy message yet, cannot forward");
-    }
-
-    vTaskDelay(pdMS_TO_TICKS(100));
-
-    // as soon as we have a valid message from the main controller, forward it
-    if (DHWState::getInstance().copyFrame(aquamqtt::message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
-    {
-        uint16_t crc = mCRC.ccitt(mTransferBuffer, aquamqtt::message::MAIN_MESSAGE_LENGTH);
-        Serial1.write(aquamqtt::message::MAIN_MESSAGE_IDENTIFIER);
-        Serial1.write(mTransferBuffer, aquamqtt::message::MAIN_MESSAGE_LENGTH);
-        Serial1.write((uint8_t) (crc >> 8));
-        Serial1.write((uint8_t) (crc & 0xFF));
-        Serial1.flush();
-        mMessagesSent++;
-    }
-    else
-    {
-        Serial.println("[hmi] no main message yet, cannot forward");
-    }
-
-    // flush read buffer
-    while (Serial1.available())
-    {
-        Serial1.read();
-    }
-
-    vTaskDelay(pdMS_TO_TICKS(200));
 
     DHWState::getInstance().updateFrameBufferStatistics(
             1,
@@ -110,7 +137,6 @@ void HMITask::loop()
 
     if (printSerialStats)
     {
-
         Serial.print("[hmi]: handled=");
         Serial.print(mBuffer.getHandledCount());
         Serial.print(", unhandled=");
@@ -128,6 +154,90 @@ void HMITask::loop()
         Serial.println(xPortGetMinimumEverFreeHeapSize());
 
         mLastStatisticsUpdate = millis();
+    }
+}
+void HMITask::flushReadBuffer()
+{
+    while (Serial1.available())
+    {
+        Serial1.read();
+    }
+}
+void HMITask::sendMessage193()
+{
+    if (DHWState::getInstance().copyFrame(message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
+    {
+        uint16_t crc = mCRC.ccitt(mTransferBuffer, message::MAIN_MESSAGE_LENGTH);
+        Serial1.write(message::MAIN_MESSAGE_IDENTIFIER);
+        Serial1.write(mTransferBuffer, message::MAIN_MESSAGE_LENGTH);
+        Serial1.write((uint8_t) (crc >> 8));
+        Serial1.write((uint8_t) (crc & 0xFF));
+        Serial1.flush();
+        mMessagesSent++;
+    }
+    else
+    {
+        Serial.println("[hmi] no main message yet, cannot forward");
+    }
+}
+void HMITask::sendMessage67()
+{
+    if (DHWState::getInstance().copyFrame(message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
+    {
+        uint16_t crc = mCRC.ccitt(mTransferBuffer, message::ENERGY_MESSAGE_LENGTH);
+        Serial1.write(message::ENERGY_MESSAGE_IDENTIFIER);
+        Serial1.write(mTransferBuffer, message::ENERGY_MESSAGE_LENGTH);
+        Serial1.write((uint8_t) (crc >> 8));
+        Serial1.write((uint8_t) (crc & 0xFF));
+        Serial1.flush();
+        mMessagesSent++;
+    }
+    else
+    {
+        Serial.println("[hmi] no energy message yet, cannot forward");
+    }
+}
+
+void HMITask::sendMessage74()
+{
+    // check if the HMI is requesting an error message
+    uint8_t requestId = UINT8_MAX;
+    {
+        if (DHWState::getInstance().copyFrame(aquamqtt::message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
+        {
+            aquamqtt::message::HMIMessage hmiMessage(mTransferBuffer);
+            requestId = hmiMessage.errorRequestId();
+        }
+    }
+
+    // Check if we already emitted that error message, because we emit error messages just once
+    if (mLastEmittedRequestId == requestId)
+    {
+        // already emitted, no change
+        return;
+    }
+
+    // check if we have the requested error message in cache
+    uint8_t availableRequestId = 0;
+    {
+        if (DHWState::getInstance().copyFrame(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER, mTransferBuffer))
+        {
+            aquamqtt::message::ErrorMessage errorMessage(mTransferBuffer);
+            availableRequestId = errorMessage.errorRequestId();
+        }
+    }
+
+    // emit the error message
+    if (requestId == availableRequestId)
+    {
+        uint16_t crc = mCRC.ccitt(mTransferBuffer, aquamqtt::message::ERROR_MESSAGE_LENGTH);
+        Serial1.write(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER);
+        Serial1.write(mTransferBuffer, aquamqtt::message::ERROR_MESSAGE_LENGTH);
+        Serial1.write((uint8_t) (crc >> 8));
+        Serial1.write((uint8_t) (crc & 0xFF));
+        Serial1.flush();
+        mMessagesSent++;
+        mLastEmittedRequestId = requestId;
     }
 }
 

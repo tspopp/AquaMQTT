@@ -103,12 +103,6 @@ public:
 
     bool errorCodeChanged() const;
 
-    void changeUnknownStateA(bool b);
-
-    void changeUnknownStateB(bool b);
-
-    void     hackError();
-
 private:
     uint8_t* mData;
     bool     mHotWaterTempChanged;
