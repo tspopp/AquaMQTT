@@ -115,7 +115,7 @@ controller completes the packet on the one-wire bus.
 | 0           | 35      | Length Field                                             | -                                                                                                                                                                                                                      |
 | 1 - 2       | 18 2    | Target Temp.                                             | See Temperature Table, 53°C                                                                                                                                                                                            |
 | 3           | 66      | OperationMode                                            | See Operation Mode Table                                                                                                                                                                                               |
-| 4           | 252     | Command: Change PWM, Command: Change Anti-Trockenheizung | See Commands                                                                                                                                                                                                           |
+| 4           | 252     | Command: Change PWM, Command: Change Anti-Dry-Heating    | See Commands                                                                                                                                                                                                           |
 | 5           | 0       | Anti-Legionella Mode / AirDuct Mode                      | 0 == Off, 1 == 1perMonth, 2 == 2perMonth, 3 == 3perMonth, 4 == 4/perMonth, // 0 == AirDuct INT/INT, 16 == AirDuct EXT/INT, 32 == AirDuct EXT/EXT                                                                       |
 | 6           | 240     | Emergency-Mode, Command: Change Connectivity             | "Emergency Mode Off == 240, Emergency Mode On == 241", "Disabled Connectivity: No == 240, Disabled Connectivity: Yes == 16"                                                                                            |
 | 7           | 17      | InstallationConfig                                       | WP-Only == 0, WP+ExtBoiler-Prio-WP == 1, Wp+ExtBoiler-Opt-WP == 17, Wp+ExtBoiler-Opt-ExtBoiler == 33 , Wp+ExtBoiler-Prio-ExtBoiler == 49 , WP + Solar == 50                                                            |
@@ -321,7 +321,7 @@ Noop:  35 18 2 65 252 0 240 32 240 4 60 16 16 24 255 255 0  x x x x x 0 0 255 0 
 40°C:  35 18 2 65 252 0 240 32 240 4 60 16 16 24 255  40 0 x x x x x  0 0 255 0 9 66 1 1 255 255 255 255 255
 ```
 
-##### Enable/Disable Anti-Trockenheizung
+##### Enable/Disable Anti-Dry-Heating
 
 - Affected Byte Positions: 4
 
@@ -459,12 +459,12 @@ Findings...
 Findings...
 
 ```
-5dec  | 0000 0101: Communication Enabled, PV enabled, No Circulation, Anti-Trockenheizung
-17dec | 0001 0001: Communication Enabled, PV disabled, Heat-Exchanger available, No Zirculation, No Anti-Trockenheizung
-20dec | 0001 0100: Communication Enabled, PV enabled, Heat Exchanger not available, No Zirculation, No Anti-Trockenheizung
-21dec | 0001 0101: Communication Enabled, PV enabled, No Circulation, No Anti-Trockenheizung
-23dec | 0001 0111: Communication Enabled, PV enabled, With Circulation Enabled, No Anti-Trockenheizung
-29dec | 0001 1101: Communication Disabled, PV enabled, Heat-Exchanger available, No Zirculation, No Anti-Trockenheizung
+5dec  | 0000 0101: Communication Enabled, PV enabled, No Circulation, Anti-Dry-Heating
+17dec | 0001 0001: Communication Enabled, PV disabled, Heat-Exchanger available, No Zirculation, No Anti-Dry-Heating
+20dec | 0001 0100: Communication Enabled, PV enabled, Heat Exchanger not available, No Zirculation, No Anti-Dry-Heating
+21dec | 0001 0101: Communication Enabled, PV enabled, No Circulation, No Anti-Dry-Heating
+23dec | 0001 0111: Communication Enabled, PV enabled, With Circulation Enabled, No Anti-Dry-Heating
+29dec | 0001 1101: Communication Disabled, PV enabled, Heat-Exchanger available, No Circulation, No Anti-Dry-Heating
 ```
 
 | Bit Number | Purpose/Function          | Other Information                                    |
@@ -503,12 +503,9 @@ Error messages are emitted by the main controller if the HMI is requesting error
 - The main controller is emitting empty error messages if HMI is requesting placeholder values (errorNumber==0,
   requestId==0) or if an invalid errorNumber has been requested.
 - Entering Secret Diagnosis Menu: HMI will fetch all existing errors
-
-To be clarified:
-
-- Most likely the HMI controller will request an error message if the error bitflag has been set.
-- Most likely the MAIN controller will never emit an error message, without an HMI controller asking for it.
-- Check if errorId == 0 contains an valid error during an error state of if is reserved to be empty.
+- The HMI controller will request an error message if the error bitflag (within main message, byte 17) has been set.
+- The MAIN controller will never emit an error message, without an HMI controller asking for it.
+- ErrorID == 0 is reserved and always contains an empty error message if requested.
 
 <!--
 Not yet identified:

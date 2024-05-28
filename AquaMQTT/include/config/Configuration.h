@@ -51,7 +51,7 @@ constexpr bool OVERRIDE_TIME_AND_DATE_IN_MITM = true;
 constexpr bool DEBUG_RAW_SERIAL_MESSAGES = false;
 
 /**
- * Change the time interval where all known attributes are published to the MQTT broker.
+ * Change the time interval where all known attributes are re-published to the MQTT broker.
  */
 constexpr uint32_t MQTT_FULL_UPDATE_MS = 1000*60*30;
 
