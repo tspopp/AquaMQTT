@@ -10,12 +10,13 @@ namespace aquamqtt
 
 ControllerTask::ControllerTask()
     : mBuffer(false, true, true, true, "controller")
-    , mFlagSeen193(false)
-    , mFlagSeen67(false)
     , mLastStatisticsUpdate(0)
     , mTransferBuffer{ 0 }
     , mCRC()
-    , mMessagesSent(0){}
+    , mMessagesSent(0)
+    , mState(ControllerTaskState::AWAITING_67)
+{
+}
 
 void ControllerTask::spawn()
 {
@@ -40,7 +41,7 @@ void ControllerTask::spawn()
     }
 }
 
-void ControllerTask::setup() // NOLINT(*-convert-member-functions-to-static)
+void ControllerTask::setup()  // NOLINT(*-convert-member-functions-to-static)
 {
     Serial2.begin(9550, SERIAL_8N2, aquamqtt::config::GPIO_MAIN_RX, aquamqtt::config::GPIO_MAIN_TX);
 }
@@ -54,50 +55,56 @@ void ControllerTask::loop()
     {
         int valRead = Serial2.read();
 
-        if (mFlagSeen67 && mFlagSeen193)
+        switch (mState)
         {
-            if (valRead == aquamqtt::message::HMI_MESSAGE_IDENTIFIER)
+            case ControllerTaskState::AWAITING_67:
+                if (mBuffer.pushByte(valRead) == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER)
+                {
+                    mState = ControllerTaskState::AWAITING_193;
+                }
+                break;
+            case ControllerTaskState::AWAITING_193:
             {
-                mFlagSeen67  = false;
-                mFlagSeen193 = false;
-
-                if (HMIStateProxy::getInstance().copyFrame(aquamqtt::message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
+                int processedMessageId = mBuffer.pushByte(valRead);
+                if (processedMessageId == aquamqtt::message::MAIN_MESSAGE_IDENTIFIER)
                 {
-                    uint16_t crc = mCRC.ccitt(mTransferBuffer, aquamqtt::message::HMI_MESSAGE_LENGTH);
-                    Serial2.write(mTransferBuffer, aquamqtt::message::HMI_MESSAGE_LENGTH);
-                    Serial2.write((uint8_t) (crc >> 8));
-                    Serial2.write((uint8_t) (crc & 0xFF));
-                    Serial2.flush();
-                    mMessagesSent++;
+                    mState = ControllerTaskState::CHECK_FOR_HMI_TRIGGER;
                 }
-                else
+                else if (processedMessageId != 0)
                 {
-                    Serial.println("[main] no hmi message yet, cannot forward");
+                    mState = ControllerTaskState::AWAITING_67;
                 }
-
-                // flush read buffer
-                while (Serial2.available())
-                {
-                    Serial2.read();
-                }
-                continue;
+                break;
             }
-            else
+            case ControllerTaskState::CHECK_FOR_HMI_TRIGGER:
+                if (valRead == aquamqtt::message::ERROR_MESSAGE_IDENTIFIER)
+                {
+                    mBuffer.pushByte(valRead);
+                    mState = ControllerTaskState::AWAITING_74;
+                    continue;
+                }
+
+                if (valRead == aquamqtt::message::HMI_MESSAGE_IDENTIFIER)
+                {
+                    sendMessage194();
+                    flushReadBuffer();
+                }
+
+                mState = ControllerTaskState::AWAITING_67;
+                break;
+            case ControllerTaskState::AWAITING_74:
             {
-                mFlagSeen67  = false;
-                mFlagSeen193 = false;
+                int processedMessageId = mBuffer.pushByte(valRead);
+                if (processedMessageId == aquamqtt::message::ERROR_MESSAGE_IDENTIFIER)
+                {
+                    mState = ControllerTaskState::CHECK_FOR_HMI_TRIGGER;
+                }
+                else if (processedMessageId != 0)
+                {
+                    mState = ControllerTaskState::AWAITING_67;
+                }
+                break;
             }
-        }
-
-        int message = mBuffer.pushByte(valRead);
-        if (message == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER)
-        {
-            mFlagSeen67  = true;
-            mFlagSeen193 = false;
-        }
-        else if (message == aquamqtt::message::MAIN_MESSAGE_IDENTIFIER)
-        {
-            mFlagSeen193 = true;
         }
     }
 
@@ -126,6 +133,29 @@ void ControllerTask::loop()
         Serial.println(uxTaskGetStackHighWaterMark(nullptr));
 
         mLastStatisticsUpdate = millis();
+    }
+}
+void ControllerTask::flushReadBuffer()
+{
+    while (Serial2.available())
+    {
+        Serial2.read();
+    }
+}
+void ControllerTask::sendMessage194()
+{
+    if (HMIStateProxy::getInstance().copyFrame(message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
+    {
+        uint16_t crc = mCRC.ccitt(mTransferBuffer, message::HMI_MESSAGE_LENGTH);
+        Serial2.write(mTransferBuffer, message::HMI_MESSAGE_LENGTH);
+        Serial2.write((uint8_t) (crc >> 8));
+        Serial2.write((uint8_t) (crc & 0xFF));
+        Serial2.flush();
+        mMessagesSent++;
+    }
+    else
+    {
+        Serial.println("[main] no hmi message yet, cannot forward");
     }
 }
 
