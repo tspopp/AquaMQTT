@@ -82,6 +82,7 @@ const char MAIN_STATE_HEAT_ELEMENT[] PROGMEM        = { "stateElement" };
 const char MAIN_STATE_EXT_BOILER[] PROGMEM          = { "stateExtBoiler" };
 const char MAIN_STATE_DEFROST[] PROGMEM             = { "stateDefrost" };
 const char MAIN_STATE_PV[] PROGMEM                  = { "statePV" };
+const char MAIN_STATE_SOLAR[] PROGMEM               = { "stateSolar" };
 
 const char MAIN_SETTING_PWM_01[] PROGMEM              = { "settingPWM_1" };
 const char MAIN_SETTING_PWM_02[] PROGMEM              = { "settingPWM_2" };
@@ -135,6 +136,7 @@ const char STATS_MSG_SENT[] PROGMEM                   = { "msgSent" };
 const char STATS_MSG_CRC_NOK[] PROGMEM                = { "msgCRCNOK" };
 const char STATS_DROPPED_BYTES[] PROGMEM              = { "droppedBytes" };
 const char STATS_ACTIVE_OVERRIDES[] PROGMEM           = { "activeOverrides" };
+const char STATS_ACTIVE_OVERRIDES_MAIN[] PROGMEM      = { "activeOverridesMain" };
 const char STATS_ENABLE_FLAG_PV_HEATPUMP[] PROGMEM    = { "flagPVModeHeatPump" };
 const char STATS_ENABLE_FLAG_PV_HEATELEMENT[] PROGMEM = { "flagPVModeHeatElement" };
 

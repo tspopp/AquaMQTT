@@ -39,6 +39,12 @@ public:
 
     bool statePV();
 
+    void enableStatePV(bool enabled);
+
+    bool stateSolar();
+
+    void enableStateSolar(bool enabled);
+
     uint8_t settingPwmFirst();
 
     uint8_t settingPwmSecond();
@@ -79,7 +85,7 @@ public:
 
     bool statesChanged() const;
 
-    bool statePVChanged() const;
+    bool statePVOrSolarChanged() const;
 
     uint8_t errorCode() const;
 
@@ -120,7 +126,7 @@ private:
     bool     mSettingBoilerCapacityChanged;
     bool     mSettingBoilerBrandChanged;
     bool     mSettingCapabilitiesChanged;
-    bool     mPVStateChanged;
+    bool     mPVOrSolarStateChanged;
     bool     mErrorCodeChanged;
 };
 

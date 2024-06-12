@@ -7,6 +7,7 @@
 #include "message/ErrorMessage.h"
 #include "mqtt/MQTTDefinitions.h"
 #include "state/HMIStateProxy.h"
+#include "state/MainStateProxy.h"
 
 namespace aquamqtt
 {
@@ -180,21 +181,29 @@ void MQTTTask::messageReceived(String& topic, String& payload)
             (strlen(optionalSubscribeTopicSetPvHeatPumpFlag) != 0)
             && strstr_P(topic.c_str(), optionalSubscribeTopicSetPvHeatPumpFlag) != nullptr)
     {
-        HMIStateProxy::getInstance().onPVModeHeatpumpEnabled(strcmp(payload.c_str(), "1") == 0);
+        bool enabled = strcmp(payload.c_str(), "1") == 0;
+        HMIStateProxy::getInstance().onPVModeHeatpumpEnabled(enabled);
+        MainStateProxy::getInstance().onPVModeHeatpumpEnabled(enabled);
     }
     else if (strstr_P(topic.c_str(), STATS_ENABLE_FLAG_PV_HEATPUMP) != nullptr)
     {
-        HMIStateProxy::getInstance().onPVModeHeatpumpEnabled(strcmp(payload.c_str(), "1") == 0);
+        bool enabled = strcmp(payload.c_str(), "1") == 0;
+        HMIStateProxy::getInstance().onPVModeHeatpumpEnabled(enabled);
+        MainStateProxy::getInstance().onPVModeHeatpumpEnabled(enabled);
     }
     else if (
             (strlen(optionalSubscribeTopicSetPvHeatElementFlag) != 0)
             && strstr_P(topic.c_str(), optionalSubscribeTopicSetPvHeatElementFlag) != nullptr)
     {
-        HMIStateProxy::getInstance().onPVModeHeatElementEnabled(strcmp(payload.c_str(), "1") == 0);
+        bool enabled = strcmp(payload.c_str(), "1") == 0;
+        HMIStateProxy::getInstance().onPVModeHeatElementEnabled(enabled);
+        MainStateProxy::getInstance().onPVModeHeatElementEnabled(enabled);
     }
     else if (strstr_P(topic.c_str(), STATS_ENABLE_FLAG_PV_HEATELEMENT) != nullptr)
     {
-        HMIStateProxy::getInstance().onPVModeHeatElementEnabled(strcmp(payload.c_str(), "1") == 0);
+        bool enabled = strcmp(payload.c_str(), "1") == 0;
+        HMIStateProxy::getInstance().onPVModeHeatElementEnabled(enabled);
+        MainStateProxy::getInstance().onPVModeHeatElementEnabled(enabled);
     }
     else if (strstr_P(topic.c_str(), AQUAMQTT_RESET_OVERRIDES) != nullptr)
     {
@@ -208,6 +217,7 @@ void MQTTTask::spawn()
     esp_task_wdt_add(mTaskHandle);
     DHWState::getInstance().setListener(mTaskHandle);
     HMIStateProxy::getInstance().setListener(mTaskHandle);
+    MainStateProxy::getInstance().setListener(mTaskHandle);
 }
 
 [[noreturn]] void MQTTTask::innerTask(void* pvParameters)
@@ -313,7 +323,7 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 7) != 0 || fullUpdate)
     {
-        if (DHWState::getInstance().copyFrame(aquamqtt::message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
+        if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             updateMainStatus(fullUpdate);
 
@@ -327,7 +337,7 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 6) != 0 || fullUpdate)
     {
-        if (DHWState::getInstance().copyFrame(aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
+        if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             updateEnergyStats(fullUpdate);
 
@@ -341,7 +351,7 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 5) != 0)
     {
-        if (DHWState::getInstance().copyFrame(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER, mTransferBuffer))
+        if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             updateErrorStatus();
         }
@@ -436,6 +446,22 @@ void                     MQTTTask::updateStats()
                 STATS_ACTIVE_OVERRIDES);
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
+        auto mainOverrides = MainStateProxy::getInstance().getOverrides();
+        sprintf(reinterpret_cast<char*>(mPayloadBuffer),
+                R"({ "%S": %s, "%S": %s })",
+                MAIN_STATE_PV,
+                mainOverrides.pvState ? "1" : "0",
+                MAIN_STATE_SOLAR,
+                mainOverrides.solarState ? "1" : "0");
+
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%S%S%S",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                STATS_SUBTOPIC,
+                STATS_ACTIVE_OVERRIDES_MAIN);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
         publishString(
                 STATS_SUBTOPIC,
                 STATS_AQUAMQTT_OVERRIDE_MODE,
@@ -488,9 +514,10 @@ void                     MQTTTask::updateMainStatus(bool fullUpdate)
         publishi(MAIN_SUBTOPIC, MAIN_STATE_DEFROST, message.stateDefrost());
     }
 
-    if (message.statePVChanged())
+    if (message.statePVOrSolarChanged())
     {
         publishi(MAIN_SUBTOPIC, MAIN_STATE_PV, message.statePV());
+        publishi(MAIN_SUBTOPIC, MAIN_STATE_SOLAR, message.stateSolar());
     }
 
     if (message.settingPwmFirstChanged())

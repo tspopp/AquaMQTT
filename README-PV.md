@@ -1,6 +1,6 @@
 # PV Modes
 
-AquaMqtt has been built to utilize local end excess energy produced by photovoltaic energy sources. For doing so, AquaMQTT provides additional operation modes to turn on either heat pump and/or heat element to reach the maximum water temperature. These operation modes can be enabled using two flags which are signaled via [MQTT](./MQTT.md). These flags override various HMI attributes:
+AquaMqtt has been built to utilize local end excess energy produced by photovoltaic energy sources. For doing so, AquaMQTT provides additional operation modes to turn on either heat pump and/or heat element to reach the maximum water temperature. The additional operation modes, which are only available in MITM configuration, can be enabled using two flags which are signaled via [MQTT](./MQTT.md). These flags override various HMI attributes:
 
 ## Default
 
@@ -20,7 +20,7 @@ flagPVModeHeatElement = false;
 
 The heat pump will try to reach maximum allowed temperature using the heat pump, without usage of the heating element. This will consume between 300 and 550W of power, depending on the current water temperature and air temperature.
 
-Active Overrides:
+Active Overrides (Direction HMI to MAIN):
 - Installation Mode is set to `HEATPUMP ONLY` (we don't want to use an external boiler if any connected)
 - OperationMode is set to "`MAN ECO OFF`"
 - OperationType is set to "`ALWAYS ON`"
@@ -28,6 +28,9 @@ Active Overrides:
 - Heating Element is set to `disabled`
 - Emergeny Mode is turned `off`
 - Consumes about `300 - 550W`
+
+Active Overrides (Direction MAIN to HMI):
+- Solar State is set to `true` (shows Solar Icon on the HMI Display)
 
 *Any other previously set overrides are ignored, if this mode is active!*
 
@@ -40,6 +43,7 @@ flagPVModeHeatElement = true;
 
 The heat pump will try to reach maximum allowed temperate using the heating element, without usage of the heat pump. This will consume 1600W of power.
 
+Active Overrides (Direction HMI to MAIN):
 - Installation Mode is set to `HEATPUMP ONLY` (we don't want to use an external boiler if any connected)
 - OperationMode is set to "`MAN ECO OFF`"
 - OperationType is set to "`ALWAYS ON`"
@@ -47,6 +51,9 @@ The heat pump will try to reach maximum allowed temperate using the heating elem
 - Heating Element is set to `enabled`
 - Emergency Mode is turned `on` (forces usage of heat element)
 - Consumes `1600W`
+
+Active Overrides (Direction MAIN to HMI):
+- PV State is set to `true` (shows PV Icon on the HMI Display)
 
 *Any other previously set overrides are ignored, if this mode is active!*
 
@@ -59,12 +66,17 @@ flagPVModeHeatElement = true;
 
 If both flags are set, the heat pump will enter the enter OperationMode "`BOOST`" and therefore utilize both heat pump and heat element to reach and keep maximum temperature.
 
+Active Overrides (Direction HMI to MAIN):
 - Installation Mode is set to `HEATPUMP ONLY` (we don't want to use an external boiler if any connected)
 - OperationMode is set to "`BOOST`"
 - OperationType is set to "`ALWAYS ON`"
 - Water Temperature is set to `62°C`
 - Heating Element is set to `enabled`
 - Consumes `1600W` + `300 - 550W`
+
+Active Overrides (Direction MAIN to HMI):
+- Solar State is set to `true` (shows Solar Icon on the HMI Display)
+- PV State is set to `true` (shows PV Icon on the HMI Display)
 
 *Any other previously set overrides are ignored, if this mode is active!*
 
@@ -79,7 +91,6 @@ The flags can be triggered using the [MQTT](./MQTT.md) control topics. The curre
 | Flag PV heat element   | `$root/stats/flagPVModeHeatElement` | bool | Status of the pv heat element flag
 | Set PV Mode Heat Pump Flag                 | `$root/ctrl/flagPVModeHeatPump`       |   bool           | Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`  |
 | Set PV Mode Heat Element Flag                 | `$root/ctrl/flagPVModeHeatElement`       |   bool           |  Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h`  |
-   |
 
 ## How to automate?
 

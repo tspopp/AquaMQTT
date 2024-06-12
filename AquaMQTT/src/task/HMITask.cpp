@@ -6,6 +6,7 @@
 #include "message/ErrorMessage.h"
 #include "message/MessageConstants.h"
 #include "state/HMIStateProxy.h"
+#include "state/MainStateProxy.h"
 
 namespace aquamqtt
 {
@@ -165,7 +166,7 @@ void HMITask::flushReadBuffer()
 }
 void HMITask::sendMessage193()
 {
-    if (DHWState::getInstance().copyFrame(message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
+    if (MainStateProxy::getInstance().copyFrame(message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
     {
         uint16_t crc = mCRC.ccitt(mTransferBuffer, message::MAIN_MESSAGE_LENGTH);
         Serial1.write(message::MAIN_MESSAGE_IDENTIFIER);
@@ -182,7 +183,7 @@ void HMITask::sendMessage193()
 }
 void HMITask::sendMessage67()
 {
-    if (DHWState::getInstance().copyFrame(message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
+    if (MainStateProxy::getInstance().copyFrame(message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
     {
         uint16_t crc = mCRC.ccitt(mTransferBuffer, message::ENERGY_MESSAGE_LENGTH);
         Serial1.write(message::ENERGY_MESSAGE_IDENTIFIER);
@@ -203,7 +204,7 @@ void HMITask::sendMessage74()
     // check if the HMI is requesting an error message
     uint8_t requestId = UINT8_MAX;
     {
-        if (DHWState::getInstance().copyFrame(aquamqtt::message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
+        if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             aquamqtt::message::HMIMessage hmiMessage(mTransferBuffer);
             requestId = hmiMessage.errorRequestId();
@@ -220,7 +221,7 @@ void HMITask::sendMessage74()
     // check if we have the requested error message in cache
     uint8_t availableRequestId = 0;
     {
-        if (DHWState::getInstance().copyFrame(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER, mTransferBuffer))
+        if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             aquamqtt::message::ErrorMessage errorMessage(mTransferBuffer);
             availableRequestId = errorMessage.errorRequestId();
