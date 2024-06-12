@@ -27,11 +27,11 @@ Disassemble the heatpump as described within the chapter "**Opening the product 
 
 Once disassembled you can locate the connector on the back side of the HMI Controller...
 
-<img src="../media/hmi_controller_back.jpg?raw=true" width=40% height=40%>
+<img src="img/hmi_controller_back.jpg?raw=true" width=40% height=40%>
 
 ... which is connected to the following port of the Main Controller:
 
-<img src="../media/main_controller.jpg?raw=true" width=40% height=40%>
+<img src="img/main_controller.jpg?raw=true" width=40% height=40%>
 
 - VCC 5V (green)
 - GND (red/brown)
@@ -44,13 +44,13 @@ The AquaMQTT Board intercepts the data line (white) and is using the provided VC
 
 Place the AquaMqtt Board to the back side of the hmi controller and connect the DHW HMI Connector with the original HMI controller. Match the connections accordingly:
 
-<img src="../media/installed.jpg?raw=true" width=40% height=40%>
+<img src="img/installed.jpg?raw=true" width=40% height=40%>
 
 ## Wiring
 
 Connect the original connector cable to the DHW Main Connector on the AquaMqtt Board as shown here:
 
-<img src="../media/wired_up.jpg?raw=true" width=40% height=40%>
+<img src="img/wired_up.jpg?raw=true" width=40% height=40%>
 
 ### Man-In-The-Middle Mode
 

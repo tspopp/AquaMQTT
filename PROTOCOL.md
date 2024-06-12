@@ -93,13 +93,13 @@ If an error message is requested by the HMI controller, the sequence contains an
 56ms idle
 ```
 
-<img src="../media/sequence.png?raw=true" width=100% height=100%>
+<img src="img/sequence.png?raw=true" width=100% height=100%>
 
 In case we disconnect the HMI controller during operation, we will notice that the 194 frame is no longer complete:
 
-<img src="../media/nohmi1.png?raw=true" width=100% height=100%>
+<img src="img/nohmi1.png?raw=true" width=100% height=100%>
 
-<img src="../media/nohmi2.png?raw=true" width=50% height=50%>
+<img src="img/nohmi2.png?raw=true" width=50% height=50%>
 
 Therefore, message 194 is completed by the HMI controller, whereas 193 and 67 are emitted by the main controller.
 
@@ -225,7 +225,7 @@ Example Table (Byte 19):
 Commands are executed by the HMI as soon as placeholder fields/values are replaced by command values. The HMI Controller
 awaits the change of the Main controller and then resets the placeholder fields to the previous placeholder value.
 
-##### Change Capactiy
+##### Change Capacity
 
 - Affected Byte Positions: 33, 34
 
@@ -460,8 +460,8 @@ Findings...
 
 ```
 5dec  | 0000 0101: Communication Enabled, PV enabled, No Circulation, Anti-Dry-Heating
-17dec | 0001 0001: Communication Enabled, PV disabled, Heat-Exchanger available, No Zirculation, No Anti-Dry-Heating
-20dec | 0001 0100: Communication Enabled, PV enabled, Heat Exchanger not available, No Zirculation, No Anti-Dry-Heating
+17dec | 0001 0001: Communication Enabled, PV disabled, Heat-Exchanger available, No Circulation, No Anti-Dry-Heating
+20dec | 0001 0100: Communication Enabled, PV enabled, Heat Exchanger not available, No Circulation, No Anti-Dry-Heating
 21dec | 0001 0101: Communication Enabled, PV enabled, No Circulation, No Anti-Dry-Heating
 23dec | 0001 0111: Communication Enabled, PV enabled, With Circulation Enabled, No Anti-Dry-Heating
 29dec | 0001 1101: Communication Disabled, PV enabled, Heat-Exchanger available, No Circulation, No Anti-Dry-Heating

@@ -6,9 +6,9 @@ individual [USART entities in One-Wire Mode](https://ww1.microchip.com/downloads
 The Arduino ESP32 on the board runs AquaMQTT, providing communication via WiFi/MQTT while being powerful enough to
 handle any time critical USART communication with the heat pumps hmi controller and main board.
 
-<img src="../../media/board_front.png?raw=true" width=40% height=40%>
+<img src="./../img/board_front.png?raw=true" width=40% height=40%>
 
-<img src="../../media/board_back.png?raw=true" width=40% height=40%>
+<img src="./../img/board_back.png?raw=true" width=40% height=40%>
 
 Additionally, an optional DS3231 Real Time Clock might be added to the board. This might be handy in case AquaMQTT will be ever used without any HMI at all. It would ensure a recovery with correct date and time after power outage and without WiFi.
 **Adding a RTC Module is experimental and untested!**
