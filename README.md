@@ -24,6 +24,7 @@ AquaMQTT has been designed and tested with the [Windhager AquaWin Air3](https://
 ### Proofen compatible devices:
 
 - [Atlantic Explorer V4](https://github.com/tspopp/AquaMQTT/issues/14)
+- [Austria Email Explorer Evo 2](https://github.com/tspopp/AquaMQTT/issues/22)
 - [Thermor Aeromax 5](https://github.com/tspopp/AquaMQTT/issues/18)
 - [Windhager AquaWin Air3](https://www.windhager.com/en/products/hot-water-tanks/aquawin-air3/) 
 
@@ -67,8 +68,9 @@ Unfortunately, I had no success pairing those solutions with my Windhager brande
 
 - [Utilize excess local energy using PV modes](./README-PV.md)
 
-## Some references to AquaMQTT
+## References
 
 - 🇫🇷 https://forum.hacf.fr/t/integration-dun-chauffe-eau-atlantic-explorer-en-mqtt/40493/6
 - 🇳🇱 https://gathering.tweakers.net/forum/list_messages/2116816/78
+- 🇩🇪 https://forum.iobroker.net/topic/61801/skript-atlantic-w%C3%A4rmepumpe-%C3%BCber-cozytouch-abfragen/74
 
