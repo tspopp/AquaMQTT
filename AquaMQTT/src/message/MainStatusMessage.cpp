@@ -50,6 +50,11 @@ bool MainStatusMessage::stateDefrost()
 
 bool MainStatusMessage::statePV()
 {
+    return mData[22] & 0x10;
+}
+
+bool MainStatusMessage::stateSolar()
+{
     return mData[22] & 0x20;
 }
 
@@ -137,7 +142,7 @@ void MainStatusMessage::compareWith(uint8_t* data)
         mSettingBoilerCapacityChanged       = true;
         mSettingBoilerBrandChanged          = true;
         mSettingCapabilitiesChanged         = true;
-        mPVStateChanged                     = true;
+        mPVOrSolarStateChanged              = true;
         mErrorCodeChanged                   = true;
         return;
     }
@@ -191,7 +196,7 @@ void MainStatusMessage::compareWith(uint8_t* data)
                 mSettingAntiLegionellaTargetChanged = true;
                 break;
             case 22:
-                mPVStateChanged = true;
+                mPVOrSolarStateChanged = true;
                 break;
             case 23:
                 mErrorCodeChanged = true;
@@ -231,7 +236,7 @@ MainStatusMessage::MainStatusMessage(uint8_t* data)
     , mSettingBoilerCapacityChanged(false)
     , mSettingBoilerBrandChanged(false)
     , mSettingCapabilitiesChanged(false)
-    , mPVStateChanged(false)
+    , mPVOrSolarStateChanged(false)
     , mErrorCodeChanged(false)
 {
 }
@@ -295,15 +300,14 @@ bool MainStatusMessage::settingCapabilitiesChanged() const
 {
     return mSettingCapabilitiesChanged;
 }
-bool MainStatusMessage::statePVChanged() const
+bool MainStatusMessage::statePVOrSolarChanged() const
 {
-    return mPVStateChanged;
+    return mPVOrSolarStateChanged;
 }
 bool MainStatusMessage::errorCodeChanged() const
 {
     return mErrorCodeChanged;
 }
-
 uint8_t MainStatusMessage::errorCode() const
 {
     if (mData[23] == UINT8_MAX)
@@ -311,6 +315,28 @@ uint8_t MainStatusMessage::errorCode() const
         return 0;
     }
     return mData[23];
+}
+void MainStatusMessage::enableStatePV(bool enabled)
+{
+    if (enabled)
+    {
+        mData[22] |= 0x10;
+    }
+    else
+    {
+        mData[22] &= ~0x10;
+    }
+}
+void MainStatusMessage::enableStateSolar(bool enabled)
+{
+    if (enabled)
+    {
+        mData[22] |= 0x20;
+    }
+    else
+    {
+        mData[22] &= ~0x20;
+    }
 }
 }  // namespace message
 }  // namespace aquamqtt

@@ -408,7 +408,7 @@ Request Error No 2 with Request Id: 77    35 18 2 65 252 0 240 32 240 6 60 16 16
 | 18 - 19     | 0 0     | Fan-Speed                         | Either 0 (off) or 650 (lowspeed) or 810 (highspeed) Maybe rpm? Does this reflect the PWM settings? |
 | 20          | 44      | Setting: Min T Target             | *Adjustable from HMI controller*                                                                   |
 | 21          | 62      | Setting: Anti-Legionella T Target | *Adjustable from HMI controller*                                                                   |
-| 22          | 0       | State: PV-Input                   | 16 == PV Enabled and Active!                                                                       |
+| 22          | 0       | State: PV and Solar Input         | 16 == PV Enabled and Active, 32 == Solar Input Triggered                                           |
 | 23          | 255     | Error-Code                        | In Error State this contains Error Code, eg. 7                                                     |
 | 24          | 255     | Error-Code                        | In Error State this contains 0                                                                     |
 | 25          | 255     | Error-Code                        | In Error State this contains 0                                                                     |
