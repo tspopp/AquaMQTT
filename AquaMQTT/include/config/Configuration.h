@@ -4,7 +4,7 @@
 /**
  * Possibility to include your own configuration file (added to .gitignore)
  */
-#define CUSTOM_CONFIGURATION
+//#define CUSTOM_CONFIGURATION
 
 #ifdef CUSTOM_CONFIGURATION
 #    include "CustomConfiguration.h"
