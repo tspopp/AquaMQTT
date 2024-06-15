@@ -86,7 +86,7 @@ void loop()
                 mBuffer.pop(retVal);
                 mTempBuffer[i] = retVal;
             }
-            sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%S%S", config::mqttPrefix, BASE_TOPIC, DEBUG);
+            sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%s%s", config::mqttPrefix, BASE_TOPIC, DEBUG);
             toHexStr(mTempBuffer, BUFFER_SIZE, reinterpret_cast<char*>(mPayloadBuffer));
             mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
         }
