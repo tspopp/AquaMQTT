@@ -1,149 +1,147 @@
 #ifndef AQUAMQTT_MQTTDEFINITIONS_H
 #define AQUAMQTT_MQTTDEFINITIONS_H
 
-#include "pgmspace.h"
-
 namespace aquamqtt
 {
 namespace mqtt
 {
 // Base Topics
-const char BASE_TOPIC[] PROGMEM    = { "aquamqtt/" };
-const char CONTROL_TOPIC[] PROGMEM = { "aquamqtt/ctrl/#" };
+constexpr char BASE_TOPIC[]    = { "aquamqtt/" };
+constexpr char CONTROL_TOPIC[] = { "aquamqtt/ctrl/#" };
 
-const char HMI_SUBTOPIC[] PROGMEM    = { "hmi/" };
-const char MAIN_SUBTOPIC[] PROGMEM   = { "main/" };
-const char ENERGY_SUBTOPIC[] PROGMEM = { "energy/" };
-const char ERROR_SUBTOPIC[] PROGMEM  = { "error/" };
-const char STATS_SUBTOPIC[] PROGMEM  = { "stats/" };
+constexpr char HMI_SUBTOPIC[]    = { "hmi/" };
+constexpr char MAIN_SUBTOPIC[]   = { "main/" };
+constexpr char ENERGY_SUBTOPIC[] = { "energy/" };
+constexpr char ERROR_SUBTOPIC[]  = { "error/" };
+constexpr char STATS_SUBTOPIC[]  = { "stats/" };
 
 // Enum Types
-const char ENUM_UNKNOWN[] PROGMEM = { "UNKNOWN" };
+constexpr char ENUM_UNKNOWN[] = { "UNKNOWN" };
 
-const char ENUM_AQUAMQTT_MODE_LISTENER[] PROGMEM = { "LISTENER" };
-const char ENUM_AQUAMQTT_MODE_MITM[] PROGMEM     = { "MITM" };
+constexpr char ENUM_AQUAMQTT_MODE_LISTENER[] = { "LISTENER" };
+constexpr char ENUM_AQUAMQTT_MODE_MITM[]     = { "MITM" };
 
-const char ENUM_BRAND_ATLANTIC[] PROGMEM = { "Atlantic" };
-const char ENUM_BRAND_THERMOR[] PROGMEM  = { "Thermor" };
-const char ENUM_BRAND_SAUTER[] PROGMEM   = { "Sauter" };
-const char ENUM_BRAND_NONAME[] PROGMEM   = { "No Name" };
+constexpr char ENUM_BRAND_ATLANTIC[] = { "Atlantic" };
+constexpr char ENUM_BRAND_THERMOR[]  = { "Thermor" };
+constexpr char ENUM_BRAND_SAUTER[]   = { "Sauter" };
+constexpr char ENUM_BRAND_NONAME[]   = { "No Name" };
 
-const char ENUM_OPERATION_MODE_AUTO[] PROGMEM    = { "AUTO" };
-const char ENUM_OPERATION_MODE_ECO_OFF[] PROGMEM = { "MAN ECO OFF" };
-const char ENUM_OPERATION_MODE_ECO_ON[] PROGMEM  = { "MAN ECO ON" };
-const char ENUM_OPERATION_MODE_BOOST[] PROGMEM   = { "BOOST" };
-const char ENUM_OPERATION_MODE_ABSENCE[] PROGMEM = { "ABSENCE" };
+constexpr char ENUM_OPERATION_MODE_AUTO[]    = { "AUTO" };
+constexpr char ENUM_OPERATION_MODE_ECO_OFF[] = { "MAN ECO OFF" };
+constexpr char ENUM_OPERATION_MODE_ECO_ON[]  = { "MAN ECO ON" };
+constexpr char ENUM_OPERATION_MODE_BOOST[]   = { "BOOST" };
+constexpr char ENUM_OPERATION_MODE_ABSENCE[] = { "ABSENCE" };
 
-const char ENUM_AIR_DUCT_IN_IN[] PROGMEM   = { "INT/INT" };
-const char ENUM_AIR_DUCT_EXT_EXT[] PROGMEM = { "EXT/EXT" };
-const char ENUM_AIR_DUCT_INT_EXT[] PROGMEM = { "INT/EXT" };
+constexpr char ENUM_AIR_DUCT_IN_IN[]   = { "INT/INT" };
+constexpr char ENUM_AIR_DUCT_EXT_EXT[] = { "EXT/EXT" };
+constexpr char ENUM_AIR_DUCT_INT_EXT[] = { "INT/EXT" };
 
-const char ENUM_INSTALLATION_THERMODYNAMICS_ONLY[] PROGMEM    = { "HEAT PUMP ONLY" };
-const char ENUM_INSTALLATION_BOILER_BACKUP_HP_PRIO[] PROGMEM  = { "BOILER BACKUP / HEAT PUMP PRIORITY" };
-const char ENUM_INSTALLATION_BOILER_BACKUP_HP_OPT[] PROGMEM   = { "BOILER BACKUP / HEAT PUMP OPTIMIZED" };
-const char ENUM_INSTALLATION_BOILER_BACKUP_EXT_OPT[] PROGMEM  = { "BOILER BACKUP / BOILER OPTIMIZED" };
-const char ENUM_INSTALLATION_BOILER_BACKUP_EXT_PRIO[] PROGMEM = { "BOILER BACKUP / BOILER PRIORITY" };
-const char ENUM_INSTALLATION_SOLAR_BACKUP[] PROGMEM           = { "HEAT PUMP AND SOLAR BACKUP" };
+constexpr char ENUM_INSTALLATION_THERMODYNAMICS_ONLY[]    = { "HEAT PUMP ONLY" };
+constexpr char ENUM_INSTALLATION_BOILER_BACKUP_HP_PRIO[]  = { "BOILER BACKUP / HEAT PUMP PRIORITY" };
+constexpr char ENUM_INSTALLATION_BOILER_BACKUP_HP_OPT[]   = { "BOILER BACKUP / HEAT PUMP OPTIMIZED" };
+constexpr char ENUM_INSTALLATION_BOILER_BACKUP_EXT_OPT[]  = { "BOILER BACKUP / BOILER OPTIMIZED" };
+constexpr char ENUM_INSTALLATION_BOILER_BACKUP_EXT_PRIO[] = { "BOILER BACKUP / BOILER PRIORITY" };
+constexpr char ENUM_INSTALLATION_SOLAR_BACKUP[]           = { "HEAT PUMP AND SOLAR BACKUP" };
 
-const char ENUM_TEST_MODE_OFF[] PROGMEM                            = { "OFF" };
-const char ENUM_TEST_MODE_IDLE[] PROGMEM                           = { "IDLE" };
-const char ENUM_TEST_MODE_ACTIVE_HEAT_PUMP[] PROGMEM               = { "TESTING HEAT PUMP" };
-const char ENUM_TEST_MODE_ACTIVE_HEAT_ELEM[] PROGMEM               = { "TESTING HEAT ELEM" };
-const char ENUM_TEST_MODE_ACTIVE_FAN_HIGH[] PROGMEM                = { "TESTING FAN HIGH" };
-const char ENUM_TEST_MODE_ACTIVE_FAN_LOW[] PROGMEM                 = { "TESTING FAN LOW" };
-const char ENUM_TEST_MODE_ACTIVE_DEFROSTING[] PROGMEM              = { "TESTING DEFROSTING" };
-const char ENUM_TEST_MODE_ACTIVE_HEAT_PUMP_BOILER_BACKUP[] PROGMEM = { "TESTING HEAT PUMP AND BOILER BACKUP" };
+constexpr char ENUM_TEST_MODE_OFF[]                            = { "OFF" };
+constexpr char ENUM_TEST_MODE_IDLE[]                           = { "IDLE" };
+constexpr char ENUM_TEST_MODE_ACTIVE_HEAT_PUMP[]               = { "TESTING HEAT PUMP" };
+constexpr char ENUM_TEST_MODE_ACTIVE_HEAT_ELEM[]               = { "TESTING HEAT ELEM" };
+constexpr char ENUM_TEST_MODE_ACTIVE_FAN_HIGH[]                = { "TESTING FAN HIGH" };
+constexpr char ENUM_TEST_MODE_ACTIVE_FAN_LOW[]                 = { "TESTING FAN LOW" };
+constexpr char ENUM_TEST_MODE_ACTIVE_DEFROSTING[]              = { "TESTING DEFROSTING" };
+constexpr char ENUM_TEST_MODE_ACTIVE_HEAT_PUMP_BOILER_BACKUP[] = { "TESTING HEAT PUMP AND BOILER BACKUP" };
 
-const char ENUM_OPERATION_TYPE_ALWAYS_ON[] PROGMEM = { "ALWAYS ON" };
-const char ENUM_OPERATION_TYPE_TIMER[] PROGMEM     = { "TIME WINDOW" };
+constexpr char ENUM_OPERATION_TYPE_ALWAYS_ON[] = { "ALWAYS ON" };
+constexpr char ENUM_OPERATION_TYPE_TIMER[]     = { "TIME WINDOW" };
 
-const char ENUM_LAST_WILL_ONLINE[] PROGMEM  = { "ONLINE" };
-const char ENUM_LAST_WILL_OFFLINE[] PROGMEM = { "OFFLINE" };
+constexpr char ENUM_LAST_WILL_ONLINE[]  = { "ONLINE" };
+constexpr char ENUM_LAST_WILL_OFFLINE[] = { "OFFLINE" };
 
-const char ENUM_SETUP_COMPLETED[] PROGMEM  = { "OK" };
-const char ENUM_SETUP_INCOMPLETE[] PROGMEM = { "PARTIAL RESET" };
-const char ENUM_SETUP_RESET[] PROGMEM      = { "FACTORY RESET" };
+constexpr char ENUM_SETUP_COMPLETED[]  = { "OK" };
+constexpr char ENUM_SETUP_INCOMPLETE[] = { "PARTIAL RESET" };
+constexpr char ENUM_SETUP_RESET[]      = { "FACTORY RESET" };
 
-const char ENUM_AQUAMQTT_OVERRIDE_MODE_DEFAULT[] PROGMEM = { "DEFAULT" };
-const char ENUM_AQUAMQTT_OVERRIDE_MODE_HP_ONLY[] PROGMEM = { "PV HP" };
-const char ENUM_AQUAMQTT_OVERRIDE_MODE_HE_ONLY[] PROGMEM = { "PV HE" };
-const char ENUM_AQUAMQTT_OVERRIDE_MODE_PV_FULL[] PROGMEM = { "PV BOOST" };
+constexpr char ENUM_AQUAMQTT_OVERRIDE_MODE_DEFAULT[] = { "DEFAULT" };
+constexpr char ENUM_AQUAMQTT_OVERRIDE_MODE_HP_ONLY[] = { "PV HP" };
+constexpr char ENUM_AQUAMQTT_OVERRIDE_MODE_HE_ONLY[] = { "PV HE" };
+constexpr char ENUM_AQUAMQTT_OVERRIDE_MODE_PV_FULL[] = { "PV BOOST" };
 
 // Subtopics
-const char MAIN_ERROR_CODE[] PROGMEM                = { "errorCode" };
-const char MAIN_HOT_WATER_TEMP[] PROGMEM            = { "waterTemp" };
-const char MAIN_SUPPLY_AIR_TEMP[] PROGMEM           = { "supplyAirTemp" };
-const char MAIN_EVAPORATOR_AIR_TEMP_UPPER[] PROGMEM = { "evaporatorAirTemp" };
-const char MAIN_EVAPORATOR_AIR_TEMP_LOWER[] PROGMEM = { "evaporatorAirTempLower" };
-const char MAIN_FAN_PWM[] PROGMEM                   = { "fanPWM" };
-const char MAIN_STATE_FAN[] PROGMEM                 = { "stateFan" };
-const char MAIN_STATE_HEATPUMP[] PROGMEM            = { "stateHeatpump" };
-const char MAIN_STATE_HEAT_ELEMENT[] PROGMEM        = { "stateElement" };
-const char MAIN_STATE_EXT_BOILER[] PROGMEM          = { "stateExtBoiler" };
-const char MAIN_STATE_DEFROST[] PROGMEM             = { "stateDefrost" };
-const char MAIN_STATE_PV[] PROGMEM                  = { "statePV" };
-const char MAIN_STATE_SOLAR[] PROGMEM               = { "stateSolar" };
+constexpr char MAIN_ERROR_CODE[]                = { "errorCode" };
+constexpr char MAIN_HOT_WATER_TEMP[]            = { "waterTemp" };
+constexpr char MAIN_SUPPLY_AIR_TEMP[]           = { "supplyAirTemp" };
+constexpr char MAIN_EVAPORATOR_AIR_TEMP_UPPER[] = { "evaporatorAirTemp" };
+constexpr char MAIN_EVAPORATOR_AIR_TEMP_LOWER[] = { "evaporatorAirTempLower" };
+constexpr char MAIN_FAN_PWM[]                   = { "fanPWM" };
+constexpr char MAIN_STATE_FAN[]                 = { "stateFan" };
+constexpr char MAIN_STATE_HEATPUMP[]            = { "stateHeatpump" };
+constexpr char MAIN_STATE_HEAT_ELEMENT[]        = { "stateElement" };
+constexpr char MAIN_STATE_EXT_BOILER[]          = { "stateExtBoiler" };
+constexpr char MAIN_STATE_DEFROST[]             = { "stateDefrost" };
+constexpr char MAIN_STATE_PV[]                  = { "statePV" };
+constexpr char MAIN_STATE_SOLAR[]               = { "stateSolar" };
 
-const char MAIN_SETTING_PWM_01[] PROGMEM              = { "settingPWM_1" };
-const char MAIN_SETTING_PWM_02[] PROGMEM              = { "settingPWM_2" };
-const char MAIN_SETTING_PWM_03[] PROGMEM              = { "settingPWM_3" };
-const char MAIN_SETTING_MIN_TEMP_TARGET[] PROGMEM     = { "settingMinTargetTemp" };
-const char MAIN_SETTING_MIN_TEMP_LEGIONELLA[] PROGMEM = { "settingMinLegionellaTemp" };
-const char MAIN_SETTING_PWR_HEATELEM[] PROGMEM        = { "settingWattageElement" };
-const char MAIN_SETTING_BOILER_CAP[] PROGMEM          = { "settingBoilerCapacity" };
-const char MAIN_SETTING_BOILER_BRAND[] PROGMEM        = { "settingBoilerBrand" };
-const char MAIN_CAPABILITY_HEAT_EXC[] PROGMEM         = { "capabilityHeatExchanger" };
-const char MAIN_CAPABILITY_CIRCULATION[] PROGMEM      = { "capabilityCirculation" };
-const char MAIN_CAPABILITY_PV_INPUT[] PROGMEM         = { "capabilityPVInput" };
-const char MAIN_CAPABILITY_EXT_COMM[] PROGMEM         = { "capabilityCommunication" };
-const char MAIN_CAPABILITY_DRY_HEATING[] PROGMEM      = { "capabilityAntiDryHeating" };
+constexpr char MAIN_SETTING_PWM_01[]              = { "settingPWM_1" };
+constexpr char MAIN_SETTING_PWM_02[]              = { "settingPWM_2" };
+constexpr char MAIN_SETTING_PWM_03[]              = { "settingPWM_3" };
+constexpr char MAIN_SETTING_MIN_TEMP_TARGET[]     = { "settingMinTargetTemp" };
+constexpr char MAIN_SETTING_MIN_TEMP_LEGIONELLA[] = { "settingMinLegionellaTemp" };
+constexpr char MAIN_SETTING_PWR_HEATELEM[]        = { "settingWattageElement" };
+constexpr char MAIN_SETTING_BOILER_CAP[]          = { "settingBoilerCapacity" };
+constexpr char MAIN_SETTING_BOILER_BRAND[]        = { "settingBoilerBrand" };
+constexpr char MAIN_CAPABILITY_HEAT_EXC[]         = { "capabilityHeatExchanger" };
+constexpr char MAIN_CAPABILITY_CIRCULATION[]      = { "capabilityCirculation" };
+constexpr char MAIN_CAPABILITY_PV_INPUT[]         = { "capabilityPVInput" };
+constexpr char MAIN_CAPABILITY_EXT_COMM[]         = { "capabilityCommunication" };
+constexpr char MAIN_CAPABILITY_DRY_HEATING[]      = { "capabilityAntiDryHeating" };
 
-const char HMI_HOT_WATER_TEMP_TARGET[] PROGMEM   = { "waterTempTarget" };
-const char HMI_OPERATION_MODE[] PROGMEM          = { "operationMode" };
-const char HMI_OPERATION_TYPE[] PROGMEM          = { "operationType" };
-const char HMI_TIME[] PROGMEM                    = { "time" };
-const char HMI_DATE[] PROGMEM                    = { "date" };
-const char HMI_TIME_AND_DATE[] PROGMEM           = { "time/date" };
-const char HMI_EMERGENCY_MODE[] PROGMEM          = { "emergencyModeEnabled" };
-const char HMI_HEATING_ELEMENT_ENABLED[] PROGMEM = { "heatingElementEnabled" };
-const char HMI_LEGIONELLA[] PROGMEM              = { "antiLegionellaPerMonth" };
-const char HMI_TIMER_WINDOW_A[] PROGMEM          = { "timerWindowA" };
-const char HMI_TIMER_WINDOW_B[] PROGMEM          = { "timerWindowB" };
-const char HMI_AIR_DUCT_CONFIG[] PROGMEM         = { "configAirduct" };
-const char HMI_INSTALLATION_CONFIG[] PROGMEM     = { "configInstallation" };
-const char HMI_TEST_MODE[] PROGMEM               = { "testModeStatus" };
-const char HMI_SETUP_STATE[] PROGMEM             = { "setupState" };
-const char HMM_PV_INPUT_ACTIVATED[] PROGMEM      = { "pvInputActivated" };
+constexpr char HMI_HOT_WATER_TEMP_TARGET[]   = { "waterTempTarget" };
+constexpr char HMI_OPERATION_MODE[]          = { "operationMode" };
+constexpr char HMI_OPERATION_TYPE[]          = { "operationType" };
+constexpr char HMI_TIME[]                    = { "time" };
+constexpr char HMI_DATE[]                    = { "date" };
+constexpr char HMI_TIME_AND_DATE[]           = { "time/date" };
+constexpr char HMI_EMERGENCY_MODE[]          = { "emergencyModeEnabled" };
+constexpr char HMI_HEATING_ELEMENT_ENABLED[] = { "heatingElementEnabled" };
+constexpr char HMI_LEGIONELLA[]              = { "antiLegionellaPerMonth" };
+constexpr char HMI_TIMER_WINDOW_A[]          = { "timerWindowA" };
+constexpr char HMI_TIMER_WINDOW_B[]          = { "timerWindowB" };
+constexpr char HMI_AIR_DUCT_CONFIG[]         = { "configAirduct" };
+constexpr char HMI_INSTALLATION_CONFIG[]     = { "configInstallation" };
+constexpr char HMI_TEST_MODE[]               = { "testModeStatus" };
+constexpr char HMI_SETUP_STATE[]             = { "setupState" };
+constexpr char HMM_PV_INPUT_ACTIVATED[]      = { "pvInputActivated" };
 
-const char ENERGY_TOTAL_HEATING_ELEM_HOURS[] PROGMEM = { "totalHeatingElemHours" };
-const char ENERGY_TOTAL_HEATPUMP_HOURS[] PROGMEM     = { "totalHeatpumpHours" };
-const char ENERGY_TOTAL_HOURS[] PROGMEM              = { "totalHours" };
-const char ENERGY_TOTAL_ENERGY_WH[] PROGMEM          = { "totalEnergyWh" };
-const char ENERGY_POWER_TOTAL[] PROGMEM              = { "powerTotal" };
-const char ENERGY_POWER_HEAT_ELEMENT[] PROGMEM       = { "powerHeatingElem" };
-const char ENERGY_POWER_HEATPUMP[] PROGMEM           = { "powerHeatpump" };
+constexpr char ENERGY_TOTAL_HEATING_ELEM_HOURS[] = { "totalHeatingElemHours" };
+constexpr char ENERGY_TOTAL_HEATPUMP_HOURS[]     = { "totalHeatpumpHours" };
+constexpr char ENERGY_TOTAL_HOURS[]              = { "totalHours" };
+constexpr char ENERGY_TOTAL_ENERGY_WH[]          = { "totalEnergyWh" };
+constexpr char ENERGY_POWER_TOTAL[]              = { "powerTotal" };
+constexpr char ENERGY_POWER_HEAT_ELEMENT[]       = { "powerHeatingElem" };
+constexpr char ENERGY_POWER_HEATPUMP[]           = { "powerHeatpump" };
 
-const char ERROR_ERROR_NUMBER[] PROGMEM = { "errorNumber" };
+constexpr char ERROR_ERROR_NUMBER[] = { "errorNumber" };
 
-const char STATS_AQUAMQTT_ADDR[] PROGMEM              = { "ipAddress" };
-const char STATS_AQUAMQTT_RSSI[] PROGMEM              = { "rssiDb" };
-const char STATS_AQUAMQTT_MODE[] PROGMEM              = { "aquamqttMode" };
-const char STATS_AQUAMQTT_OVERRIDE_MODE[] PROGMEM     = { "overrideMode" };
-const char STATS_AQUAMQTT_LAST_WILL[] PROGMEM         = { "lwlState" };
-const char STATS_MSG_HANDLED[] PROGMEM                = { "msgHandled" };
-const char STATS_MSG_UNHANDLED[] PROGMEM              = { "msgUnhandled" };
-const char STATS_MSG_SENT[] PROGMEM                   = { "msgSent" };
-const char STATS_MSG_CRC_NOK[] PROGMEM                = { "msgCRCNOK" };
-const char STATS_DROPPED_BYTES[] PROGMEM              = { "droppedBytes" };
-const char STATS_ACTIVE_OVERRIDES[] PROGMEM           = { "activeOverrides" };
-const char STATS_ACTIVE_OVERRIDES_MAIN[] PROGMEM      = { "activeOverridesMain" };
-const char STATS_ENABLE_FLAG_PV_HEATPUMP[] PROGMEM    = { "flagPVModeHeatPump" };
-const char STATS_ENABLE_FLAG_PV_HEATELEMENT[] PROGMEM = { "flagPVModeHeatElement" };
+constexpr char STATS_AQUAMQTT_ADDR[]              = { "ipAddress" };
+constexpr char STATS_AQUAMQTT_RSSI[]              = { "rssiDb" };
+constexpr char STATS_AQUAMQTT_MODE[]              = { "aquamqttMode" };
+constexpr char STATS_AQUAMQTT_OVERRIDE_MODE[]     = { "overrideMode" };
+constexpr char STATS_AQUAMQTT_LAST_WILL[]         = { "lwlState" };
+constexpr char STATS_MSG_HANDLED[]                = { "msgHandled" };
+constexpr char STATS_MSG_UNHANDLED[]              = { "msgUnhandled" };
+constexpr char STATS_MSG_SENT[]                   = { "msgSent" };
+constexpr char STATS_MSG_CRC_NOK[]                = { "msgCRCNOK" };
+constexpr char STATS_DROPPED_BYTES[]              = { "droppedBytes" };
+constexpr char STATS_ACTIVE_OVERRIDES[]           = { "activeOverrides" };
+constexpr char STATS_ACTIVE_OVERRIDES_MAIN[]      = { "activeOverridesMain" };
+constexpr char STATS_ENABLE_FLAG_PV_HEATPUMP[]    = { "flagPVModeHeatPump" };
+constexpr char STATS_ENABLE_FLAG_PV_HEATELEMENT[] = { "flagPVModeHeatElement" };
 
-const char DEBUG[] PROGMEM = { "debug" };
+constexpr char DEBUG[] = { "debug" };
 
 // CTRL
-const char AQUAMQTT_RESET_OVERRIDES[] PROGMEM = { "reset" };
+constexpr char AQUAMQTT_RESET_OVERRIDES[] = { "reset" };
 
 }  // namespace mqtt
 }  // namespace aquamqtt
