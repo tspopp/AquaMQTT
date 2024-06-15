@@ -84,7 +84,7 @@ flowchart TD
   time. If this counter is rising, there might be connectivity issues or a different heatpump protocol using a
   different CRC mechanism.
 
-- Both counter values `msgHandled` and `msgSent` shall be rising over time if the connection is good. If these values stay at `0` there are connectivity issues.
+- The value `msgHandled` shall be rising over time if the connection is good. If this value stays at `0` there are most likely connectivity issues or the heat pump protocol is not (yet) supported.
 
 ### Q: AquaMQTT is connected to MQTT, but I don't see any values from the heatpump?
 
@@ -108,7 +108,7 @@ It seems that depending on your heat-pump brand and model there are sometimes fo
 ### Q: Why do I need the HMI controller? Do I have to connect the HMI controller?
 
 In both of AquaMQTT current implemented OperationModes `LISTENER` and `MITM` it is expected to have an HMI controller
-connected, since AquaMQTT is either just forwarding or altering the original messages emitted by the heat-pump
+connected, since AquaMQTT is either just listening or forwarding original or modified messages emitted by the heat-pump
 controllers.
 
 Technically it would be feasible to build another OperationMode without the need for the original HMI controller, but
@@ -147,3 +147,7 @@ There is a [python script](./tools) which subscribes all the debug topics and wr
 *The python script has to be modified to connect to your mqtt broker, with your mqtt broker credentials etc.*
 
 Afterwards you can inspect changing values over time and identify attributes by making changes to your HMI controller. If you identifiy something new which is not documented within [PROTOCOL.md](./PROTOCOL.md) yet, please create an issue or even an PR.
+
+### Q: I think my heat-pump uses an incompatible serial protocol? What can I do?
+
+If you already have the AquaMQTT Board installed and available, you can set it to LISTENER Mode and install [AquaDebug](./tools/AquaDebug/) to collect unmodified serial data traces from the heat-pump controller. If there are no other hardware and or connectivity related issues you should be able to identify the [heat-pump messages](./PROTOCOL.md) within the raw data. If the messages differ from the expected protocol, open up an github issue to discuss further.
