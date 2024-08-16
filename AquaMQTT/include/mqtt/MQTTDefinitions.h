@@ -120,6 +120,7 @@ constexpr char ENERGY_TOTAL_ENERGY_WH[]          = { "totalEnergyWh" };
 constexpr char ENERGY_POWER_TOTAL[]              = { "powerTotal" };
 constexpr char ENERGY_POWER_HEAT_ELEMENT[]       = { "powerHeatingElem" };
 constexpr char ENERGY_POWER_HEATPUMP[]           = { "powerHeatpump" };
+constexpr char ENERGY_TOTAL_WATER_CONSUMPTION[]  = { "waterConsumption" };
 
 constexpr char ERROR_ERROR_NUMBER[] = { "errorNumber" };
 

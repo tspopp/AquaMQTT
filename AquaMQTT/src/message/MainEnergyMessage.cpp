@@ -40,6 +40,12 @@ uint16_t MainEnergyMessage::powerOverall()
 {
     return ((uint16_t) mData[8] << 8) | (uint16_t) mData[7];
 }
+
+uint16_t MainEnergyMessage::totalWaterConsumption()
+{
+    return ((uint16_t) mData[10] << 8) | (uint16_t) mData[9];
+}
+
 void MainEnergyMessage::compareWith(uint8_t* data)
 {
     if (data == nullptr)
@@ -51,6 +57,7 @@ void MainEnergyMessage::compareWith(uint8_t* data)
         mTotalHeatElementHoursChanged = true;
         mTotalHoursChanged            = true;
         mTotalEnergyChanged           = true;
+        mTotalWaterConsumptionChanged = true;
         return;
     }
 
@@ -75,6 +82,10 @@ void MainEnergyMessage::compareWith(uint8_t* data)
             case 7:
             case 8:
                 mPowerOverallChanged = true;
+                break;
+            case 9:
+            case 10:
+                mTotalWaterConsumptionChanged = true;
                 break;
             case 11:
             case 12:
@@ -118,6 +129,7 @@ MainEnergyMessage::MainEnergyMessage(uint8_t* data)
     , mTotalHeatElementHoursChanged(false)
     , mTotalHoursChanged(false)
     , mTotalEnergyChanged(false)
+    , mTotalWaterConsumptionChanged(false)
 {
 }
 bool MainEnergyMessage::totalHeatpumpHoursChanged() const
@@ -147,6 +159,10 @@ bool MainEnergyMessage::powerHeatElementChanged() const
 bool MainEnergyMessage::powerOverallChanged() const
 {
     return mPowerOverallChanged;
+}
+bool MainEnergyMessage::totalWaterConsumptionChanged() const
+{
+    return mTotalWaterConsumptionChanged;
 }
 
 }  // namespace message
