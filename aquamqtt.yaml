@@ -224,6 +224,17 @@ mqtt:
         manufacturer: tspopp
         name: AquaMQTT 
         model: V1
+    - name: "Total Water Consumption"
+      state_topic: "aquamqtt/energy/waterConsumption"
+      unit_of_measurement: "l"
+      state_class: total_increasing
+      unique_id: atlantic_state_total_water_consumption
+      icon: mdi:water-pump
+      device:
+        identifiers: AquaMQTT
+        manufacturer: tspopp
+        name: AquaMQTT
+        model: V1
     - name: "Total Heating Element Hours"
       state_topic: "aquamqtt/energy/totalHeatingElemHours"
       unit_of_measurement: "h"
