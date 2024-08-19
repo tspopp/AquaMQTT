@@ -1,10 +1,10 @@
 #include <Arduino.h>
-#include <WiFi.h>
 #include <esp_task_wdt.h>
 
 #include "config/Configuration.h"
 #include "handler/OTA.h"
 #include "handler/RTC.h"
+#include "handler/Wifi.h"
 #include "task/ControllerTask.h"
 #include "task/HMITask.h"
 #include "task/ListenerTask.h"
@@ -19,27 +19,17 @@ ListenerTask   listenerTask;
 MQTTTask       mqttTask;
 OTAHandler     otaHandler;
 RTCHandler     rtcHandler;
+WifiHandler    wifiHandler;
 
-void wifiCallback(WiFiEvent_t event)
-{
-    switch (event)
-    {
-        case WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED:
-            Serial.println(F("ARDUINO_EVENT_WIFI_STA_CONNECTED"));
-            break;
-        case WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-            Serial.println(F("ARDUINO_EVENT_WIFI_STA_DISCONNECTED"));
-            WiFi.setAutoReconnect(true);
-            break;
-        default:
-            break;
-    }
-}
+
 
 void loop()
 {
     // watchdog
     esp_task_wdt_reset();
+
+    // handle wifi events
+    wifiHandler.loop();
 
     // handle over-the-air module in main thread
     otaHandler.loop();
@@ -58,10 +48,8 @@ void setup()
     esp_task_wdt_init(WATCHDOG_TIMEOUT_S, true);
     esp_task_wdt_add(nullptr);
 
-    // connect to Wi-Fi
-    WiFiClass::mode(WIFI_STA);
-    WiFi.onEvent(wifiCallback);
-    WiFi.begin(aquamqtt::config::ssid, aquamqtt::config::psk);
+    // setup wifi
+    wifiHandler.setup();
 
     // setup rtc module
     rtcHandler.setup();
