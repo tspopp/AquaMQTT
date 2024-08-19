@@ -28,7 +28,7 @@ public:
 
     uint16_t powerOverall();
 
-    uint16_t totalWaterConsumption();
+    uint16_t totalWaterProduction();
 
     void compareWith(uint8_t* data);
 
@@ -46,7 +46,7 @@ public:
 
     bool powerOverallChanged() const;
 
-    bool totalWaterConsumptionChanged() const;
+    bool totalWaterProductionChanged() const;
 
 private:
     uint8_t* mData;
@@ -58,7 +58,7 @@ private:
     bool mTotalHeatElementHoursChanged;
     bool mTotalHoursChanged;
     bool mTotalEnergyChanged;
-    bool mTotalWaterConsumptionChanged;
+    bool mTotalWaterProductionChanged;
 };
 
 }  // namespace message

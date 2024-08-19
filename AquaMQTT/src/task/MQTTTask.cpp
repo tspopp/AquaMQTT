@@ -760,8 +760,8 @@ void                     MQTTTask::updateEnergyStats(bool fullUpdate)
         publishul(ENERGY_SUBTOPIC, ENERGY_POWER_TOTAL, message.powerOverall());
     }
 
-    if(message.totalWaterConsumptionChanged()) {
-        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_WATER_CONSUMPTION, message.totalWaterConsumption());
+    if(message.totalWaterProductionChanged()) {
+        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_WATER_PRODUCTION, message.totalWaterProduction());
     }
 
     if (config::DEBUG_RAW_SERIAL_MESSAGES)

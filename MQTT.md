@@ -93,7 +93,7 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 | Total Heating Element Hours   | `$root/energy/totalHeatingElemHours` | uint32 | h    | retained                                                                                           |
 | Total Hours                   | `$root/energy/totalHours`            | uint32 | h    | retained                                                                                           |
 | Total Energy                  | `$root/energy/totalEnergyWh`         | uint64 | Wh   |                                                                                                    |
-| Total Water Consumption       | `$root/energy/waterConsumption`      | uint16 | l    | Note: Expected to wrap-around at UINT16_MAX                                                        |
+| Total Water Production        | `$root/energy/totalWaterProduction`  | uint16 | l    | Note: Expected to wrap-around at UINT16_MAX                                                        |
 | Current Power Heatpump        | `$root/energy/powerHeatpump`         | uint16 | W    | Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h` |
 | Current Power Heating Element | `$root/energy/powerHeatingElem`      | uint16 | W    | Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h` |
 | Current Power Total           | `$root/energy/powerTotal`            | uint16 | W    |                                                                                                    |
