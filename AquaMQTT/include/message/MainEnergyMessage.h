@@ -28,6 +28,8 @@ public:
 
     uint16_t powerOverall();
 
+    uint16_t totalWaterProduction();
+
     void compareWith(uint8_t* data);
 
     bool totalHeatpumpHoursChanged() const;
@@ -44,6 +46,8 @@ public:
 
     bool powerOverallChanged() const;
 
+    bool totalWaterProductionChanged() const;
+
 private:
     uint8_t* mData;
 
@@ -54,6 +58,7 @@ private:
     bool mTotalHeatElementHoursChanged;
     bool mTotalHoursChanged;
     bool mTotalEnergyChanged;
+    bool mTotalWaterProductionChanged;
 };
 
 }  // namespace message

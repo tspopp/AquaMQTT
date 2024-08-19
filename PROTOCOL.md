@@ -488,8 +488,7 @@ Findings...
 | 5           | 0                   | ?                                       | -                 |
 | 6           | 0                   | ?                                       | -                 |
 | 7 - 8       | 221 1               | Power Consumption Total (Both)          | -                 |
-| 9           | 54                  | ?                                       | -                 |
-| 10          | 215                 | ?                                       | -                 |
+| 9 - 10      | 54 215              | Total Water Production (l)              | [Ticket](https://github.com/tspopp/AquaMQTT/issues/30)     |
 | 11 - 14     | 231 9 0 0           | Total Operation Hours (Heatpump)        | -                 |
 | 15 - 18     | 24 0 0 0            | Total Operation Hours (Heating Element) | -                 |
 | 19 - 22     | 231 9 0 0           | Total Operation Hours (Both)            | -                 |
