@@ -224,11 +224,11 @@ mqtt:
         manufacturer: tspopp
         name: AquaMQTT 
         model: V1
-    - name: "Total Water Consumption"
-      state_topic: "aquamqtt/energy/waterConsumption"
+    - name: "Total Water Production"
+      state_topic: "aquamqtt/energy/totalWaterProduction"
       unit_of_measurement: "l"
       state_class: total_increasing
-      unique_id: atlantic_state_total_water_consumption
+      unique_id: atlantic_state_total_water_production
       icon: mdi:water-pump
       device:
         identifiers: AquaMQTT
