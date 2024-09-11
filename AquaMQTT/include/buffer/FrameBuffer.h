@@ -9,7 +9,7 @@
 class FrameBuffer
 {
 public:
-    explicit FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74, std::string name);
+    explicit FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74);
 
     ~FrameBuffer() = default;
 
@@ -33,11 +33,10 @@ private:
 
     FastCRC16 mCRC;
 
-    bool        mHandle194;
-    bool        mHandle193;
-    bool        mHandle67;
-    bool        mHandle74;
-    std::string mName;
+    bool mHandle194;
+    bool mHandle193;
+    bool mHandle67;
+    bool mHandle74;
 
     uint64_t mDroppedCount;
     uint64_t mCRCFailCount;

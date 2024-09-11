@@ -9,7 +9,7 @@ namespace aquamqtt
 {
 
 ControllerTask::ControllerTask()
-    : mBuffer(false, true, true, true, "controller")
+    : mBuffer(false, true, true, true)
     , mLastStatisticsUpdate(0)
     , mTransferBuffer{ 0 }
     , mCRC()

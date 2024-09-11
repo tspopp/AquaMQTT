@@ -12,7 +12,7 @@ namespace aquamqtt
 {
 
 HMITask::HMITask()
-    : mBuffer(true, false, false, false, "hmi")
+    : mBuffer(true, false, false, false)
     , mLastEmittedRequestId(UINT8_MAX)
     , mLastStatisticsUpdate(0)
     , mLastMessageSent(0)

@@ -5,12 +5,11 @@
 #define FRAME_ID_LEN_BYTES 1
 #define CRC_LEN_BYTES      2
 
-FrameBuffer::FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74, std::string name)
+FrameBuffer::FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74)
     : mHandle194(handle194)
     , mHandle193(handle193)
     , mHandle67(handle67)
     , mHandle74(handle74)
-    , mName(std::move(name))
     , mDroppedCount(0)
     , mCRCFailCount(0)
     , mUnhandledCount(0)
