@@ -55,9 +55,24 @@ constexpr bool DEBUG_RAW_SERIAL_MESSAGES = false;
 constexpr uint32_t MQTT_FULL_UPDATE_MS = 1000 * 60 * 30;
 
 /**
- * Change the fixed time interval where the attributes published to the stats topic are updated.
+ * Change the time interval where the attributes published to the 'energy' topic are updated.
  */
-constexpr uint16_t MQTT_STATS_UPDATE_MS = 5000;
+constexpr uint32_t MQTT_ENERGY_UPDATE_MS = 1000 * 60;
+
+/**
+ * Change the time interval where the attributes published to the 'hmi' topic are updated.
+ */
+constexpr uint32_t MQTT_HMI_UPDATE_MS = 1000 * 60;
+
+/**
+ * Change the time interval where the attributes published to the 'main' topic are updated.
+ */
+constexpr uint32_t MQTT_MAIN_UPDATE_MS = 1000 * 60;
+
+/**
+ * Change the time interval where the attributes published to the 'stats' topic are updated.
+ */
+constexpr uint32_t MQTT_STATS_UPDATE_MS = 1000 * 60 * 5;
 
 /**
  * Self explanatory internal settings: most probably you don't want to change them.
