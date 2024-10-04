@@ -42,6 +42,9 @@ private:
     uint8_t       mTransferBuffer[message::HEATPUMP_MAX_FRAME_LENGTH];
     uint8_t       mTopicBuffer[config::MQTT_MAX_TOPIC_SIZE];
     uint8_t       mPayloadBuffer[config::MQTT_MAX_PAYLOAD_SIZE];
+    unsigned long mLastEnergyUpdate;
+    unsigned long mLastHmiUpdate;
+    unsigned long mLastMainUpdate;
     unsigned long mLastStatsUpdate;
     unsigned long mLastFullUpdate;
     WiFiClient    mWiFiClient;

@@ -17,6 +17,9 @@ using namespace message;
 
 MQTTTask::MQTTTask()
     : mLastStatsUpdate(0)
+    , mLastEnergyUpdate(0)
+    , mLastHmiUpdate(0)
+    , mLastMainUpdate(0)
     , mLastFullUpdate(0)
     , mMQTTClient(256)
     , mTransferBuffer{ 0 }
@@ -305,9 +308,15 @@ void MQTTTask::loop()
 
     bool statsUpdate = (millis() - mLastStatsUpdate) >= config::MQTT_STATS_UPDATE_MS;
 
+    bool energyUpdate = (millis() - mLastEnergyUpdate) >= config::MQTT_ENERGY_UPDATE_MS;
+
+    bool hmiUpdate = (millis() - mLastHmiUpdate) >= config::MQTT_HMI_UPDATE_MS;
+
+    bool mainUpdate = (millis() - mLastMainUpdate) >= config::MQTT_MAIN_UPDATE_MS;
+
     auto notify = ulTaskNotifyTake(pdTRUE, mqttCycle);
 
-    if ((notify & 1 << 8) != 0 || fullUpdate)
+    if (hmiUpdate || fullUpdate)
     {
         if (HMIStateProxy::getInstance().copyFrame(aquamqtt::message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
@@ -318,10 +327,12 @@ void MQTTTask::loop()
                 mLastProcessedHMIMessage = new uint8_t[aquamqtt::message::HMI_MESSAGE_LENGTH];
             }
             memcpy(mLastProcessedHMIMessage, mTransferBuffer, aquamqtt::message::HMI_MESSAGE_LENGTH);
+
+            mLastHmiUpdate = millis();
         }
     }
 
-    if ((notify & 1 << 7) != 0 || fullUpdate)
+    if (mainUpdate || fullUpdate)
     {
         if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
@@ -332,10 +343,12 @@ void MQTTTask::loop()
                 mLastProcessedMainMessage = new uint8_t[aquamqtt::message::MAIN_MESSAGE_LENGTH];
             }
             memcpy(mLastProcessedMainMessage, mTransferBuffer, aquamqtt::message::MAIN_MESSAGE_LENGTH);
+
+            mLastMainUpdate = millis();
         }
     }
 
-    if ((notify & 1 << 6) != 0 || fullUpdate)
+    if (energyUpdate || fullUpdate)
     {
         if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
@@ -346,6 +359,8 @@ void MQTTTask::loop()
                 mLastProcessedEnergyMessage = new uint8_t[aquamqtt::message::ENERGY_MESSAGE_LENGTH];
             }
             memcpy(mLastProcessedEnergyMessage, mTransferBuffer, aquamqtt::message::ENERGY_MESSAGE_LENGTH);
+
+            mLastEnergyUpdate = millis();
         }
     }
 
