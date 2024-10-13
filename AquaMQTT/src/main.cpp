@@ -21,6 +21,11 @@ OTAHandler     otaHandler;
 RTCHandler     rtcHandler;
 WifiHandler    wifiHandler;
 
+esp_task_wdt_config_t twdt_config = {
+    .timeout_ms     = WATCHDOG_TIMEOUT_S * 1000,
+    .idle_core_mask = (1 << configNUM_CORES) - 1,
+    .trigger_panic  = true,
+};
 
 void loop()
 {
@@ -44,7 +49,7 @@ void setup()
     Serial.println("REBOOT");
 
     // initialize watchdog
-    esp_task_wdt_init(WATCHDOG_TIMEOUT_S, true);
+    esp_task_wdt_init(&twdt_config);
     esp_task_wdt_add(nullptr);
 
     // setup wifi
