@@ -1,6 +1,7 @@
 #include "handler/OTA.h"
 
 #include <ArduinoOTA.h>
+#include <esp_task_wdt.h>
 
 #include "config/Configuration.h"
 
@@ -36,6 +37,7 @@ void OTAHandler::setup()  // NOLINT(*-convert-member-functions-to-static)
             .onEnd([]() { Serial.println("\nEnd"); })
             .onProgress([](unsigned int progress, unsigned int total) {
                 Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+                esp_task_wdt_reset();
             })
             .onError([](ota_error_t error) {
                 Serial.printf("Error[%u]: ", error);
