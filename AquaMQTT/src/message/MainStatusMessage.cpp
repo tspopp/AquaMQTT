@@ -9,17 +9,48 @@ float message::MainStatusMessage::hotWaterTemp()
 {
     return (float) (((short int) (mData[2] << 8) | mData[1]) / 10.0);
 }
+
+void MainStatusMessage::setHotWaterTemp(float temp)
+{
+    short int rawValue = temp * 100 / 10;
+    mData[1]           = rawValue & 0xFF;
+    mData[2]           = (rawValue >> 8) & 0xFF;
+}
+
 float MainStatusMessage::airTemp()
 {
     return (float) (((short int) (mData[4] << 8) | mData[3]) / 10.0);
 }
+
+void MainStatusMessage::setAirTemp(float temp)
+{
+    short int rawValue = temp * 100 / 10;
+    mData[3]           = rawValue & 0xFF;
+    mData[4]           = (rawValue >> 8) & 0xFF;
+}
+
 float MainStatusMessage::evaporatorLowerAirTemp()
 {
     return (float) (((short int) (mData[6] << 8) | mData[5]) / 10.0);
 }
+
+void MainStatusMessage::setEvaporatorLowerAirTemp(float temp)
+{
+    short int rawValue = temp * 100 / 10;
+    mData[5]           = rawValue & 0xFF;
+    mData[6]           = (rawValue >> 8) & 0xFF;
+}
+
 float MainStatusMessage::evaporatorUpperAirTemp()
 {
     return (float) (((short int) (mData[8] << 8) | mData[7]) / 10.0);
+}
+
+void MainStatusMessage::setEvaporatorUpperAirTemp(float temp)
+{
+    short int rawValue = temp * 100 / 10;
+    mData[7]           = rawValue & 0xFF;
+    mData[8]           = (rawValue >> 8) & 0xFF;
 }
 
 float MainStatusMessage::fanSpeedPwm()

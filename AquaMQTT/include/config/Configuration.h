@@ -60,6 +60,34 @@ constexpr uint32_t MQTT_FULL_UPDATE_MS = 1000 * 60 * 30;
 constexpr uint16_t MQTT_STATS_UPDATE_MS = 5000;
 
 /**
+ * Use kalman filters for removing noise from the temperature values. This reduces updates sent to MQTT.
+ * Note: Filters are only applied within the MQTT channel, the communication between HMI and Controller
+ * are still using raw temperature values and is not altered.
+ */
+constexpr bool MQTT_FILTER_TEMPERATURE_NOISE = true;
+
+/**
+ * Parametrize kalman filter for reading temperature values
+ * Measurement Uncertainty - How much do we expect to our measurement vary
+ */
+
+constexpr float KALMAN_MEA_E = 0.1;
+
+/**
+ * Parametrize kalman filter for reading temperature values
+ * Estimation Uncertainty - Can be initialized with the same value as e_mea since the kalman filter will adjust its
+ * value.
+ */
+
+constexpr float KALMAN_EST_E = 0.1;
+
+/**
+ * Parametrize kalman filter for reading temperature values
+ * Process Variance - usually a small number between 0.001 and 1 - how fast your measurement moves.
+ */
+constexpr float KALMAN_Q = 0.01;
+
+/**
  * Self explanatory internal settings: most probably you don't want to change them.
  */
 constexpr uint8_t  WATCHDOG_TIMEOUT_S     = 60;

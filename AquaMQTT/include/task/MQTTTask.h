@@ -4,6 +4,7 @@
 #include <MQTT.h>
 #include <WiFiClient.h>
 
+#include "SimpleKalmanFilter.h"
 #include "config/Configuration.h"
 #include "message/HMIMessage.h"
 #include "message/MainEnergyMessage.h"
@@ -52,6 +53,11 @@ private:
     uint8_t* mLastProcessedEnergyMessage;
     uint8_t* mLastProcessedMainMessage;
 
+    SimpleKalmanFilter mEvaporatorLowerAirTempFilter;
+    SimpleKalmanFilter mEvaporatorUpperAirTempFilter;
+    SimpleKalmanFilter mAirTempFilter;
+    SimpleKalmanFilter mHotWaterTempFilter;
+
     // helper to avoid code duplication
     void publishFloat(const char* subtopic, const char* topic, float value, bool retained = false);
     void publishString(const char* subtopic, const char* topic, const char* value, bool retained = false);
@@ -63,6 +69,7 @@ private:
             const char*   topic,
             unsigned long value,
             bool          retained = false);
+    void applyTemperatureFilter(message::MainStatusMessage* pMessage);
 };
 }  // namespace aquamqtt
 
