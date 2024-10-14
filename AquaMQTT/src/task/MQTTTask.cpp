@@ -26,6 +26,10 @@ MQTTTask::MQTTTask()
     , mLastProcessedHMIMessage(nullptr)
     , mLastProcessedEnergyMessage(nullptr)
     , mLastProcessedMainMessage(nullptr)
+    , mHotWaterTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mEvaporatorLowerAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mEvaporatorUpperAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
 {
 }
 
@@ -234,7 +238,7 @@ void MQTTTask::spawn()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat"
-void                     MQTTTask::setup()
+void MQTTTask::setup()
 {
     mMQTTClient.begin(aquamqtt::config::brokerAddr, aquamqtt::config::brokerPort, mWiFiClient);
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
@@ -380,7 +384,7 @@ void MQTTTask::loop()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat"
-void                     MQTTTask::updateStats()
+void MQTTTask::updateStats()
 {
     publishString(
             STATS_SUBTOPIC,
@@ -480,9 +484,12 @@ void                     MQTTTask::updateStats()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat"
-void                     MQTTTask::updateMainStatus(bool fullUpdate)
+void MQTTTask::updateMainStatus(bool fullUpdate)
 {
     message::MainStatusMessage message(mTransferBuffer);
+
+    applyTemperatureFilter(&message);
+
     message.compareWith(fullUpdate ? nullptr : mLastProcessedMainMessage);
 
     if (message.hotWaterTempChanged())
@@ -582,7 +589,7 @@ void                     MQTTTask::updateMainStatus(bool fullUpdate)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat"
-void                     MQTTTask::updateHMIStatus(bool fullUpdate)
+void MQTTTask::updateHMIStatus(bool fullUpdate)
 {
     message::HMIMessage message(mTransferBuffer);
     message.compareWith(fullUpdate ? nullptr : mLastProcessedHMIMessage);
@@ -713,7 +720,7 @@ void                     MQTTTask::updateHMIStatus(bool fullUpdate)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat"
-void                     MQTTTask::updateEnergyStats(bool fullUpdate)
+void MQTTTask::updateEnergyStats(bool fullUpdate)
 {
     message::MainEnergyMessage message(mTransferBuffer);
     message.compareWith(fullUpdate ? nullptr : mLastProcessedEnergyMessage);
@@ -760,7 +767,8 @@ void                     MQTTTask::updateEnergyStats(bool fullUpdate)
         publishul(ENERGY_SUBTOPIC, ENERGY_POWER_TOTAL, message.powerOverall());
     }
 
-    if(message.totalWaterProductionChanged()) {
+    if (message.totalWaterProductionChanged())
+    {
         publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_WATER_PRODUCTION, message.totalWaterProduction());
     }
 
@@ -951,6 +959,19 @@ void MQTTTask::publishul(
             subtopic_2,
             topic);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), retained, 0);
+}
+
+void MQTTTask::applyTemperatureFilter(message::MainStatusMessage* message)
+{
+    if (config::MQTT_FILTER_TEMPERATURE_NOISE)
+    {
+        message->setEvaporatorLowerAirTemp(
+                mEvaporatorLowerAirTempFilter.updateEstimate(message->evaporatorLowerAirTemp()));
+        message->setEvaporatorUpperAirTemp(
+                mEvaporatorUpperAirTempFilter.updateEstimate(message->evaporatorUpperAirTemp()));
+        message->setAirTemp(mAirTempFilter.updateEstimate(message->airTemp()));
+        message->setHotWaterTemp(mHotWaterTempFilter.updateEstimate(message->hotWaterTemp()));
+    }
 }
 
 }  // namespace aquamqtt

@@ -19,11 +19,19 @@ public:
 
     float hotWaterTemp();
 
+    void setHotWaterTemp(float temp);
+
     float airTemp();
+
+    void setAirTemp(float temp);
 
     float evaporatorLowerAirTemp();
 
+    void setEvaporatorLowerAirTemp(float temp);
+
     float evaporatorUpperAirTemp();
+
+    void setEvaporatorUpperAirTemp(float temp);
 
     float fanSpeedPwm();
 
