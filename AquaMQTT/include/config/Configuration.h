@@ -35,6 +35,17 @@ constexpr char timeZoneInfo[] = "CET-1CEST,M3.5.0,M10.5.0/3";  // Europe/Berlin
 constexpr char ntpServer[] = "pool.ntp.org";
 
 /**
+ * Enable HomeAssistant MQTT Discovery Mode
+ */
+constexpr bool ENABLE_HOMEASSISTANT_DISCOVERY_MODE = true;
+
+/**
+ * Homeassistant MQTT Discovery Prefix
+ * https://www.home-assistant.io/integrations/mqtt/#discovery-topic
+ */
+constexpr char haDiscoveryPrefix[] = "homeassistant/";
+
+/**
  * The OperationMode which is used for AquaMqtt. Refer to EOperationMode
  */
 constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
@@ -104,8 +115,8 @@ constexpr float ABSENCE_WATER_TEMPERATURE = 20.0;
  */
 constexpr uint32_t WATCHDOG_TIMEOUT_MS    = 60000;
 constexpr uint16_t WIFI_RECONNECT_CYCLE_S = 10;
-constexpr uint8_t  MQTT_MAX_TOPIC_SIZE    = 80;
-constexpr uint8_t  MQTT_MAX_PAYLOAD_SIZE  = 255;
+constexpr uint16_t MQTT_MAX_TOPIC_SIZE    = 255;
+constexpr uint16_t MQTT_MAX_PAYLOAD_SIZE  = 1024;
 
 /**
  * Pin assignments for AquaMQTT Board Rev 1.0

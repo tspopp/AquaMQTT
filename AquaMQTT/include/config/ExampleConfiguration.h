@@ -12,9 +12,10 @@ constexpr char     brokerAddr[]     = "192.168.188.1";
 constexpr uint16_t brokerPort       = 1883;
 constexpr char     brokerClientId[] = "aquamqtt";
 // leave blank if your broker does not require a username/password
-constexpr char brokerUser[]     = "";
-constexpr char brokerPassword[] = "";
-constexpr char mqttPrefix[]     = "";
+constexpr char brokerUser[]        = "";
+constexpr char brokerPassword[]    = "";
+constexpr char mqttPrefix[]        = "";
+constexpr char heatpumpModelName[] = "Atlantic Explorer v4";
 
 }  // namespace config
 

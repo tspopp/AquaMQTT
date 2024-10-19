@@ -1,11 +1,14 @@
 #include "task/MQTTTask.h"
 
+#include <ArduinoJson.h>
 #include <WiFi.h>
 #include <esp_task_wdt.h>
 
+#include "FastCRC.h"
 #include "config/Configuration.h"
 #include "message/ErrorMessage.h"
 #include "mqtt/MQTTDefinitions.h"
+#include "mqtt/MQTTDiscovery.h"
 #include "state/HMIStateProxy.h"
 #include "state/MainStateProxy.h"
 
@@ -296,6 +299,8 @@ void MQTTTask::check_mqtt_connection()
         mMQTTClient.subscribe(reinterpret_cast<char*>(mTopicBuffer));
     }
 
+    enableDiscovery();
+
     Serial.println("[mqtt] is now connected");
 }
 
@@ -420,27 +425,20 @@ void MQTTTask::updateStats()
         publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_DROPPED_BYTES, mainStats.droppedBytes);
         publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_SENT, mainStats.msgSent);
 
-        auto overrides = HMIStateProxy::getInstance().getOverrides();
-
-        sprintf(reinterpret_cast<char*>(mPayloadBuffer),
-                R"({ "%s": %s, "%s": %s, "%s": %s, "%s": %s, "%s": %s, "%s": %s , "%s": %s })",
-                HMI_OPERATION_MODE,
-                overrides.operationMode ? "1" : "0",
-                HMI_OPERATION_TYPE,
-                overrides.operationType ? "1" : "0",
-                HMI_HOT_WATER_TEMP_TARGET,
-                overrides.waterTempTarget ? "1" : "0",
-                HMI_HEATING_ELEMENT_ENABLED,
-                overrides.heatingElementEnabled ? "1" : "0",
-                HMI_EMERGENCY_MODE,
-                overrides.emergencyModeEnabled ? "1" : "0",
-                HMI_INSTALLATION_CONFIG,
-                overrides.installationMode ? "1" : "0",
-                HMI_TIME_AND_DATE,
-                (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM
-                 && aquamqtt::config::OPERATION_MODE != aquamqtt::config::EOperationMode::LISTENER)
-                        ? "1"
-                        : "0");
+        auto         overrides = HMIStateProxy::getInstance().getOverrides();
+        JsonDocument overrideJson;
+        overrideJson[HMI_OPERATION_MODE]          = overrides.operationMode ? "1" : "0";
+        overrideJson[HMI_OPERATION_TYPE]          = overrides.operationType ? "1" : "0";
+        overrideJson[HMI_HOT_WATER_TEMP_TARGET]   = overrides.waterTempTarget ? "1" : "0";
+        overrideJson[HMI_HEATING_ELEMENT_ENABLED] = overrides.heatingElementEnabled ? "1" : "0";
+        overrideJson[HMI_EMERGENCY_MODE]          = overrides.emergencyModeEnabled ? "1" : "0";
+        overrideJson[HMI_INSTALLATION_CONFIG]     = overrides.installationMode ? "1" : "0";
+        overrideJson[HMI_TIME_AND_DATE]           = (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM
+                                           && aquamqtt::config::OPERATION_MODE
+                                                      != aquamqtt::config::EOperationMode::LISTENER)
+                                                            ? "1"
+                                                            : "0";
+        serializeJson(overrideJson, mPayloadBuffer, config::MQTT_MAX_PAYLOAD_SIZE);
 
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%s",
@@ -450,13 +448,12 @@ void MQTTTask::updateStats()
                 STATS_ACTIVE_OVERRIDES);
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
 
-        auto mainOverrides = MainStateProxy::getInstance().getOverrides();
-        sprintf(reinterpret_cast<char*>(mPayloadBuffer),
-                R"({ "%s": %s, "%s": %s })",
-                MAIN_STATE_PV,
-                mainOverrides.pvState ? "1" : "0",
-                MAIN_STATE_SOLAR,
-                mainOverrides.solarState ? "1" : "0");
+        auto         mainOverrides = MainStateProxy::getInstance().getOverrides();
+        JsonDocument mainOverrideJson;
+        mainOverrideJson[MAIN_STATE_PV]    = mainOverrides.pvState ? "1" : "0";
+        mainOverrideJson[MAIN_STATE_SOLAR] = mainOverrides.solarState ? "1" : "0";
+
+        serializeJson(mainOverrideJson, mPayloadBuffer, config::MQTT_MAX_PAYLOAD_SIZE);
 
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%s",
@@ -971,6 +968,47 @@ void MQTTTask::applyTemperatureFilter(message::MainStatusMessage* message)
                 mEvaporatorUpperAirTempFilter.updateEstimate(message->evaporatorUpperAirTemp()));
         message->setAirTemp(mAirTempFilter.updateEstimate(message->airTemp()));
         message->setHotWaterTemp(mHotWaterTempFilter.updateEstimate(message->hotWaterTemp()));
+    }
+}
+
+void MQTTTask::enableDiscovery()
+{
+    if (!config::ENABLE_HOMEASSISTANT_DISCOVERY_MODE)
+    {
+        return;
+    }
+
+    unsigned long long mac = ESP.getEfuseMac();
+    FastCRC16          crc;
+    uint16_t           identifier = crc.ccitt(reinterpret_cast<uint8_t*>(&mac), sizeof(mac));
+
+    publishDiscovery(identifier, "sensor", discovery::MQTT_ITEM_SENSOR::RESERVED_COUNT);
+    publishDiscovery(identifier, "binary_sensor", discovery::MQTT_ITEM_BINARY_SENSOR::RESERVED_COUNT);
+    publishDiscovery(identifier, "number", discovery::MQTT_ITEM_NUMBER::RESERVED_COUNT);
+    publishDiscovery(identifier, "button", discovery::MQTT_ITEM_BUTTON::RESERVED_COUNT);
+    publishDiscovery(identifier, "switch", discovery::MQTT_ITEM_SWITCH::RESERVED_COUNT);
+    publishDiscovery(identifier, "select", discovery::MQTT_ITEM_SELECT::RESERVED_COUNT);
+}
+
+template <typename T>
+void MQTTTask::publishDiscovery(uint16_t identifier, const char* haCategory, T)
+{
+    for (int item = 0; item < static_cast<int>(T::RESERVED_COUNT); ++item)
+    {
+        if (discovery::buildConfiguration(mPayloadBuffer, identifier, static_cast<T>(item)))
+        {
+            sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                    "%s%s/aquamqtt_%u/%u/config",
+                    config::haDiscoveryPrefix,
+                    haCategory,
+                    identifier,
+                    item);
+
+            mMQTTClient
+                    .publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), true, 0);
+
+            mMQTTClient.loop();
+        }
     }
 }
 
