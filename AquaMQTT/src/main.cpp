@@ -22,7 +22,7 @@ RTCHandler     rtcHandler;
 WifiHandler    wifiHandler;
 
 esp_task_wdt_config_t twdt_config = {
-    .timeout_ms     = WATCHDOG_TIMEOUT_S * 1000,
+    .timeout_ms     = WATCHDOG_TIMEOUT_MS,
     .idle_core_mask = (1 << configNUM_CORES) - 1,
     .trigger_panic  = true,
 };

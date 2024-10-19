@@ -88,9 +88,21 @@ constexpr float KALMAN_EST_E = 0.1;
 constexpr float KALMAN_Q = 0.01;
 
 /**
+ * Maximum Water Temperature: This value is used by BOOST or PV Modes.
+ * Change at your own risk, 62°C is the default value on a Windhager Aquawin Air 3 heat pump
+ */
+constexpr float MAX_WATER_TEMPERATURE = 62.0;
+
+/**
+ * Water Temperature set during mode absence.
+ * Change at your own risk, 20°C is the default value on a Windhager Aquawin Air 3 heat pump
+ */
+constexpr float ABSENCE_WATER_TEMPERATURE = 20.0;
+
+/**
  * Self explanatory internal settings: most probably you don't want to change them.
  */
-constexpr uint8_t  WATCHDOG_TIMEOUT_S     = 60;
+constexpr uint32_t WATCHDOG_TIMEOUT_MS    = 60000;
 constexpr uint16_t WIFI_RECONNECT_CYCLE_S = 10;
 constexpr uint8_t  MQTT_MAX_TOPIC_SIZE    = 80;
 constexpr uint8_t  MQTT_MAX_PAYLOAD_SIZE  = 255;
