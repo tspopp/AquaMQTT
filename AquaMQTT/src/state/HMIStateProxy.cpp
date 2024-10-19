@@ -54,7 +54,7 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer)
             message.setInstallationMode(message::HMIInstallation::INST_HP_ONLY);
             message.setOperationType(message::HMIOperationType::ALWAYS_ON);
             message.setOperationMode(message::HMIOperationMode::OM_ECO_INACTIVE);
-            message.setWaterTempTarget(62.0);
+            message.setWaterTempTarget(config::MAX_WATER_TEMPERATURE);
             // do not use heat element
             message.setEmergencyMode(false);
             message.enableHeatingElement(false);
@@ -63,7 +63,7 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer)
             message.setInstallationMode(message::HMIInstallation::INST_HP_ONLY);
             message.setOperationType(message::HMIOperationType::ALWAYS_ON);
             message.setOperationMode(message::HMIOperationMode::OM_ECO_INACTIVE);
-            message.setWaterTempTarget(62.0);
+            message.setWaterTempTarget(config::MAX_WATER_TEMPERATURE);
             // just use heat element
             message.enableHeatingElement(true);
             message.setEmergencyMode(true);
@@ -72,12 +72,13 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer)
             message.setInstallationMode(message::HMIInstallation::INST_HP_ONLY);
             message.setOperationType(message::HMIOperationType::ALWAYS_ON);
             message.setOperationMode(message::HMIOperationMode::OM_BOOST);
-            message.setWaterTempTarget(62.0);
+            message.setWaterTempTarget(config::MAX_WATER_TEMPERATURE);
             break;
         case AM_MODE_STANDARD:
         {
             // TODO: this sanity should be handled within message
-            if (mTargetTemperature != nullptr && *mTargetTemperature <= 62.0f && *mTargetTemperature >= 20.0f)
+            if (mTargetTemperature != nullptr && *mTargetTemperature <= config::MAX_WATER_TEMPERATURE
+                && *mTargetTemperature >= config::ABSENCE_WATER_TEMPERATURE)
             {
                 message.setWaterTempTarget(*mTargetTemperature);
             }
@@ -94,11 +95,11 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer)
                 // Operation Mode BOOST overrides target temperature
                 if (*mOperationMode == message::HMIOperationMode::OM_BOOST)
                 {
-                    message.setWaterTempTarget(62.0);
+                    message.setWaterTempTarget(config::MAX_WATER_TEMPERATURE);
                 }
                 else if (*mOperationMode == message::HMIOperationMode::OM_ABSENCE)
                 {
-                    message.setWaterTempTarget(20.0);
+                    message.setWaterTempTarget(config::ABSENCE_WATER_TEMPERATURE);
                 }
             }
 
