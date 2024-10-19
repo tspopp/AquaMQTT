@@ -12,8 +12,7 @@ AquaMQTT is a project designed to monitor and control your DHW heat pump locally
 - Easily integrate AquaMQTT with smart home systems like [Home Assistant](https://www.home-assistant.io/).
 
 <p float="left">
-   <img src="img/homeassistant.png?raw=true" width=35% height=35%>
-   <img src="img/aquamqtt.jpg?raw=true" width=60% height=60%>
+   <img src="img/homeassistant.png?raw=true" width=100% height=100%>
 </p>
 
 
@@ -45,6 +44,8 @@ AquaMQTT facilitates communication between the HMI controller and the main contr
 
 To achieve this communication interception, an Arduino-based microcontroller is introduced between the communication lines of the HMI controller and the main controller.
 
+<img src="img/aquamqtt.jpg?raw=true" width=35% height=35%>
+
 AquaMQTT not only monitors the heat pump's status but also provides the capability to control it by modifying the messages originating from the HMI controller. This allows you to set operational states, such as water temperature and operation modes, directly through AquaMQTT.
 
 ## Getting Started
@@ -61,6 +62,8 @@ AquaMQTT not only monitors the heat pump's status but also provides the capabili
 Unfortunately, I had no success pairing those solutions with my Windhager branded heatpump. Moreover, this solution is independent from any manufacturer backends and therefore running entirely within your private local area network. 
 
 ## Further Reading
+
+- [HomeAssistant Integration](./HOMEASSISTANT.md)
 
 - [Troubleshooting / F.A.Q](./TROUBLESHOOTING.md)
 

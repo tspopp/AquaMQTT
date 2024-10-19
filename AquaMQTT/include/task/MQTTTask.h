@@ -70,6 +70,10 @@ private:
             unsigned long value,
             bool          retained = false);
     void applyTemperatureFilter(message::MainStatusMessage* pMessage);
+
+    void enableDiscovery();
+    template <typename T>
+    void publishDiscovery(uint16_t identifier, const char* haCategory, T enumClass);
 };
 }  // namespace aquamqtt
 
