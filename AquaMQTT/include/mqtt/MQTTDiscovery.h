@@ -533,7 +533,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
         case MQTT_ITEM_SENSOR::MAIN_SETTING_MIN_TEMP_LEGIONELLA:
             doc["name"]         = "Minimum Water Temperature Anti-Legionella";
             doc["stat_t"]       = "~/main/settingMinLegionellaTemp";
-            doc["uniq_id"]      = make_unique(temp, identifier, "main_setting_min_target_temp");
+            doc["uniq_id"]      = make_unique(temp, identifier, "main_setting_min_target_legionella_temp");
             doc["unit_of_meas"] = "°C";
             doc["ic"]           = "mdi:thermometer-plus";
             break;
