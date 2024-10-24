@@ -24,6 +24,8 @@ HMIStateProxy::HMIStateProxy()
     , mEmergencyModeEnabled(nullptr)
     , mHeatingElementEnabled(nullptr)
     , mInstallationMode(nullptr)
+    , mFanExhaustMode(nullptr)
+    , mAirductConfig(nullptr)
 {
 }
 
@@ -86,6 +88,16 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer)
             if (mInstallationMode != nullptr)
             {
                 message.setInstallationMode(*mInstallationMode);
+            }
+
+            if (mFanExhaustMode != nullptr)
+            {
+                message.setFanExhaustMode(*mFanExhaustMode);
+            }
+
+            if (mAirductConfig != nullptr)
+            {
+                message.setAirDuctConfig(*mAirductConfig);
             }
 
             if (mOperationMode != nullptr)
@@ -222,10 +234,43 @@ void HMIStateProxy::onEmergencyModeEnabledChanged(std::unique_ptr<bool> enabled)
 
     xSemaphoreGive(mMutex);
 }
+void HMIStateProxy::onFanExhaustModeChanged(std::unique_ptr<message::HMIFanExhaust> mode)
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mFanExhaustMode = std::move(mode);
+
+    // message 194 has changed
+    if (mNotify != nullptr)
+    {
+        xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
+    }
+
+    xSemaphoreGive(mMutex);
+}
+void HMIStateProxy::onAirductConfigChanged(std::unique_ptr<message::HMIAirDuctConfig> config)
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mAirductConfig = std::move(config);
+
+    // message 194 has changed
+    if (mNotify != nullptr)
+    {
+        xTaskNotifyIndexed(mNotify, 0, (1UL << 8UL), eSetBits);
+    }
+
+    xSemaphoreGive(mMutex);
+}
 
 void HMIStateProxy::onPVModeHeatpumpEnabled(bool enabled)
 {
-
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
         return;
@@ -271,6 +316,8 @@ void HMIStateProxy::onResetOverrides()
     mTargetTemperature     = std::unique_ptr<float>(nullptr);
     mOperationType         = std::unique_ptr<message::HMIOperationType>(nullptr);
     mInstallationMode      = std::unique_ptr<message::HMIInstallation>(nullptr);
+    mFanExhaustMode        = std::unique_ptr<message::HMIFanExhaust>(nullptr);
+    mAirductConfig         = std::unique_ptr<message::HMIAirDuctConfig>(nullptr);
     mEmergencyModeEnabled  = std::unique_ptr<bool>(nullptr);
     mHeatingElementEnabled = std::unique_ptr<bool>(nullptr);
 
@@ -296,14 +343,15 @@ AquaMqttOverrides HMIStateProxy::getOverrides()
         case AM_MODE_STANDARD:
             retVal = AquaMqttOverrides{ mOperationMode != nullptr,        mOperationType != nullptr,
                                         mTargetTemperature != nullptr,    mHeatingElementEnabled != nullptr,
-                                        mEmergencyModeEnabled != nullptr, mInstallationMode != nullptr };
+                                        mEmergencyModeEnabled != nullptr, mInstallationMode != nullptr,
+                                        mFanExhaustMode != nullptr,       mAirductConfig != nullptr };
             break;
         case AM_MODE_PV_HP_ONLY:
         case AM_MODE_PV_HE_ONLY:
-            retVal = AquaMqttOverrides{ true, true, true, true, true, true };
+            retVal = AquaMqttOverrides{ true, true, true, true, true, true, false, false };
             break;
         case AM_MODE_PV_FULL:
-            retVal = AquaMqttOverrides{ true, true, true, false, false, true };
+            retVal = AquaMqttOverrides{ true, true, true, false, false, true, false, false };
             break;
     }
 

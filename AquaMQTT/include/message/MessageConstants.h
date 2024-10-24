@@ -131,6 +131,29 @@ static const char* testModeStr(HMITestMode config)
     }
 }
 
+enum HMIFanExhaust
+{
+    EXHAUST_UNKNOWN    = -1,
+    EXHAUST_STOP       = 0,
+    EXHAUST_LOW_SPEED  = 1,
+    EXHAUST_HIGH_SPEED = 2
+};
+
+static const char* exhaustModeStr(HMIFanExhaust mode)
+{
+    switch (mode)
+    {
+        case EXHAUST_STOP:
+            return reinterpret_cast<const char*>(mqtt::ENUM_CONFIG_EXHAUST_FAN_STOP);
+        case EXHAUST_LOW_SPEED:
+            return reinterpret_cast<const char*>(mqtt::ENUM_CONFIG_EXHAUST_FAN_LOW_SPEED);
+        case EXHAUST_HIGH_SPEED:
+            return reinterpret_cast<const char*>(mqtt::ENUM_CONFIG_EXHAUST_FAN_HIGH_SPEED);
+        default:
+            return reinterpret_cast<const char*>(mqtt::ENUM_UNKNOWN);
+    }
+}
+
 enum HMIInstallation
 {
     INST_HP_UNKNOWN          = -1,

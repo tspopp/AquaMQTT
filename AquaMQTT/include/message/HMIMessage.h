@@ -20,33 +20,41 @@ public:
 
     void setWaterTempTarget(float targetTemperature);
 
-    HMIOperationMode operationMode();
+    HMIOperationMode operationMode() const;
 
-    void setOperationMode(HMIOperationMode operationMode);
+    void setOperationMode(HMIOperationMode operationMode) const;
 
-    HMIOperationType getOperationType();
+    HMIOperationType getOperationType() const;
 
-    void setOperationType(HMIOperationType operationType);
+    void setOperationType(HMIOperationType operationType) const;
 
-    bool isEmergencyModeEnabled();
+    bool isEmergencyModeEnabled() const;
 
-    void setEmergencyMode(bool enabled);
+    void setEmergencyMode(bool enabled) const;
 
-    bool isHeatingElementEnabled();
+    bool isHeatingElementEnabled() const;
 
-    void enableHeatingElement(bool enabled);
+    void enableHeatingElement(bool enabled) const;
 
-    bool isPVInputActivated();
+    bool isPVInputActivated() const;
 
-    HMISetup setupMode();
+    HMISetup setupMode() const;
 
-    uint8_t antiLegionellaModePerMonth();
+    uint8_t antiLegionellaModePerMonth() const;
 
     void setAntiLegionellaModePerMonth(uint8_t value);
 
-    HMIAirDuctConfig airDuctConfig();
+    HMIAirDuctConfig airDuctConfig() const;
+
+    void setAirDuctConfig(HMIAirDuctConfig config) const;
 
     HMIInstallation installationMode();
+
+    HMIFanExhaust fanExhaust() const;
+
+    void setFanExhaustMode(HMIFanExhaust mode) const;
+
+    bool exhaustFanChanged() const;
 
     HMITestMode testMode();
 
@@ -54,37 +62,37 @@ public:
 
     void setTimeWindowByStr(bool firstWindow, char* buffer, uint8_t length);
 
-    uint16_t timerWindowAStart();
+    uint16_t timerWindowAStart() const;
 
-    uint16_t timerWindowALength();
+    uint16_t timerWindowALength() const;
 
-    uint16_t timerWindowBStart();
+    uint16_t timerWindowBStart() const;
 
-    uint16_t timerWindowBLength();
+    uint16_t timerWindowBLength() const;
 
-    uint8_t timeHours();
+    uint8_t timeHours() const;
 
-    void setTimeHours(uint8_t hour);
+    void setTimeHours(uint8_t hour) const;
 
-    uint8_t timeMinutes();
+    uint8_t timeMinutes() const;
 
-    void setTimeMinutes(uint8_t minute);
+    void setTimeMinutes(uint8_t minute) const;
 
-    uint8_t timeSeconds();
+    uint8_t timeSeconds() const;
 
-    void setTimeSeconds(uint8_t second);
+    void setTimeSeconds(uint8_t second) const;
 
-    uint16_t dateYear();
+    uint16_t dateYear() const;
 
-    void setDateMonthAndYear(uint8_t month, uint16_t year);
+    void setDateMonthAndYear(uint8_t month, uint16_t year) const;
 
-    uint8_t dateMonth();
+    uint8_t dateMonth() const;
 
-    uint8_t dateDay();
+    uint8_t dateDay() const;
 
-    void setDateDay(uint8_t day);
+    void setDateDay(uint8_t day) const;
 
-    void setInstallationMode(HMIInstallation mode);
+    void setInstallationMode(HMIInstallation mode) const;
 
     bool waterTempTargetChanged() const;
 
@@ -129,6 +137,7 @@ private:
     bool mDateChanged;
     bool mTestModeChanged;
     bool mErrorRequestChanged;
+    bool mExhaustFanChanged;
 
     uint8_t* mData;
 };
