@@ -56,6 +56,10 @@ public:
 
     void onPVModeHeatElementEnabled(bool enabled) override;
 
+    void onFanExhaustModeChanged(std::unique_ptr<message::HMIFanExhaust> mode) override;
+
+    void onAirductConfigChanged(std::unique_ptr<message::HMIAirDuctConfig> config) override;
+
     void onResetOverrides() override;
 
     AquaMqttMainOverrides getOverrides();

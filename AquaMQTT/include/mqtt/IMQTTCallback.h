@@ -10,6 +10,8 @@ namespace mqtt
 class IMQTTCallback
 {
 public:
+    virtual ~IMQTTCallback() = default;
+
     // $prefix/aquamqtt/ctrl/operationMode + ENUM_OPERATION_MODE
     virtual void onOperationModeChanged(std::unique_ptr<message::HMIOperationMode> value) = 0;
 
@@ -27,6 +29,12 @@ public:
 
     // $prefix/aquamqtt/ctrl/configInstallation + ENUM INSTALLATION
     virtual void onInstallationModeChanged(std::unique_ptr<message::HMIInstallation> mode) = 0;
+
+    // $prefix/aquamqtt/configFanExhaust + ENUM FAN EXHAUST
+    virtual void onFanExhaustModeChanged(std::unique_ptr<message::HMIFanExhaust> mode) = 0;
+
+    // $prefix/aquamqtt/configAirduct
+    virtual void onAirductConfigChanged(std::unique_ptr<message::HMIAirDuctConfig> config) = 0;
 
     // $prefic/aquamqtt/ctrl/flagPVModeHeatPump + bool
     virtual void onPVModeHeatpumpEnabled(bool enabled) = 0;

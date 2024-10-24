@@ -43,6 +43,10 @@ constexpr char ENUM_INSTALLATION_BOILER_BACKUP_EXT_OPT[]  = { "BOILER BACKUP / B
 constexpr char ENUM_INSTALLATION_BOILER_BACKUP_EXT_PRIO[] = { "BOILER BACKUP / BOILER PRIORITY" };
 constexpr char ENUM_INSTALLATION_SOLAR_BACKUP[]           = { "HEAT PUMP AND SOLAR BACKUP" };
 
+constexpr char ENUM_CONFIG_EXHAUST_FAN_STOP[]       = { "STOP" };
+constexpr char ENUM_CONFIG_EXHAUST_FAN_LOW_SPEED[]  = { "LOW SPEED" };
+constexpr char ENUM_CONFIG_EXHAUST_FAN_HIGH_SPEED[] = { "HIGH SPEED" };
+
 constexpr char ENUM_TEST_MODE_OFF[]                            = { "OFF" };
 constexpr char ENUM_TEST_MODE_IDLE[]                           = { "IDLE" };
 constexpr char ENUM_TEST_MODE_ACTIVE_HEAT_PUMP[]               = { "TESTING HEAT PUMP" };
@@ -108,6 +112,7 @@ constexpr char HMI_LEGIONELLA[]              = { "antiLegionellaPerMonth" };
 constexpr char HMI_TIMER_WINDOW_A[]          = { "timerWindowA" };
 constexpr char HMI_TIMER_WINDOW_B[]          = { "timerWindowB" };
 constexpr char HMI_AIR_DUCT_CONFIG[]         = { "configAirduct" };
+constexpr char HMI_FAN_EXHAUST_CONFIG[]      = { "configFanExhaust" };
 constexpr char HMI_INSTALLATION_CONFIG[]     = { "configInstallation" };
 constexpr char HMI_TEST_MODE[]               = { "testModeStatus" };
 constexpr char HMI_SETUP_STATE[]             = { "setupState" };

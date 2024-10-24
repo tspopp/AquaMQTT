@@ -21,6 +21,7 @@ HMIMessage::HMIMessage(uint8_t* data)
     , mDateChanged(false)
     , mTestModeChanged(false)
     , mErrorRequestChanged(false)
+    , mExhaustFanChanged(false)
 {
 }
 float HMIMessage::waterTempTarget()
@@ -33,7 +34,7 @@ void HMIMessage::setWaterTempTarget(float targetTemperature)
     mData[1]           = rawValue & 0xFF;
     mData[2]           = (rawValue >> 8) & 0xFF;
 }
-HMIOperationMode HMIMessage::operationMode()
+HMIOperationMode HMIMessage::operationMode() const
 {
     switch (mData[3] & 0x0F)
     {
@@ -51,14 +52,14 @@ HMIOperationMode HMIMessage::operationMode()
             return OM_UNKNOWN;
     }
 }
-void HMIMessage::setOperationMode(HMIOperationMode operationMode)
+void HMIMessage::setOperationMode(HMIOperationMode operationMode) const
 {
     if (operationMode != HMIOperationMode::OM_UNKNOWN)
     {
         mData[3] = (mData[3] & 0xF0) | (operationMode & 0x0F);
     }
 }
-HMIOperationType HMIMessage::getOperationType()
+HMIOperationType HMIMessage::getOperationType() const
 {
     if (mData[3] & 0x40)
     {
@@ -67,7 +68,7 @@ HMIOperationType HMIMessage::getOperationType()
     return HMIOperationType::ALWAYS_ON;
 }
 
-void HMIMessage::setOperationType(HMIOperationType operationType)
+void HMIMessage::setOperationType(HMIOperationType operationType) const
 {
     if (operationType == HMIOperationType::TIMER)
     {
@@ -78,86 +79,126 @@ void HMIMessage::setOperationType(HMIOperationType operationType)
         mData[3] = (mData[3] & ~(1 << 6)) | (false << 6);
     }
 }
-bool HMIMessage::isEmergencyModeEnabled()
+bool HMIMessage::isEmergencyModeEnabled() const
 {
     return mData[6] & 0x01;
 }
-bool HMIMessage::isHeatingElementEnabled()
+bool HMIMessage::isHeatingElementEnabled() const
 {
     return mData[9] & 0x04;
 }
 
-bool HMIMessage::isPVInputActivated()
+bool HMIMessage::isPVInputActivated() const
 {
     return mData[9] & 0x02;
 }
 
-HMISetup HMIMessage::setupMode()
+HMISetup HMIMessage::setupMode() const
 {
     if (mData[9] & 0x80)
     {
         return HMISetup::RESET;
     }
-    else if (mData[9] & 0x20)
+    if (mData[9] & 0x20)
     {
         return HMISetup::INCOMPLETE;
     }
-    else
-    {
-        return HMISetup::COMPLETED;
-    }
+    return HMISetup::COMPLETED;
 }
 
-uint8_t HMIMessage::antiLegionellaModePerMonth()
+uint8_t HMIMessage::antiLegionellaModePerMonth() const
 {
     return (uint8_t) (mData[5] & 0x0F);
 }
-HMIAirDuctConfig HMIMessage::airDuctConfig()
+HMIAirDuctConfig HMIMessage::airDuctConfig() const
 {
     switch ((uint8_t) (mData[5] & 0xF0))
     {
         case 0:
-            return HMIAirDuctConfig::AD_INT_INT;
+            return AD_INT_INT;
         case 16:
-            return HMIAirDuctConfig::AD_INT_EXT;
+            return AD_INT_EXT;
         case 32:
-            return HMIAirDuctConfig::AD_EXT_EXT;
+            return AD_EXT_EXT;
         default:
-            return HMIAirDuctConfig::AD_UNKNOWN;
+            return AD_UNKNOWN;
+    }
+}
+
+void HMIMessage::setAirDuctConfig(HMIAirDuctConfig config) const
+{
+    if (config == AD_UNKNOWN)
+    {
+        return;
+    }
+
+    // clear bit 5 and 6 (INT/INT)
+    mData[5] &= 0b11001111;
+
+    if (config == AD_INT_EXT)
+    {
+        mData[5] |= 0b00010000;
+    }
+    else if (config == AD_EXT_EXT)
+    {
+        mData[5] |= 0b00100000;
     }
 }
 HMIInstallation HMIMessage::installationMode()
 {
     if (mData[7] & 0x02)
     {
-        return HMIInstallation::INST_HP_AND_SOLAR;
+        return INST_HP_AND_SOLAR;
     }
-    else if (mData[7] & 0x01)
+    if (mData[7] & 0x01)
     {
         if (mData[7] & 0x10 && mData[7] & 0x20)
         {
             return HMIInstallation::INST_HP_AND_EXT_PRIO_EXT;
         }
-        else if (!(mData[7] & 0x10) && mData[7] & 0x20)
+        if (!(mData[7] & 0x10) && mData[7] & 0x20)
         {
             return HMIInstallation::INST_HP_AND_EXT_OPT_EXT;
         }
-        else if (mData[7] & 0x10 && !(mData[7] & 0x20))
+        if (mData[7] & 0x10 && !(mData[7] & 0x20))
         {
             return HMIInstallation::INST_HP_AND_EXT_OPT_HP;
         }
-        else
-        {
-            return HMIInstallation::INST_HP_AND_EXT_PRIO_HP;
-        }
+        return HMIInstallation::INST_HP_AND_EXT_PRIO_HP;
     }
-    else
-    {
-        return HMIInstallation::INST_HP_ONLY;
-    }
+    return HMIInstallation::INST_HP_ONLY;
 }
 
-void HMIMessage::setInstallationMode(HMIInstallation mode)
+HMIFanExhaust HMIMessage::fanExhaust() const
+{
+    switch ((uint8_t) (mData[8] & 0x03))
+    {
+        case 0:
+            return EXHAUST_STOP;
+        case 1:
+            return EXHAUST_LOW_SPEED;
+        case 2:
+            return EXHAUST_HIGH_SPEED;
+        default:
+            return EXHAUST_UNKNOWN;
+    }
+}
+void HMIMessage::setFanExhaustMode(HMIFanExhaust mode) const
+{
+    if (mode == EXHAUST_UNKNOWN)
+        return;
+
+    // clean the first two bits
+    mData[8] &= 0b11111100;
+    // apply value
+    mData[8] |= mode;
+}
+bool HMIMessage::exhaustFanChanged() const
+{
+    return mExhaustFanChanged;
+}
+
+void HMIMessage::setInstallationMode(HMIInstallation mode) const
 {
     switch (mode)
     {
@@ -207,23 +248,23 @@ HMITestMode HMIMessage::testMode()
     switch (mData[22])
     {
         case 0:
-            return HMITestMode::TM_OFF;
+            return TM_OFF;
         case 1:
-            return HMITestMode::TM_ENTERED;
+            return TM_ENTERED;
         case 2:
-            return HMITestMode::TM_HEAT_PUMP;
+            return TM_HEAT_PUMP;
         case 3:
-            return HMITestMode::TM_HEAT_ELEMENT;
+            return TM_HEAT_ELEMENT;
         case 4:
-            return HMITestMode::TM_FAN_LOW;
+            return TM_FAN_LOW;
         case 5:
-            return HMITestMode::TM_FAN_HIGH;
+            return TM_FAN_HIGH;
         case 6:
-            return HMITestMode::TM_DEFROST;
+            return TM_DEFROST;
         case 8:
-            return HMITestMode::TM_HEAT_PUMP_AND_EXT;
+            return TM_HEAT_PUMP_AND_EXT;
         default:
-            return HMITestMode::TM_UNKNOWN;
+            return TM_UNKNOWN;
     }
 }
 void HMIMessage::timerWindowStr(bool firstWindow, char* buffer)
@@ -240,71 +281,71 @@ void HMIMessage::timerWindowStr(bool firstWindow, char* buffer)
     const uint8_t endHours      = (beginHours + lengthHours) % 24 + hourOverlap;
     sprintf(buffer, "%02d:%02d-%02d:%02d", beginHours, beginMinutes, endHours, endMinutes);
 }
-uint16_t HMIMessage::timerWindowAStart()
+uint16_t HMIMessage::timerWindowAStart() const
 {
     return mData[10];
 }
-uint16_t HMIMessage::timerWindowALength()
+uint16_t HMIMessage::timerWindowALength() const
 {
     return mData[11];
 }
-uint16_t HMIMessage::timerWindowBStart()
+uint16_t HMIMessage::timerWindowBStart() const
 {
     return mData[12];
 }
-uint16_t HMIMessage::timerWindowBLength()
+uint16_t HMIMessage::timerWindowBLength() const
 {
     return mData[13];
 }
-uint8_t HMIMessage::timeHours()
+uint8_t HMIMessage::timeHours() const
 {
     return mData[21];
 }
-void HMIMessage::setTimeHours(uint8_t hour)
+void HMIMessage::setTimeHours(uint8_t hour) const
 {
     mData[21] = hour;
 }
-uint8_t HMIMessage::timeMinutes()
+uint8_t HMIMessage::timeMinutes() const
 {
     return mData[20];
 }
-void HMIMessage::setTimeMinutes(uint8_t minute)
+void HMIMessage::setTimeMinutes(uint8_t minute) const
 {
     mData[20] = minute;
 }
-uint8_t HMIMessage::timeSeconds()
+uint8_t HMIMessage::timeSeconds() const
 {
     return mData[17];
 }
-void HMIMessage::setTimeSeconds(uint8_t second)
+void HMIMessage::setTimeSeconds(uint8_t second) const
 {
     mData[17] = second;
 }
-uint16_t HMIMessage::dateYear()
+uint16_t HMIMessage::dateYear() const
 {
     return 2000 + (mData[19] / 2);
 }
-void HMIMessage::setDateMonthAndYear(uint8_t month, uint16_t year)
+void HMIMessage::setDateMonthAndYear(uint8_t month, uint16_t year) const
 {
     int pastJuly   = month > 7 ? 1 : 0;
     mData[19]      = ((year - 2000) * 2) + pastJuly;
     int monthValue = (pastJuly ? month - 8 : month) << 5;
     mData[18]      = (mData[18] & 0x1F) | (monthValue & 0xE0);
 }
-uint8_t HMIMessage::dateMonth()
+uint8_t HMIMessage::dateMonth() const
 {
     return (mData[18] >> 5) + ((mData[19] % 2) * 8);
 }
-uint8_t HMIMessage::dateDay()
+uint8_t HMIMessage::dateDay() const
 {
     return mData[18] & 0x1F;
 }
-void HMIMessage::setDateDay(uint8_t day)
+void HMIMessage::setDateDay(uint8_t day) const
 {
     mData[18] = (mData[18] & 0xE0) | (day & 0x1F);
 }
 
-void HMIMessage::setEmergencyMode(bool enabled)
+void HMIMessage::setEmergencyMode(bool enabled) const
 {
     // Sanity: You cannot activate emergency mode if heating element is disabled
     if (enabled && isHeatingElementEnabled())
@@ -317,7 +358,7 @@ void HMIMessage::setEmergencyMode(bool enabled)
     }
 }
 
-void HMIMessage::enableHeatingElement(bool enabled)
+void HMIMessage::enableHeatingElement(bool enabled) const
 {
     if (enabled)
     {
@@ -368,6 +409,7 @@ void HMIMessage::compareWith(uint8_t* data)
         mDateChanged                              = true;
         mTestModeChanged                          = true;
         mErrorRequestChanged                      = true;
+        mExhaustFanChanged                        = true;
         return;
     }
 
@@ -393,6 +435,9 @@ void HMIMessage::compareWith(uint8_t* data)
                 break;
             case 6:
                 mEmergencyModeChanged = true;
+                break;
+            case 8:
+                mExhaustFanChanged = true;
                 break;
             case 7:
                 mInstallConfigChanged = true;

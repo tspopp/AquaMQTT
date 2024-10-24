@@ -56,32 +56,27 @@ void MQTTTask::messageReceived(String& topic, String& payload)
     {
         if (strstr_P(payload.c_str(), ENUM_OPERATION_MODE_ABSENCE) != nullptr)
         {
-            HMIStateProxy::getInstance().onOperationModeChanged(
-                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(OM_ABSENCE)));
+            HMIStateProxy::getInstance().onOperationModeChanged(std::make_unique<HMIOperationMode>(OM_ABSENCE));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_OPERATION_MODE_BOOST) != nullptr)
         {
-            HMIStateProxy::getInstance().onOperationModeChanged(
-                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(OM_BOOST)));
+            HMIStateProxy::getInstance().onOperationModeChanged(std::make_unique<HMIOperationMode>(OM_BOOST));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_OPERATION_MODE_AUTO) != nullptr)
         {
-            HMIStateProxy::getInstance().onOperationModeChanged(
-                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(OM_AUTO)));
+            HMIStateProxy::getInstance().onOperationModeChanged(std::make_unique<HMIOperationMode>(OM_AUTO));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_OPERATION_MODE_ECO_ON) != nullptr)
         {
-            HMIStateProxy::getInstance().onOperationModeChanged(
-                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(OM_ECO_ACTIVE)));
+            HMIStateProxy::getInstance().onOperationModeChanged(std::make_unique<HMIOperationMode>(OM_ECO_ACTIVE));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_OPERATION_MODE_ECO_OFF) != nullptr)
         {
-            HMIStateProxy::getInstance().onOperationModeChanged(
-                    std::unique_ptr<HMIOperationMode>(new HMIOperationMode(OM_ECO_INACTIVE)));
+            HMIStateProxy::getInstance().onOperationModeChanged(std::make_unique<HMIOperationMode>(OM_ECO_INACTIVE));
         }
         else
         {
@@ -92,13 +87,11 @@ void MQTTTask::messageReceived(String& topic, String& payload)
     {
         if (strstr_P(payload.c_str(), ENUM_OPERATION_TYPE_TIMER) != nullptr)
         {
-            HMIStateProxy::getInstance().onOperationTypeChanged(
-                    std::unique_ptr<HMIOperationType>(new HMIOperationType(TIMER)));
+            HMIStateProxy::getInstance().onOperationTypeChanged(std::make_unique<HMIOperationType>(TIMER));
         }
         else if (strstr_P(payload.c_str(), ENUM_OPERATION_TYPE_ALWAYS_ON) != nullptr)
         {
-            HMIStateProxy::getInstance().onOperationTypeChanged(
-                    std::unique_ptr<HMIOperationType>(new HMIOperationType(ALWAYS_ON)));
+            HMIStateProxy::getInstance().onOperationTypeChanged(std::make_unique<HMIOperationType>(ALWAYS_ON));
         }
         else
         {
@@ -115,7 +108,7 @@ void MQTTTask::messageReceived(String& topic, String& payload)
         else
         {
             bool result = (strcmp(payload.c_str(), "1") == 0);
-            HMIStateProxy::getInstance().onEmergencyModeEnabledChanged(std::unique_ptr<bool>(new bool(result)));
+            HMIStateProxy::getInstance().onEmergencyModeEnabledChanged(std::make_unique<bool>(result));
         }
     }
     else if (strstr_P(topic.c_str(), HMI_HEATING_ELEMENT_ENABLED) != nullptr)
@@ -127,7 +120,7 @@ void MQTTTask::messageReceived(String& topic, String& payload)
         else
         {
             bool result = (strcmp(payload.c_str(), "1") == 0);
-            HMIStateProxy::getInstance().onHeatingElementEnabledChanged(std::unique_ptr<bool>(new bool(result)));
+            HMIStateProxy::getInstance().onHeatingElementEnabledChanged(std::make_unique<bool>(result));
         }
     }
     else if (strstr_P(topic.c_str(), HMI_HOT_WATER_TEMP_TARGET) != nullptr)
@@ -138,49 +131,86 @@ void MQTTTask::messageReceived(String& topic, String& payload)
         }
         else
         {
-            HMIStateProxy::getInstance().onWaterTempTargetChanged(
-                    std::unique_ptr<float>(new float(atof(payload.c_str()))));
+            HMIStateProxy::getInstance().onWaterTempTargetChanged(std::make_unique<float>(atof(payload.c_str())));
         }
     }
     else if (strstr_P(topic.c_str(), HMI_INSTALLATION_CONFIG) != nullptr)
     {
         if (strstr_P(payload.c_str(), ENUM_INSTALLATION_THERMODYNAMICS_ONLY) != nullptr)
         {
-            HMIStateProxy::getInstance().onInstallationModeChanged(
-                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_ONLY)));
+            HMIStateProxy::getInstance().onInstallationModeChanged(std::make_unique<HMIInstallation>(INST_HP_ONLY));
         }
         else if (strstr_P(payload.c_str(), ENUM_INSTALLATION_SOLAR_BACKUP) != nullptr)
         {
             HMIStateProxy::getInstance().onInstallationModeChanged(
-                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_AND_SOLAR)));
+                    std::make_unique<HMIInstallation>(INST_HP_AND_SOLAR));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_INSTALLATION_BOILER_BACKUP_EXT_OPT) != nullptr)
         {
             HMIStateProxy::getInstance().onInstallationModeChanged(
-                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_AND_EXT_OPT_EXT)));
+                    std::make_unique<HMIInstallation>(INST_HP_AND_EXT_OPT_EXT));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_INSTALLATION_BOILER_BACKUP_EXT_PRIO) != nullptr)
         {
             HMIStateProxy::getInstance().onInstallationModeChanged(
-                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_AND_EXT_PRIO_EXT)));
+                    std::make_unique<HMIInstallation>(INST_HP_AND_EXT_PRIO_EXT));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_INSTALLATION_BOILER_BACKUP_HP_OPT) != nullptr)
         {
             HMIStateProxy::getInstance().onInstallationModeChanged(
-                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_AND_EXT_OPT_HP)));
+                    std::make_unique<HMIInstallation>(INST_HP_AND_EXT_OPT_HP));
         }
 
         else if (strstr_P(payload.c_str(), ENUM_INSTALLATION_BOILER_BACKUP_HP_PRIO) != nullptr)
         {
             HMIStateProxy::getInstance().onInstallationModeChanged(
-                    std::unique_ptr<HMIInstallation>(new HMIInstallation(INST_HP_AND_EXT_PRIO_HP)));
+                    std::make_unique<HMIInstallation>(INST_HP_AND_EXT_PRIO_HP));
         }
         else
         {
             HMIStateProxy::getInstance().onInstallationModeChanged(std::unique_ptr<HMIInstallation>(nullptr));
+        }
+    }
+    else if (strstr_P(topic.c_str(), HMI_FAN_EXHAUST_CONFIG) != nullptr)
+    {
+        if (strstr_P(payload.c_str(), ENUM_CONFIG_EXHAUST_FAN_STOP) != nullptr)
+        {
+            HMIStateProxy::getInstance().onFanExhaustModeChanged(std::make_unique<HMIFanExhaust>(EXHAUST_STOP));
+        }
+        else if (strstr_P(payload.c_str(), ENUM_CONFIG_EXHAUST_FAN_LOW_SPEED) != nullptr)
+        {
+            HMIStateProxy::getInstance().onFanExhaustModeChanged(std::make_unique<HMIFanExhaust>(EXHAUST_LOW_SPEED));
+        }
+        else if (strstr_P(payload.c_str(), ENUM_CONFIG_EXHAUST_FAN_HIGH_SPEED) != nullptr)
+        {
+            HMIStateProxy::getInstance().onFanExhaustModeChanged(std::make_unique<HMIFanExhaust>(EXHAUST_HIGH_SPEED));
+        }
+        else
+        {
+            HMIStateProxy::getInstance().onFanExhaustModeChanged(std::unique_ptr<HMIFanExhaust>(nullptr));
+        }
+    }
+
+    else if (strstr_P(topic.c_str(), HMI_AIR_DUCT_CONFIG) != nullptr)
+    {
+        if (strstr_P(payload.c_str(), ENUM_AIR_DUCT_IN_IN) != nullptr)
+        {
+            HMIStateProxy::getInstance().onAirductConfigChanged(std::make_unique<HMIAirDuctConfig>(AD_INT_INT));
+        }
+        else if (strstr_P(payload.c_str(), ENUM_AIR_DUCT_INT_EXT) != nullptr)
+        {
+            HMIStateProxy::getInstance().onAirductConfigChanged(std::make_unique<HMIAirDuctConfig>(AD_INT_EXT));
+        }
+        else if (strstr_P(payload.c_str(), ENUM_AIR_DUCT_EXT_EXT) != nullptr)
+        {
+            HMIStateProxy::getInstance().onAirductConfigChanged(std::make_unique<HMIAirDuctConfig>(AD_EXT_EXT));
+        }
+        else
+        {
+            HMIStateProxy::getInstance().onAirductConfigChanged(std::unique_ptr<HMIAirDuctConfig>(nullptr));
         }
     }
 
@@ -239,8 +269,6 @@ void MQTTTask::spawn()
     }
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wformat"
 void MQTTTask::setup()
 {
     mMQTTClient.begin(aquamqtt::config::brokerAddr, aquamqtt::config::brokerPort, mWiFiClient);
@@ -266,9 +294,9 @@ void MQTTTask::check_mqtt_connection()
     Serial.println("[mqtt] is disconnected... trying to connect to mqtt broker");
 
     while (!mMQTTClient.connect(
-            aquamqtt::config::brokerClientId,
-            strlen(aquamqtt::config::brokerUser) == 0 ? nullptr : aquamqtt::config::brokerUser,
-            strlen(aquamqtt::config::brokerPassword) == 0 ? nullptr : aquamqtt::config::brokerPassword))
+            config::brokerClientId,
+            strlen(config::brokerUser) == 0 ? nullptr : config::brokerUser,
+            strlen(config::brokerPassword) == 0 ? nullptr : config::brokerPassword))
     {
         vTaskDelay(pdMS_TO_TICKS(1000));
         esp_task_wdt_reset();
@@ -318,49 +346,49 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 8) != 0 || fullUpdate)
     {
-        if (HMIStateProxy::getInstance().copyFrame(aquamqtt::message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
+        if (HMIStateProxy::getInstance().copyFrame(HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             updateHMIStatus(fullUpdate);
 
             if (mLastProcessedHMIMessage == nullptr)
             {
-                mLastProcessedHMIMessage = new uint8_t[aquamqtt::message::HMI_MESSAGE_LENGTH];
+                mLastProcessedHMIMessage = new uint8_t[HMI_MESSAGE_LENGTH];
             }
-            memcpy(mLastProcessedHMIMessage, mTransferBuffer, aquamqtt::message::HMI_MESSAGE_LENGTH);
+            memcpy(mLastProcessedHMIMessage, mTransferBuffer, HMI_MESSAGE_LENGTH);
         }
     }
 
     if ((notify & 1 << 7) != 0 || fullUpdate)
     {
-        if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
+        if (MainStateProxy::getInstance().copyFrame(MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             updateMainStatus(fullUpdate);
 
             if (mLastProcessedMainMessage == nullptr)
             {
-                mLastProcessedMainMessage = new uint8_t[aquamqtt::message::MAIN_MESSAGE_LENGTH];
+                mLastProcessedMainMessage = new uint8_t[MAIN_MESSAGE_LENGTH];
             }
-            memcpy(mLastProcessedMainMessage, mTransferBuffer, aquamqtt::message::MAIN_MESSAGE_LENGTH);
+            memcpy(mLastProcessedMainMessage, mTransferBuffer, MAIN_MESSAGE_LENGTH);
         }
     }
 
     if ((notify & 1 << 6) != 0 || fullUpdate)
     {
-        if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
+        if (MainStateProxy::getInstance().copyFrame(ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             updateEnergyStats(fullUpdate);
 
             if (mLastProcessedEnergyMessage == nullptr)
             {
-                mLastProcessedEnergyMessage = new uint8_t[aquamqtt::message::ENERGY_MESSAGE_LENGTH];
+                mLastProcessedEnergyMessage = new uint8_t[ENERGY_MESSAGE_LENGTH];
             }
-            memcpy(mLastProcessedEnergyMessage, mTransferBuffer, aquamqtt::message::ENERGY_MESSAGE_LENGTH);
+            memcpy(mLastProcessedEnergyMessage, mTransferBuffer, ENERGY_MESSAGE_LENGTH);
         }
     }
 
     if ((notify & 1 << 5) != 0)
     {
-        if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER, mTransferBuffer))
+        if (MainStateProxy::getInstance().copyFrame(ERROR_MESSAGE_IDENTIFIER, mTransferBuffer))
         {
             updateErrorStatus();
         }
@@ -387,8 +415,6 @@ void MQTTTask::loop()
     mMQTTClient.loop();
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wformat"
 void MQTTTask::updateStats()
 {
     publishString(
@@ -433,6 +459,8 @@ void MQTTTask::updateStats()
         overrideJson[HMI_HEATING_ELEMENT_ENABLED] = overrides.heatingElementEnabled ? "1" : "0";
         overrideJson[HMI_EMERGENCY_MODE]          = overrides.emergencyModeEnabled ? "1" : "0";
         overrideJson[HMI_INSTALLATION_CONFIG]     = overrides.installationMode ? "1" : "0";
+        overrideJson[HMI_FAN_EXHAUST_CONFIG]      = overrides.exhaustFanMode ? "1" : "0";
+        overrideJson[HMI_AIR_DUCT_CONFIG]         = overrides.airductConfig ? "1" : "0";
         overrideJson[HMI_TIME_AND_DATE]           = (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM
                                            && aquamqtt::config::OPERATION_MODE
                                                       != aquamqtt::config::EOperationMode::LISTENER)
@@ -477,10 +505,6 @@ void MQTTTask::updateStats()
                 HMIStateProxy::getInstance().isPVModeHeatElementEnabled());
     }
 }
-#pragma clang diagnostic pop
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wformat"
 void MQTTTask::updateMainStatus(bool fullUpdate)
 {
     message::MainStatusMessage message(mTransferBuffer);
@@ -584,8 +608,6 @@ void MQTTTask::updateMainStatus(bool fullUpdate)
     }
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wformat"
 void MQTTTask::updateHMIStatus(bool fullUpdate)
 {
     message::HMIMessage message(mTransferBuffer);
@@ -663,6 +685,11 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
         publishString(HMI_SUBTOPIC, HMI_INSTALLATION_CONFIG, installationModeStr(message.installationMode()));
     }
 
+    if (message.exhaustFanChanged())
+    {
+        publishString(HMI_SUBTOPIC, HMI_FAN_EXHAUST_CONFIG, exhaustModeStr(message.fanExhaust()));
+    }
+
     if (message.timerModeOneChanged())
     {
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
@@ -715,8 +742,6 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
     }
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wformat"
 void MQTTTask::updateEnergyStats(bool fullUpdate)
 {
     message::MainEnergyMessage message(mTransferBuffer);

@@ -31,7 +31,7 @@ enum class MQTT_ITEM_SENSOR
     HMI_LEGIONELLA,
     HMI_TIMER_WINDOW_A,
     HMI_TIMER_WINDOW_B,
-    HMI_AIR_DUCT_CONFIG,
+    HMI_AIR_DUCT_CONFIG_DEPRECATED,
     HMI_TEST_MODE,
     HMI_SETUP_STATE,
     HMI_PV_INPUT_ACTIVATED,
@@ -88,6 +88,8 @@ enum class MQTT_ITEM_BINARY_SENSOR
     MAIN_CAPABILITY_PV_INPUT,
     MAIN_CAPABILITY_EXT_COMM,
     MAIN_CAPABILITY_DRY_HEATING,
+    STATS_ACTIVE_OVERRIDE_HMI_FAN_EXHAUST_CONFIG,
+    STATS_ACTIVE_OVERRIDE_HMI_AIRDUCT_CONFIG,
     RESERVED_COUNT
 };
 
@@ -117,6 +119,8 @@ enum class MQTT_ITEM_SELECT
     HMI_OPERATION_MODE,
     HMI_OPERATION_TYPE,
     HMI_INSTALLATION_CONFIG,
+    HMI_FAN_EXHAUST_CONFIG,
+    HMI_AIR_DUCT_CONFIG,
     RESERVED_COUNT
 };
 
@@ -482,12 +486,8 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_setup");
             doc["ic"]      = "mdi:tablet-dashboard";
             break;
-        case MQTT_ITEM_SENSOR::HMI_AIR_DUCT_CONFIG:
-            doc["name"]    = "AirDuct Configuration";
-            doc["stat_t"]  = "~/hmi/configAirduct";
-            doc["uniq_id"] = make_unique(temp, identifier, "hmi_airduct_cfg");
-            doc["ic"]      = "mdi:sign-direction";
-            break;
+        case MQTT_ITEM_SENSOR::HMI_AIR_DUCT_CONFIG_DEPRECATED:
+            return false;
         case MQTT_ITEM_SENSOR::STATS_AQUAMQTT_MODE:
             doc["name"]    = "AquaMQTT Mode";
             doc["stat_t"]  = "~/stats/aquamqttMode";
@@ -699,6 +699,26 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_B
             doc["pl_off"]  = "0";
             doc["ent_cat"] = "diagnostic";
             break;
+        case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_FAN_EXHAUST_CONFIG:
+            doc["name"]    = "Active Override Configuration Fan Exhaust";
+            doc["stat_t"]  = "~/stats/activeOverrides";
+            doc["val_tpl"] = "{{ value_json.configFanExhaust }}";
+            doc["ic"]      = "mdi:debug-step-over";
+            doc["uniq_id"] = make_unique(temp, identifier, "main_state_override_fan_exh_cfg");
+            doc["pl_on"]   = "1";
+            doc["pl_off"]  = "0";
+            doc["ent_cat"] = "diagnostic";
+            break;
+        case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_AIRDUCT_CONFIG:
+            doc["name"]    = "Active Override Configuration Air Duct";
+            doc["stat_t"]  = "~/stats/activeOverrides";
+            doc["val_tpl"] = "{{ value_json.configAirduct }}";
+            doc["ic"]      = "mdi:debug-step-over";
+            doc["uniq_id"] = make_unique(temp, identifier, "main_state_override_airduct_cfg");
+            doc["pl_on"]   = "1";
+            doc["pl_off"]  = "0";
+            doc["ent_cat"] = "diagnostic";
+            break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_TIME_DATE:
             doc["name"]    = "Active Override Time/Date";
             doc["stat_t"]  = "~/stats/activeOverrides";
@@ -875,6 +895,28 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ops"][3]  = mqtt::ENUM_INSTALLATION_BOILER_BACKUP_HP_OPT;
             doc["ops"][4]  = mqtt::ENUM_INSTALLATION_THERMODYNAMICS_ONLY;
             doc["ops"][5]  = mqtt::ENUM_INSTALLATION_SOLAR_BACKUP;
+            break;
+        case MQTT_ITEM_SELECT::HMI_FAN_EXHAUST_CONFIG:
+            doc["name"]    = "Fan Exhaust Configuration";
+            doc["ent_cat"] = "config";
+            doc["uniq_id"] = make_unique(temp, identifier, "hmi_fanExhaustConfig");
+            doc["stat_t"]  = "~/hmi/configFanExhaust";
+            doc["cmd_t"]   = "~/ctrl/configFanExhaust";
+            doc["ic"]      = "mdi:fan";
+            doc["ops"][0]  = mqtt::ENUM_CONFIG_EXHAUST_FAN_STOP;
+            doc["ops"][1]  = mqtt::ENUM_CONFIG_EXHAUST_FAN_LOW_SPEED;
+            doc["ops"][2]  = mqtt::ENUM_CONFIG_EXHAUST_FAN_HIGH_SPEED;
+            break;
+        case MQTT_ITEM_SELECT::HMI_AIR_DUCT_CONFIG:
+            doc["name"]    = "AirDuct Configuration";
+            doc["ent_cat"] = "config";
+            doc["uniq_id"] = make_unique(temp, identifier, "hmi_airduct_cfg_sel");
+            doc["stat_t"]  = "~/hmi/configAirduct";
+            doc["cmd_t"]   = "~/ctrl/configAirduct";
+            doc["ic"]      = "mdi:sign-direction";
+            doc["ops"][0]  = mqtt::ENUM_AIR_DUCT_IN_IN;
+            doc["ops"][1]  = mqtt::ENUM_AIR_DUCT_INT_EXT;
+            doc["ops"][2]  = mqtt::ENUM_AIR_DUCT_EXT_EXT;
             break;
         case MQTT_ITEM_SELECT::RESERVED_COUNT:
         default:

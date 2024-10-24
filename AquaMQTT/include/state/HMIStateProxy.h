@@ -16,6 +16,8 @@ struct AquaMqttOverrides
     bool heatingElementEnabled;
     bool emergencyModeEnabled;
     bool installationMode;
+    bool exhaustFanMode;
+    bool airductConfig;
 };
 
 enum AquaMqttOverrideMode
@@ -54,7 +56,7 @@ class HMIStateProxy : public mqtt::IMQTTCallback
 public:
     static HMIStateProxy& getInstance();
 
-    virtual ~HMIStateProxy() = default;
+    ~HMIStateProxy() override = default;
 
     HMIStateProxy(const HMIStateProxy&) = delete;
 
@@ -81,6 +83,10 @@ public:
     void onHeatingElementEnabledChanged(std::unique_ptr<bool> enabled) override;
 
     void onEmergencyModeEnabledChanged(std::unique_ptr<bool> enabled) override;
+
+    void onFanExhaustModeChanged(std::unique_ptr<message::HMIFanExhaust> mode) override;
+
+    void onAirductConfigChanged(std::unique_ptr<message::HMIAirDuctConfig> config) override;
 
     void onPVModeHeatpumpEnabled(bool enabled) override;
 
@@ -116,6 +122,8 @@ private:
     std::unique_ptr<message::HMIOperationType> mOperationType;
     std::unique_ptr<message::HMIOperationMode> mOperationMode;
     std::unique_ptr<message::HMIInstallation>  mInstallationMode;
+    std::unique_ptr<message::HMIFanExhaust>    mFanExhaustMode;
+    std::unique_ptr<message::HMIAirDuctConfig> mAirductConfig;
     std::unique_ptr<bool>                      mEmergencyModeEnabled;
     std::unique_ptr<bool>                      mHeatingElementEnabled;
     bool                                       mPVModeHeatPump;

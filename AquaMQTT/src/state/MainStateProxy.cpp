@@ -128,6 +128,14 @@ void MainStateProxy::onPVModeHeatElementEnabled(bool enabled)
 
     xSemaphoreGive(mMutex);
 }
+void MainStateProxy::onFanExhaustModeChanged(std::unique_ptr<message::HMIFanExhaust> mode)
+{
+    // noop
+}
+void MainStateProxy::onAirductConfigChanged(std::unique_ptr<message::HMIAirDuctConfig> config)
+{
+    // noop
+}
 
 void MainStateProxy::onOperationTypeChanged(std::unique_ptr<message::HMIOperationType> type)
 {
