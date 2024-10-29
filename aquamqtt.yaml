@@ -397,9 +397,18 @@ mqtt:
         manufacturer: tspopp
         name: AquaMQTT 
         model: V1
+  
+  water_heater:
+    - name: "AquaMQTT boiler"
+      icon: mdi:water-boiler
+      temperature_state_topic: "aquamqtt/hmi/waterTempTarget"
+      temperature_command_topic: "aquamqtt/ctrl/waterTempTarget"
+      current_temperature_topic: "aquamqtt/main/waterTemp"
+      unique_id: atlantic_water_boiler_thermostat
+      precision: 0.5
+   
   button:
     - name: "Reset Overrides"
-
       command_topic: "aquamqtt/ctrl/reset"
       payload_press: ""
       qos: 0
