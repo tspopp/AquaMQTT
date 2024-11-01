@@ -429,28 +429,35 @@ void MQTTTask::updateStats()
 
     if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
     {
-        auto listenerStats = DHWState::getInstance().getFrameBufferStatistics(0);
-        publishul(STATS_SUBTOPIC, STATS_MSG_HANDLED, listenerStats.msgHandled);
-        publishul(STATS_SUBTOPIC, STATS_MSG_UNHANDLED, listenerStats.msgUnhandled);
-        publishul(STATS_SUBTOPIC, STATS_MSG_CRC_NOK, listenerStats.msgCRCFail);
-        publishul(STATS_SUBTOPIC, STATS_DROPPED_BYTES, listenerStats.droppedBytes);
+        if (config::MQTT_PUBLISH_SERIAL_STATISTICS)
+        {
+            auto listenerStats = DHWState::getInstance().getFrameBufferStatistics(0);
+            publishul(STATS_SUBTOPIC, STATS_MSG_HANDLED, listenerStats.msgHandled);
+            publishul(STATS_SUBTOPIC, STATS_MSG_UNHANDLED, listenerStats.msgUnhandled);
+            publishul(STATS_SUBTOPIC, STATS_MSG_CRC_NOK, listenerStats.msgCRCFail);
+            publishul(STATS_SUBTOPIC, STATS_DROPPED_BYTES, listenerStats.droppedBytes);
+        }
     }
     else
     {
-        auto hmiStats = DHWState::getInstance().getFrameBufferStatistics(1);
-        publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_HANDLED, hmiStats.msgHandled);
-        publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_UNHANDLED, hmiStats.msgUnhandled);
-        publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_CRC_NOK, hmiStats.msgCRCFail);
-        publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_DROPPED_BYTES, hmiStats.droppedBytes);
-        publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_SENT, hmiStats.msgSent);
+        if (config::MQTT_PUBLISH_SERIAL_STATISTICS)
+        {
+            auto hmiStats = DHWState::getInstance().getFrameBufferStatistics(1);
+            publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_HANDLED, hmiStats.msgHandled);
+            publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_UNHANDLED, hmiStats.msgUnhandled);
+            publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_CRC_NOK, hmiStats.msgCRCFail);
+            publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_DROPPED_BYTES, hmiStats.droppedBytes);
+            publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_SENT, hmiStats.msgSent);
 
-        auto mainStats = DHWState::getInstance().getFrameBufferStatistics(2);
-        publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_HANDLED, mainStats.msgHandled);
-        publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_UNHANDLED, mainStats.msgUnhandled);
-        publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_CRC_NOK, mainStats.msgCRCFail);
-        publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_DROPPED_BYTES, mainStats.droppedBytes);
-        publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_SENT, mainStats.msgSent);
+            auto mainStats = DHWState::getInstance().getFrameBufferStatistics(2);
+            publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_HANDLED, mainStats.msgHandled);
+            publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_UNHANDLED, mainStats.msgUnhandled);
+            publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_CRC_NOK, mainStats.msgCRCFail);
+            publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_DROPPED_BYTES, mainStats.droppedBytes);
+            publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_SENT, mainStats.msgSent);
+        }
 
+        // TODO: these should be updated a soon as something changes, and not by the stats timer
         auto         overrides = HMIStateProxy::getInstance().getOverrides();
         JsonDocument overrideJson;
         overrideJson[HMI_OPERATION_MODE]          = overrides.operationMode ? "1" : "0";
@@ -625,7 +632,7 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
         publishString(HMI_SUBTOPIC, HMI_OPERATION_TYPE, operationTypeStr(message.getOperationType()));
     }
 
-    if (message.timeChanged())
+    if (config::MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE && message.timeChanged())
     {
         sprintf(reinterpret_cast<char*>(mPayloadBuffer),
                 "%02d:%02d:%02d",
@@ -641,7 +648,7 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 
-    if (message.dateChanged())
+    if (config::MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE && message.dateChanged())
     {
         sprintf(reinterpret_cast<char*>(mPayloadBuffer),
                 "%d.%d.%d",

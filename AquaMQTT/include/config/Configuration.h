@@ -61,6 +61,22 @@ constexpr bool OVERRIDE_TIME_AND_DATE_IN_MITM = true;
 constexpr bool DEBUG_RAW_SERIAL_MESSAGES = false;
 
 /**
+ * Choose to publish message statistics from the serial interfaces, if everything
+ * works as it should you may disable this. If set to true, this will provide the
+ * topics "msgHandled, msgUnhandled, msgCRCNOK and msgSent" topics for each serial
+ * channel (hmi/main or listener),
+ */
+constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = false;
+
+/**
+ * Choose to publish time and date used by the heatpump. This is mainly for debugging
+ * if the time and date override from AquaMQTT works as expected. You may want to
+ * enable this, if you are customizing the NTP timezone or server or even trying to
+ * use the RTC module from the AquaMQTT board.
+ */
+constexpr bool MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE = false;
+
+/**
  * Change the time interval where all known attributes are re-published to the MQTT broker.
  */
 constexpr uint32_t MQTT_FULL_UPDATE_MS = 1000 * 60 * 30;
