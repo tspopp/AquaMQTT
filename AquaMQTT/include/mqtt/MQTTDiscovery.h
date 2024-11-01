@@ -124,6 +124,12 @@ enum class MQTT_ITEM_SELECT
     RESERVED_COUNT
 };
 
+enum class MQTT_ITEM_WATER_HEATER
+{
+    WATER_HEATER_CUSTOM,
+    RESERVED_COUNT
+};
+
 static JsonDocument defaultJson;
 
 static JsonDocument createFromDefault(uint16_t identifier)
@@ -972,6 +978,40 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ic"]      = "mdi:heating-coil";
             doc["pl_off"]  = "0";
             doc["pl_on"]   = "1";
+            break;
+        default:
+            return false;
+    }
+
+    serializeJson(doc, buffer, config::MQTT_MAX_PAYLOAD_SIZE);
+    return true;
+}
+
+static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_WATER_HEATER item)
+{
+    JsonDocument doc = createFromDefault(identifier);
+    char         temp[100];
+    switch (item)
+    {
+        case MQTT_ITEM_WATER_HEATER::WATER_HEATER_CUSTOM:
+            doc["name"]             = config::heatpumpModelName;
+            doc["ent_cat"]          = "config";
+            doc["uniq_id"]          = make_unique(temp, identifier, "water_heater");
+            doc["ic"]               = "mdi:water";
+            doc["mode_stat_t"]      = "~/hmi/operationMode";
+            doc["mode_cmd_t"]       = "~/ctrl/operationMode";
+            doc["modes"][0]         = mqtt::ENUM_OPERATION_MODE_AUTO;
+            doc["modes"][1]         = mqtt::ENUM_OPERATION_MODE_BOOST;
+            doc["modes"][2]         = mqtt::ENUM_OPERATION_MODE_ECO_ON;
+            doc["modes"][3]         = mqtt::ENUM_OPERATION_MODE_ECO_OFF;
+            doc["modes"][4]         = mqtt::ENUM_OPERATION_MODE_ABSENCE;
+            doc["min"]              = config::ABSENCE_WATER_TEMPERATURE;
+            doc["max"]              = config::MAX_WATER_TEMPERATURE;
+            doc["temp_stat_t"]      = "~/hmi/waterTempTarget";
+            doc["temp_cmd_t"]       = "~/ctrl/waterTempTarget";
+            doc["curr_temp_t"]      = "~/main/waterTemp";
+            doc["precision"]        = 1.0f;
+            doc["temperature_unit"] = "C";
             break;
         default:
             return false;
