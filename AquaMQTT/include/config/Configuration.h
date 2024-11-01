@@ -66,7 +66,7 @@ constexpr bool DEBUG_RAW_SERIAL_MESSAGES = false;
  * topics "msgHandled, msgUnhandled, msgCRCNOK and msgSent" topics for each serial
  * channel (hmi/main or listener),
  */
-constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = false;
+constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = true;
 
 /**
  * Choose to publish time and date used by the heatpump. This is mainly for debugging
