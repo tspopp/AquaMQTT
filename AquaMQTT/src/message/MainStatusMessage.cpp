@@ -7,152 +7,160 @@ namespace message
 
 float message::MainStatusMessage::hotWaterTemp()
 {
-    return (float) (((short int) (mData[2] << 8) | mData[1]) / 10.0);
+    // TODO
+    return 0;
 }
 
 void MainStatusMessage::setHotWaterTemp(float temp)
 {
-    short int rawValue = temp * 100 / 10;
-    mData[1]           = rawValue & 0xFF;
-    mData[2]           = (rawValue >> 8) & 0xFF;
+    // TODO
+    return;
 }
 
 float MainStatusMessage::airTemp()
 {
-    return (float) (((short int) (mData[4] << 8) | mData[3]) / 10.0);
+    // TODO
+    return 0;
 }
 
 void MainStatusMessage::setAirTemp(float temp)
 {
-    short int rawValue = temp * 100 / 10;
-    mData[3]           = rawValue & 0xFF;
-    mData[4]           = (rawValue >> 8) & 0xFF;
+    // TODO
+    return;
 }
 
 float MainStatusMessage::evaporatorLowerAirTemp()
 {
-    return (float) (((short int) (mData[6] << 8) | mData[5]) / 10.0);
+    // TODO
+    return 0;
 }
 
 void MainStatusMessage::setEvaporatorLowerAirTemp(float temp)
 {
-    short int rawValue = temp * 100 / 10;
-    mData[5]           = rawValue & 0xFF;
-    mData[6]           = (rawValue >> 8) & 0xFF;
+    // TODO
+    return;
 }
 
 float MainStatusMessage::evaporatorUpperAirTemp()
 {
-    return (float) (((short int) (mData[8] << 8) | mData[7]) / 10.0);
+    // TODO
+    return 0;
 }
 
 void MainStatusMessage::setEvaporatorUpperAirTemp(float temp)
-{
-    short int rawValue = temp * 100 / 10;
-    mData[7]           = rawValue & 0xFF;
-    mData[8]           = (rawValue >> 8) & 0xFF;
+{  // TODO
+    return;
 }
 
 float MainStatusMessage::fanSpeedPwm()
 {
-    return (float) (((short int) (mData[19] << 8) | mData[18]) / 10.0);
+    // TODO
+    return 0;
 }
 
 bool MainStatusMessage::stateHeatingElement()
 {
-    return mData[17] & 0x01;
+    // TODO
+    return false;
 }
 bool MainStatusMessage::stateHeatpump()
 {
-    return mData[17] & 0x02;
+    // TODO
+    return false;
 }
 bool MainStatusMessage::stateBoilerBackup()
 {
-    return mData[17] & 0x04;
+    // TODO
+    return false;
 }
 bool MainStatusMessage::stateFan()
 {
-    return mData[17] & 0x08;
+    // TODO
+    return false;
 }
 bool MainStatusMessage::stateDefrost()
 {
-    return mData[17] & 0x20;
+    // TODO
+    return false;
 }
 
 bool MainStatusMessage::statePV()
 {
-    return mData[22] & 0x10;
+    // TODO
+    return false;
 }
 
 bool MainStatusMessage::stateSolar()
 {
-    return mData[22] & 0x20;
+    // TODO
+    return false;
 }
 
 uint8_t MainStatusMessage::settingMinTTarget()
 {
-    return mData[20];
+    // TODO
+    return 0;
 }
 uint8_t MainStatusMessage::settingPwmFirst()
 {
-    return mData[15];
+    // TODO
+    return 0;
 }
 uint8_t MainStatusMessage::settingPwmSecond()
 {
-    return mData[16];
+    // TODO
+    return 0;
 }
 uint8_t MainStatusMessage::settingPwmThird()
 {
-    return mData[14];
+    // TODO
+    return 0;
 }
 uint8_t MainStatusMessage::settingLegionellaTTarget()
 {
-    return mData[21];
+    // TODO
+    return 0;
 }
 uint16_t MainStatusMessage::settingWattageHeatingElement()
 {
-    return mData[32] * 100;
+    // TODO
+    return 0;
 }
 uint16_t MainStatusMessage::settingBoilerCapacity()
 {
-    return ((uint16_t) mData[34] << 8) | (uint16_t) mData[33];
+    // TODO
+    return 0;
 }
 MAINBrands MainStatusMessage::settingBrand()
 {
-    switch (mData[35])
-    {
-        case 65:
-            return MAINBrands::BR_ATLANTIC;
-        case 78:
-            return MAINBrands::BR_NONAME;
-        case 83:
-            return MAINBrands::BR_SAUTER;
-        case 84:
-            return MAINBrands::BR_THERMOR;
-        default:
-            return MAINBrands::BR_UNKNOWN;
-    }
+    // TODO
+    return MAINBrands::BR_UNKNOWN;
 }
 
 bool MainStatusMessage::capabilityHasHeatExchanger()
 {
-    return mData[36] & 0x01;
+    // TODO
+    return false;
 }
 bool MainStatusMessage::capabilityHasCirculation()
 {
-    return mData[36] & 0x02;
+    // TODO
+    return false;
 }
 bool MainStatusMessage::capabilityHasPVInput()
 {
-    return mData[36] & 0x04;
+    // TODO
+    return false;
 }
 bool MainStatusMessage::capabilityHasCommunication()
 {
-    return !(mData[36] & 0x08);
+    // TODO
+    return false;
 }
 bool MainStatusMessage::capabilityHasAntiDryHeating()
 {
-    return (mData[36] & 0x20);
+    // TODO
+    return false;
 }
 void MainStatusMessage::compareWith(uint8_t* data)
 {
@@ -188,63 +196,6 @@ void MainStatusMessage::compareWith(uint8_t* data)
 
         switch (indiceChanged)
         {
-            case 1:
-            case 2:
-                mHotWaterTempChanged = true;
-                break;
-            case 3:
-            case 4:
-                mAirTempChanged = true;
-                break;
-            case 5:
-            case 6:
-                mEvaporatorLowerChanged = true;
-                break;
-            case 7:
-            case 8:
-                mEvaporatorUpperChanged = true;
-                break;
-            case 14:
-                mSettingPwmThirdChanged = true;
-                break;
-            case 15:
-                mSettingPwmFirstChanged = true;
-                break;
-            case 16:
-                mSettingPwmSecondChanged = true;
-                break;
-            case 17:
-                mStatesChanged = true;
-                break;
-            case 18:
-            case 19:
-                mFanSpeedChanged = true;
-                break;
-            case 20:
-                mSettingMinTChanged = true;
-                break;
-            case 21:
-                mSettingAntiLegionellaTargetChanged = true;
-                break;
-            case 22:
-                mPVOrSolarStateChanged = true;
-                break;
-            case 23:
-                mErrorCodeChanged = true;
-                break;
-            case 32:
-                mSettingWattageHeatElementChanged = true;
-                break;
-            case 33:
-            case 34:
-                mSettingBoilerCapacityChanged = true;
-                break;
-            case 35:
-                mSettingBoilerBrandChanged = true;
-                break;
-            case 36:
-                mSettingCapabilitiesChanged = true;
-                break;
             default:
                 break;
         }

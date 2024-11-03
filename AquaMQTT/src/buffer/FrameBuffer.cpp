@@ -3,7 +3,7 @@
 #include "state/DHWState.h"
 
 #define FRAME_ID_LEN_BYTES 1
-#define CRC_LEN_BYTES      2
+#define CRC_LEN_BYTES      1
 
 FrameBuffer::FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74)
     : mHandle194(handle194)
@@ -69,19 +69,82 @@ int FrameBuffer::handleFrame()
             mTransferBuffer[i] = retVal;
         }
 
-        // move crc out of ringbuffer
-        int crcVal1;
-        mBuffer.pop(crcVal1);
+        bool crcResult = false;
+        // FIXME: compatibility with existing protocol
+        if (true)
+        {
+            // move checksum out of ringbuffer
+            int checksum;
+            mBuffer.pop(checksum);
 
-        // move crc out of ringbuffer
-        int crcVal2;
-        mBuffer.pop(crcVal2);
+//            int32_t sum = frameId;
+//            if (frameId == 194)
+//            {
+//                Serial.print("msg ");
+//                Serial.print(frameId);
+//                Serial.print(" checksum is ");
+//                Serial.print(checksum);
+//                Serial.print(" ");
+//            }
+//            for (size_t i = 1; i < payloadLength; i++)
+//            {
+//                auto val = mTransferBuffer[i];
+//
+//                // even
+//                if (val % 2 == 0)
+//                {
+//                    sum += mTransferBuffer[i];
+//                }
+//                else
+//                {
+//                    sum -= mTransferBuffer[i];
+//                }
+//
+//                if (frameId == 194)
+//                {
+//                    Serial.print(mTransferBuffer[i]);
+//                }
+//            }
+//            if (frameId == 194)
+//            {
+//                Serial.println();
+//                Serial.print("msg: ");
+//                Serial.print(frameId);
+//                Serial.print("sum: ");
+//                Serial.println(sum);
+//                Serial.print("sum + checksum ");
+//                Serial.println(sum + checksum);
+//                Serial.print("sum - checksum ");
+//                Serial.println(sum - checksum);
+//                Serial.println("sum mod 256/255");
+//                Serial.println(sum % 256);
+//                Serial.println(sum % 255);
+//                Serial.println(sum % 256 + checksum);
+//                Serial.println((sum % 256) - checksum);
+//                Serial.println(sum % 255 + checksum);
+//                Serial.println((sum % 255) - checksum);
+//            }
 
-        uint16_t desiredCRC = crcVal1 << 8 | crcVal2;
-        uint16_t actualCRC  = mCRC.ccitt(mTransferBuffer, payloadLength);
+            // FIXME: analyze checksum calulation
+            crcResult = true;
+        }
+        else
+        {
+            // move crc out of ringbuffer
+            int crcVal1;
+            mBuffer.pop(crcVal1);
+
+            // move crc out of ringbuffer
+            int crcVal2;
+            mBuffer.pop(crcVal2);
+
+            uint16_t desiredCRC = crcVal1 << 8 | crcVal2;
+            uint16_t actualCRC  = mCRC.ccitt(mTransferBuffer, payloadLength);
+            crcResult           = desiredCRC == actualCRC;
+        }
 
         // completed and valid frame, move complete frame and ownership to frame handler
-        if (desiredCRC == actualCRC)
+        if (crcResult)
         {
             if ((frameId == aquamqtt::message::HMI_MESSAGE_IDENTIFIER && mHandle194)
                 || (frameId == aquamqtt::message::MAIN_MESSAGE_IDENTIFIER && mHandle193)
