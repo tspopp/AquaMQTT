@@ -1013,6 +1013,7 @@ void MQTTTask::enableDiscovery()
     publishDiscovery(identifier, "button", discovery::MQTT_ITEM_BUTTON::RESERVED_COUNT);
     publishDiscovery(identifier, "switch", discovery::MQTT_ITEM_SWITCH::RESERVED_COUNT);
     publishDiscovery(identifier, "select", discovery::MQTT_ITEM_SELECT::RESERVED_COUNT);
+    publishDiscovery(identifier, "water_heater", discovery::MQTT_ITEM_WATER_HEATER::RESERVED_COUNT);
 }
 
 template <typename T>
