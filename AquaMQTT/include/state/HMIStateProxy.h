@@ -1,7 +1,6 @@
 #ifndef AQUAMQTT_HMISTATEPROXY_H
 #define AQUAMQTT_HMISTATEPROXY_H
 
-#include "message/HMIMessage.h"
 #include "mqtt/IMQTTCallback.h"
 #include "state/DHWState.h"
 
@@ -68,9 +67,9 @@ public:
 
     void setListener(TaskHandle_t handle);
 
-    void applyHMIOverrides(uint8_t* buffer);
+    void applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion& version);
 
-    bool copyFrame(uint8_t frameId, uint8_t* buffer);
+    size_t copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVersion& version);
 
     void onOperationModeChanged(std::unique_ptr<message::HMIOperationMode> value) override;
 

@@ -1,6 +1,9 @@
 #include "state/HMIStateProxy.h"
 
 #include "config/Configuration.h"
+#include "message/IHMIMessage.h"
+#include "message/legacy/HMIMessage.h"
+#include "message/next/HMIMessage.h"
 
 namespace aquamqtt
 {
@@ -41,40 +44,48 @@ void HMIStateProxy::setListener(TaskHandle_t handle)
     xSemaphoreGive(mMutex);
 }
 
-void HMIStateProxy::applyHMIOverrides(uint8_t* buffer)
+void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion& version)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
         return;
     }
 
-    message::HMIMessage message(buffer);
+    std::unique_ptr<message::IHMIMessage> message;
+    if (version == message::PROTOCOL_LEGACY)
+    {
+        message = std::make_unique<message::legacy::HMIMessage>(buffer);
+    }
+    else
+    {
+        message = std::make_unique<message::next::HMIMessage>(buffer);
+    }
 
     switch (currentOverrideMode())
     {
         case AM_MODE_PV_HP_ONLY:
-            message.setInstallationMode(message::HMIInstallation::INST_HP_ONLY);
-            message.setOperationType(message::HMIOperationType::ALWAYS_ON);
-            message.setOperationMode(message::HMIOperationMode::OM_ECO_INACTIVE);
-            message.setWaterTempTarget(config::MAX_WATER_TEMPERATURE);
+            message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, message::HMIInstallation::INST_HP_ONLY);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::ALWAYS_ON);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_INACTIVE);
+            message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             // do not use heat element
-            message.setEmergencyMode(false);
-            message.enableHeatingElement(false);
+            message->setAttr(message::HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED, false);
+            message->setAttr(message::HMI_ATTR_BOOL::HEATING_ELEMENT_ALLOWED, false);
             break;
         case AM_MODE_PV_HE_ONLY:
-            message.setInstallationMode(message::HMIInstallation::INST_HP_ONLY);
-            message.setOperationType(message::HMIOperationType::ALWAYS_ON);
-            message.setOperationMode(message::HMIOperationMode::OM_ECO_INACTIVE);
-            message.setWaterTempTarget(config::MAX_WATER_TEMPERATURE);
+            message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, message::HMIInstallation::INST_HP_ONLY);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::ALWAYS_ON);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_INACTIVE);
+            message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             // just use heat element
-            message.enableHeatingElement(true);
-            message.setEmergencyMode(true);
+            message->setAttr(message::HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED, true);
+            message->setAttr(message::HMI_ATTR_BOOL::HEATING_ELEMENT_ALLOWED, true);
             break;
         case AM_MODE_PV_FULL:
-            message.setInstallationMode(message::HMIInstallation::INST_HP_ONLY);
-            message.setOperationType(message::HMIOperationType::ALWAYS_ON);
-            message.setOperationMode(message::HMIOperationMode::OM_BOOST);
-            message.setWaterTempTarget(config::MAX_WATER_TEMPERATURE);
+            message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, message::HMIInstallation::INST_HP_ONLY);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::ALWAYS_ON);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_BOOST);
+            message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             break;
         case AM_MODE_STANDARD:
         {
@@ -82,54 +93,56 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer)
             if (mTargetTemperature != nullptr && *mTargetTemperature <= config::MAX_WATER_TEMPERATURE
                 && *mTargetTemperature >= config::ABSENCE_WATER_TEMPERATURE)
             {
-                message.setWaterTempTarget(*mTargetTemperature);
+                message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, *mTargetTemperature);
             }
 
             if (mInstallationMode != nullptr)
             {
-                message.setInstallationMode(*mInstallationMode);
+                message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, *mInstallationMode);
             }
 
             if (mFanExhaustMode != nullptr)
             {
-                message.setFanExhaustMode(*mFanExhaustMode);
+                message->setAttr(message::HMI_ATTR_U8::CONFIG_FAN_EXHAUST, *mFanExhaustMode);
             }
 
             if (mAirductConfig != nullptr)
             {
-                message.setAirDuctConfig(*mAirductConfig);
+                message->setAttr(message::HMI_ATTR_U8::CONFIG_AIRDUCT, *mAirductConfig);
             }
 
             if (mOperationMode != nullptr)
             {
-                message.setOperationMode(*mOperationMode);
+                message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, *mOperationMode);
 
                 // Operation Mode BOOST overrides target temperature
                 if (*mOperationMode == message::HMIOperationMode::OM_BOOST)
                 {
-                    message.setWaterTempTarget(config::MAX_WATER_TEMPERATURE);
+                    message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
                 }
                 else if (*mOperationMode == message::HMIOperationMode::OM_ABSENCE)
                 {
-                    message.setWaterTempTarget(config::ABSENCE_WATER_TEMPERATURE);
+                    message->setAttr(
+                            message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE,
+                            config::ABSENCE_WATER_TEMPERATURE);
                 }
             }
 
             if (mOperationType != nullptr)
             {
-                message.setOperationType(*mOperationType);
+                message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, *mOperationType);
             }
 
             if (mHeatingElementEnabled != nullptr)
             {
                 // sanity is taken care within message
-                message.enableHeatingElement(*mHeatingElementEnabled);
+                message->setAttr(message::HMI_ATTR_BOOL::HEATING_ELEMENT_ALLOWED, *mHeatingElementEnabled);
             }
 
             if (mEmergencyModeEnabled != nullptr)
             {
                 // sanity is taken care within message
-                message.setEmergencyMode(*mEmergencyModeEnabled);
+                message->setAttr(message::HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED, *mEmergencyModeEnabled);
             }
         }
         break;
@@ -138,29 +151,29 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer)
     // if time has been set by rtc / ntp, override time and date in hmi message
     if (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM && mTimeIsSet)
     {
-        message.setTimeHours(mTimeHours);
-        message.setTimeMinutes(mTimeMinutes);
-        message.setTimeSeconds(mTimeSeconds);
-        message.setDateDay(mTimeDays);
-        message.setDateMonthAndYear(mTimeMonth, mTimeYear);
+        message->setAttr(message::HMI_ATTR_U8::TIME_HOURS, mTimeHours);
+        message->setAttr(message::HMI_ATTR_U8::TIME_MINUTES, mTimeMinutes);
+        message->setAttr(message::HMI_ATTR_U8::TIME_SECONDS, mTimeSeconds);
+        message->setAttr(message::HMI_ATTR_U8::DATE_DAY, mTimeDays);
+        message->setDateMonthAndYear(mTimeMonth, mTimeYear);
     }
 
     xSemaphoreGive(mMutex);
 }
 
-bool HMIStateProxy::copyFrame(uint8_t frameId, uint8_t* buffer)
+size_t HMIStateProxy::copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVersion& version)
 {
     if (frameId != aquamqtt::message::HMI_MESSAGE_IDENTIFIER)
     {
-        return aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer);
+        return aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version);
     }
 
-    bool hasHmiMessage = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer);
-    if (hasHmiMessage && aquamqtt::config::OPERATION_MODE == config::EOperationMode::MITM)
+    size_t hmiMessageLength = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version);
+    if (hmiMessageLength > 0 && aquamqtt::config::OPERATION_MODE == config::EOperationMode::MITM)
     {
-        applyHMIOverrides(buffer);
+        applyHMIOverrides(buffer, version);
     }
-    return hasHmiMessage;
+    return hmiMessageLength;
 }
 
 void HMIStateProxy::onOperationModeChanged(std::unique_ptr<message::HMIOperationMode> value)
@@ -234,6 +247,7 @@ void HMIStateProxy::onEmergencyModeEnabledChanged(std::unique_ptr<bool> enabled)
 
     xSemaphoreGive(mMutex);
 }
+
 void HMIStateProxy::onFanExhaustModeChanged(std::unique_ptr<message::HMIFanExhaust> mode)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
@@ -251,6 +265,7 @@ void HMIStateProxy::onFanExhaustModeChanged(std::unique_ptr<message::HMIFanExhau
 
     xSemaphoreGive(mMutex);
 }
+
 void HMIStateProxy::onAirductConfigChanged(std::unique_ptr<message::HMIAirDuctConfig> config)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))

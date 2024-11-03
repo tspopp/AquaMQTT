@@ -18,6 +18,7 @@ namespace aquamqtt
 {
 namespace config
 {
+
 /**
  * Defines the network name of your esp32 device in your network
  */
@@ -74,7 +75,7 @@ constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = true;
  * enable this, if you are customizing the NTP timezone or server or even trying to
  * use the RTC module from the AquaMQTT board.
  */
-constexpr bool MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE = false;
+constexpr bool MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE = true;
 
 /**
  * Change the time interval where all known attributes are re-published to the MQTT broker.

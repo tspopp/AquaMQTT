@@ -1,6 +1,9 @@
 #include "state/MainStateProxy.h"
 
 #include "config/Configuration.h"
+#include "message/IMainMessage.h"
+#include "message/legacy/MainStatusMessage.h"
+#include "message/next/MainStatusMessage.h"
 
 namespace aquamqtt
 {
@@ -32,44 +35,49 @@ void MainStateProxy::setListener(TaskHandle_t handle)
     xSemaphoreGive(mMutex);
 }
 
-void MainStateProxy::applyMainOverrides(uint8_t* buffer)
+void MainStateProxy::applyMainOverrides(uint8_t* buffer, message::ProtocolVersion& version)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
         return;
     }
 
-    message::MainStatusMessage message(buffer);
+    std::unique_ptr<message::IMainMessage> message;
+    if(version == message::PROTOCOL_LEGACY){
+        message = std::make_unique<message::legacy::MainStatusMessage>(buffer);
+    } else{
+        message = std::make_unique<message::next::MainStatusMessage>(buffer);
+    }
 
     // we only want to modify the message if a custom pv mode is active -> else leave state as it is
     if (mPVModeHeatElement)
     {
         // let the hmi show the pv icon in case the heat element pv state is enabled
-        message.enableStatePV(true);
+        message->setAttr(message::MAIN_ATTR_BOOL::STATE_PV, true);
     }
 
     if (mPVModeHeatPump)
     {
         // let the hmi show the solar icon in case the heat element pv state is enabled
-        message.enableStateSolar(true);
+        message->setAttr(message::MAIN_ATTR_BOOL::STATE_SOLAR, true);
     }
 
     xSemaphoreGive(mMutex);
 }
 
-bool MainStateProxy::copyFrame(uint8_t frameId, uint8_t* buffer)
+size_t MainStateProxy::copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVersion& version)
 {
     if (frameId != aquamqtt::message::MAIN_MESSAGE_IDENTIFIER)
     {
-        return aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer);
+        return aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version);
     }
 
-    bool hasMainMessage = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer);
-    if (hasMainMessage && aquamqtt::config::OPERATION_MODE == config::EOperationMode::MITM)
+    size_t mainMessageLength = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version);
+    if (mainMessageLength > 0 && aquamqtt::config::OPERATION_MODE == config::EOperationMode::MITM)
     {
-        applyMainOverrides(buffer);
+        applyMainOverrides(buffer, version);
     }
-    return hasMainMessage;
+    return mainMessageLength;
 }
 
 void MainStateProxy::onOperationModeChanged(std::unique_ptr<message::HMIOperationMode> value)
