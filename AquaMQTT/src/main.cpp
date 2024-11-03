@@ -31,6 +31,7 @@ void loop()
 {
     // watchdog
     esp_task_wdt_reset();
+    delay(1);
 
     // handle wifi events
     wifiHandler.loop();
@@ -49,6 +50,7 @@ void setup()
     Serial.println("REBOOT");
 
     // initialize watchdog
+    esp_task_wdt_deinit();
     esp_task_wdt_init(&twdt_config);
     esp_task_wdt_add(nullptr);
 

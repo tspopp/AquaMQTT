@@ -6,6 +6,7 @@ Since Release [v1.4.0](https://github.com/tspopp/AquaMQTT/releases/tag/v1.4.0) A
 
 - [x] AquaMQTT is connected to the MQTT broker of your HomeAssistant instance
 - [x] The correct home assistant mqtt prefix has been set and the MQTT discovery has been set to enabled within [Configuration.h](./AquaMQTT/include/config/Configuration.h) prior to flashing AquaMQTT on the Arduino.
+- [x] The first valid message from the heat pump has been parsed successfully. Reason: There are different heat pump protocols and as soon the protocol version is known, we know the set of attributes available.
 
 If all these conditions are fullfilled, you will find the AquaMQTT device at `Settings` -> `Device` -> `MQTT/Devices` within your HomeAssistant web interface.
 

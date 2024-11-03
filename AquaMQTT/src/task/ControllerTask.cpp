@@ -3,6 +3,7 @@
 #include <esp_task_wdt.h>
 
 #include "config/Configuration.h"
+#include "message/MessageConstants.h"
 #include "state/HMIStateProxy.h"
 
 namespace aquamqtt
@@ -135,6 +136,7 @@ void ControllerTask::loop()
         mLastStatisticsUpdate = millis();
     }
 }
+
 void ControllerTask::flushReadBuffer()
 {
     while (Serial2.available())
@@ -142,21 +144,32 @@ void ControllerTask::flushReadBuffer()
         Serial2.read();
     }
 }
+
 void ControllerTask::sendMessage194()
 {
-    if (HMIStateProxy::getInstance().copyFrame(message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
-    {
-        uint16_t crc = mCRC.ccitt(mTransferBuffer, message::HMI_MESSAGE_LENGTH);
-        Serial2.write(mTransferBuffer, message::HMI_MESSAGE_LENGTH);
-        Serial2.write((uint8_t) (crc >> 8));
-        Serial2.write((uint8_t) (crc & 0xFF));
-        Serial2.flush();
-        mMessagesSent++;
-    }
-    else
+    message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
+    size_t length = HMIStateProxy::getInstance().copyFrame(message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+
+    if (length <= 0 || version == message::PROTOCOL_UNKNOWN)
     {
         Serial.println("[main] no hmi message yet, cannot forward");
+        return;
     }
+
+    Serial2.write(mTransferBuffer, length);
+    if (version == message::PROTOCOL_LEGACY)
+    {
+        uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
+        Serial2.write((uint8_t) (crc >> 8));
+        Serial2.write((uint8_t) (crc & 0xFF));
+    }
+    else if (version == message::PROTOCOL_NEXT)
+    {
+        uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
+        Serial2.write(checksum);
+    }
+    Serial2.flush();
+    mMessagesSent++;
 }
 
 }  // namespace aquamqtt
