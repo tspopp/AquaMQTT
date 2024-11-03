@@ -1,2 +1,3 @@
 .pio
 include/config/CustomConfiguration.h
+.vscode
