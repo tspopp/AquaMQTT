@@ -301,7 +301,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["uniq_id"]      = make_unique(temp, identifier, "energy_total_wp");
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_HANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM)
+            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -312,7 +312,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_UNHANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM)
+            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -323,7 +323,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_SENT:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM)
+            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -334,7 +334,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_CRC_NOK:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM)
+            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -345,7 +345,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_DROPPED_BYTES:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM)
+            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -356,7 +356,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_HANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM)
+            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -367,7 +367,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_UNHANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM)
+            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -378,7 +378,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_SENT:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM)
+            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -389,7 +389,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_CRC_NOK:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM)
+            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -400,7 +400,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_DROPPED_BYTES:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM)
+            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -411,7 +411,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_MSG_HANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER)
+            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -422,7 +422,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_MSG_UNHANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER)
+            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -433,7 +433,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_MSG_CRC_NOK:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER)
+            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -444,7 +444,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_DROPPED_BYTES:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER)
+            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -455,6 +455,10 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::HMI_TIME:
+            if (!config::MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE)
+            {
+                return false;
+            }
             doc["name"]    = "Time";
             doc["stat_t"]  = "~/hmi/time";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_time");
@@ -462,6 +466,10 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::HMI_DATE:
+            if (!config::MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE)
+            {
+                return false;
+            }
             doc["name"]    = "Date";
             doc["stat_t"]  = "~/hmi/date";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_date");
