@@ -514,92 +514,92 @@ void MQTTTask::updateStats()
 }
 void MQTTTask::updateMainStatus(bool fullUpdate)
 {
-//    message::MainStatusMessage message(mTransferBuffer);
-//
-//    applyTemperatureFilter(&message);
-//
-//    message.compareWith(fullUpdate ? nullptr : mLastProcessedMainMessage);
-//
-//    if (message.hotWaterTempChanged())
-//    {
-//        publishFloat(MAIN_SUBTOPIC, MAIN_HOT_WATER_TEMP, message.hotWaterTemp());
-//    }
-//    if (message.airTempChanged())
-//    {
-//        publishFloat(MAIN_SUBTOPIC, MAIN_SUPPLY_AIR_TEMP, message.airTemp());
-//    }
-//    if (message.evaporatorLowerAirTempChanged())
-//    {
-//        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_LOWER, message.evaporatorLowerAirTemp());
-//    }
-//    if (message.evaporatorUpperAirTempChanged())
-//    {
-//        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_UPPER, message.evaporatorUpperAirTemp());
-//    }
-//    if (message.fanSpeedChanged())
-//    {
-//        publishFloat(MAIN_SUBTOPIC, MAIN_FAN_PWM, message.fanSpeedPwm());
-//    }
-//    if (message.statesChanged())
-//    {
-//        publishi(MAIN_SUBTOPIC, MAIN_STATE_HEAT_ELEMENT, message.stateHeatingElement());
-//        publishi(MAIN_SUBTOPIC, MAIN_STATE_HEATPUMP, message.stateHeatpump());
-//        publishi(MAIN_SUBTOPIC, MAIN_STATE_EXT_BOILER, message.stateBoilerBackup());
-//        publishi(MAIN_SUBTOPIC, MAIN_STATE_FAN, message.stateFan());
-//        publishi(MAIN_SUBTOPIC, MAIN_STATE_DEFROST, message.stateDefrost());
-//    }
-//
-//    if (message.statePVOrSolarChanged())
-//    {
-//        publishi(MAIN_SUBTOPIC, MAIN_STATE_PV, message.statePV());
-//        publishi(MAIN_SUBTOPIC, MAIN_STATE_SOLAR, message.stateSolar());
-//    }
-//
-//    if (message.settingPwmFirstChanged())
-//    {
-//        publishi(MAIN_SUBTOPIC, MAIN_SETTING_PWM_01, message.settingPwmFirst());
-//    }
-//    if (message.settingPwmSecondChanged())
-//    {
-//        publishi(MAIN_SUBTOPIC, MAIN_SETTING_PWM_02, message.settingPwmSecond());
-//    }
-//    if (message.settingPwmThirdChanged())
-//    {
-//        publishi(MAIN_SUBTOPIC, MAIN_SETTING_PWM_03, message.settingPwmThird());
-//    }
-//    if (message.settingMinTTargetChanged())
-//    {
-//        publishi(MAIN_SUBTOPIC, MAIN_SETTING_MIN_TEMP_TARGET, message.settingMinTTarget());
-//    }
-//    if (message.settingLegionellaTTargetChanged())
-//    {
-//        publishi(MAIN_SUBTOPIC, MAIN_SETTING_MIN_TEMP_LEGIONELLA, message.settingLegionellaTTarget());
-//    }
-//    if (message.settingWattageHeatingElementChanged())
-//    {
-//        publishi(MAIN_SUBTOPIC, MAIN_SETTING_PWR_HEATELEM, message.settingWattageHeatingElement());
-//    }
-//    if (message.settingBoilerCapacityChanged())
-//    {
-//        publishi(MAIN_SUBTOPIC, MAIN_SETTING_BOILER_CAP, message.settingBoilerCapacity());
-//    }
-//    if (message.settingBrandChanged())
-//    {
-//        publishString(MAIN_SUBTOPIC, MAIN_SETTING_BOILER_BRAND, brandStr(message.settingBrand()));
-//    }
-//    if (message.settingCapabilitiesChanged())
-//    {
-//        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_HEAT_EXC, message.capabilityHasHeatExchanger());
-//        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_CIRCULATION, message.capabilityHasCirculation());
-//        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_PV_INPUT, message.capabilityHasPVInput());
-//        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_EXT_COMM, message.capabilityHasCommunication());
-//        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_DRY_HEATING, message.capabilityHasAntiDryHeating());
-//    }
-//
-//    if (message.errorCodeChanged())
-//    {
-//        publishi(MAIN_SUBTOPIC, MAIN_ERROR_CODE, message.errorCode());
-//    }
+    //    message::MainStatusMessage message(mTransferBuffer);
+    //
+    //    applyTemperatureFilter(&message);
+    //
+    //    message.compareWith(fullUpdate ? nullptr : mLastProcessedMainMessage);
+    //
+    //    if (message.hotWaterTempChanged())
+    //    {
+    //        publishFloat(MAIN_SUBTOPIC, MAIN_HOT_WATER_TEMP, message.hotWaterTemp());
+    //    }
+    //    if (message.airTempChanged())
+    //    {
+    //        publishFloat(MAIN_SUBTOPIC, MAIN_SUPPLY_AIR_TEMP, message.airTemp());
+    //    }
+    //    if (message.evaporatorLowerAirTempChanged())
+    //    {
+    //        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_LOWER, message.evaporatorLowerAirTemp());
+    //    }
+    //    if (message.evaporatorUpperAirTempChanged())
+    //    {
+    //        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_UPPER, message.evaporatorUpperAirTemp());
+    //    }
+    //    if (message.fanSpeedChanged())
+    //    {
+    //        publishFloat(MAIN_SUBTOPIC, MAIN_FAN_PWM, message.fanSpeedPwm());
+    //    }
+    //    if (message.statesChanged())
+    //    {
+    //        publishi(MAIN_SUBTOPIC, MAIN_STATE_HEAT_ELEMENT, message.stateHeatingElement());
+    //        publishi(MAIN_SUBTOPIC, MAIN_STATE_HEATPUMP, message.stateHeatpump());
+    //        publishi(MAIN_SUBTOPIC, MAIN_STATE_EXT_BOILER, message.stateBoilerBackup());
+    //        publishi(MAIN_SUBTOPIC, MAIN_STATE_FAN, message.stateFan());
+    //        publishi(MAIN_SUBTOPIC, MAIN_STATE_DEFROST, message.stateDefrost());
+    //    }
+    //
+    //    if (message.statePVOrSolarChanged())
+    //    {
+    //        publishi(MAIN_SUBTOPIC, MAIN_STATE_PV, message.statePV());
+    //        publishi(MAIN_SUBTOPIC, MAIN_STATE_SOLAR, message.stateSolar());
+    //    }
+    //
+    //    if (message.settingPwmFirstChanged())
+    //    {
+    //        publishi(MAIN_SUBTOPIC, MAIN_SETTING_PWM_01, message.settingPwmFirst());
+    //    }
+    //    if (message.settingPwmSecondChanged())
+    //    {
+    //        publishi(MAIN_SUBTOPIC, MAIN_SETTING_PWM_02, message.settingPwmSecond());
+    //    }
+    //    if (message.settingPwmThirdChanged())
+    //    {
+    //        publishi(MAIN_SUBTOPIC, MAIN_SETTING_PWM_03, message.settingPwmThird());
+    //    }
+    //    if (message.settingMinTTargetChanged())
+    //    {
+    //        publishi(MAIN_SUBTOPIC, MAIN_SETTING_MIN_TEMP_TARGET, message.settingMinTTarget());
+    //    }
+    //    if (message.settingLegionellaTTargetChanged())
+    //    {
+    //        publishi(MAIN_SUBTOPIC, MAIN_SETTING_MIN_TEMP_LEGIONELLA, message.settingLegionellaTTarget());
+    //    }
+    //    if (message.settingWattageHeatingElementChanged())
+    //    {
+    //        publishi(MAIN_SUBTOPIC, MAIN_SETTING_PWR_HEATELEM, message.settingWattageHeatingElement());
+    //    }
+    //    if (message.settingBoilerCapacityChanged())
+    //    {
+    //        publishi(MAIN_SUBTOPIC, MAIN_SETTING_BOILER_CAP, message.settingBoilerCapacity());
+    //    }
+    //    if (message.settingBrandChanged())
+    //    {
+    //        publishString(MAIN_SUBTOPIC, MAIN_SETTING_BOILER_BRAND, brandStr(message.settingBrand()));
+    //    }
+    //    if (message.settingCapabilitiesChanged())
+    //    {
+    //        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_HEAT_EXC, message.capabilityHasHeatExchanger());
+    //        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_CIRCULATION, message.capabilityHasCirculation());
+    //        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_PV_INPUT, message.capabilityHasPVInput());
+    //        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_EXT_COMM, message.capabilityHasCommunication());
+    //        publishi(MAIN_SUBTOPIC, MAIN_CAPABILITY_DRY_HEATING, message.capabilityHasAntiDryHeating());
+    //    }
+    //
+    //    if (message.errorCodeChanged())
+    //    {
+    //        publishi(MAIN_SUBTOPIC, MAIN_ERROR_CODE, message.errorCode());
+    //    }
 
     if (config::DEBUG_RAW_SERIAL_MESSAGES)
     {
@@ -619,19 +619,19 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
 {
     message::HMIMessage message(mTransferBuffer);
     message.compareWith(fullUpdate ? nullptr : mLastProcessedHMIMessage);
-//
-//    if (message.waterTempTargetChanged())
-//    {
-//        publishFloat(HMI_SUBTOPIC, HMI_HOT_WATER_TEMP_TARGET, message.waterTempTarget());
-//    }
-//
-//    if (message.operationTypeOrModeChanged())
-//    {
-//        publishString(HMI_SUBTOPIC, HMI_OPERATION_MODE, operationModeStr(message.operationMode()));
-//
-//        publishString(HMI_SUBTOPIC, HMI_OPERATION_TYPE, operationTypeStr(message.getOperationType()));
-//    }
-//
+
+    if (message.waterTempTargetChanged())
+    {
+        publishFloat(HMI_SUBTOPIC, HMI_HOT_WATER_TEMP_TARGET, message.waterTempTarget());
+    }
+
+        if (message.operationTypeOrModeChanged())
+        {
+            publishString(HMI_SUBTOPIC, HMI_OPERATION_MODE, operationModeStr(message.operationMode()));
+
+            publishString(HMI_SUBTOPIC, HMI_OPERATION_TYPE, operationTypeStr(message.getOperationType()));
+        }
+
     if (config::MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE && message.timeChanged())
     {
         sprintf(reinterpret_cast<char*>(mPayloadBuffer),
@@ -663,77 +663,78 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
                 HMI_DATE);
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
-//
-//    if (message.emergencyModeChanged())
-//    {
-//        publishi(HMI_SUBTOPIC, HMI_EMERGENCY_MODE, message.isEmergencyModeEnabled());
-//    }
-//
-//    if (message.heatingElemOrSetupStateOrPVActiveChanged())
-//    {
-//        publishi(HMI_SUBTOPIC, HMI_HEATING_ELEMENT_ENABLED, message.isHeatingElementEnabled());
-//        publishi(HMI_SUBTOPIC, HMM_PV_INPUT_ACTIVATED, message.isPVInputActivated());
-//        publishString(HMI_SUBTOPIC, HMI_SETUP_STATE, setupStr(message.setupMode()));
-//    }
-//
-//    if (message.legionellaOrAirductChanged())
-//    {
-//        publishi(HMI_SUBTOPIC, HMI_LEGIONELLA, message.antiLegionellaModePerMonth());
-//        publishString(HMI_SUBTOPIC, HMI_AIR_DUCT_CONFIG, aquamqtt::message::airDuctConfigStr(message.airDuctConfig()));
-//    }
-//
-//    if (message.testModeChanged())
-//    {
-//        publishString(HMI_SUBTOPIC, HMI_TEST_MODE, testModeStr(message.testMode()));
-//    }
-//
-//    if (message.installationConfigChanged())
-//    {
-//        publishString(HMI_SUBTOPIC, HMI_INSTALLATION_CONFIG, installationModeStr(message.installationMode()));
-//    }
-//
-//    if (message.exhaustFanChanged())
-//    {
-//        publishString(HMI_SUBTOPIC, HMI_FAN_EXHAUST_CONFIG, exhaustModeStr(message.fanExhaust()));
-//    }
-//
-//    if (message.timerModeOneChanged())
-//    {
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                HMI_SUBTOPIC,
-//                HMI_TIMER_WINDOW_A);
-//        message.timerWindowStr(true, reinterpret_cast<char*>(mPayloadBuffer));
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//    }
-//
-//    if (message.timerModeTwoChanged())
-//    {
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                HMI_SUBTOPIC,
-//                HMI_TIMER_WINDOW_B);
-//        message.timerWindowStr(false, reinterpret_cast<char*>(mPayloadBuffer));
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//    }
-//
-//    // publish the error number to the request id
-//    if (message.errorRequestChanged() && message.errorRequestId() != 0)
-//    {
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%u/%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                ERROR_SUBTOPIC,
-//                message.errorRequestId(),
-//                ERROR_ERROR_NUMBER);
-//        itoa(message.errorNumberRequested(), reinterpret_cast<char*>(mPayloadBuffer), 10);
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//    }
+    //
+    //    if (message.emergencyModeChanged())
+    //    {
+    //        publishi(HMI_SUBTOPIC, HMI_EMERGENCY_MODE, message.isEmergencyModeEnabled());
+    //    }
+    //
+    //    if (message.heatingElemOrSetupStateOrPVActiveChanged())
+    //    {
+    //        publishi(HMI_SUBTOPIC, HMI_HEATING_ELEMENT_ENABLED, message.isHeatingElementEnabled());
+    //        publishi(HMI_SUBTOPIC, HMM_PV_INPUT_ACTIVATED, message.isPVInputActivated());
+    //        publishString(HMI_SUBTOPIC, HMI_SETUP_STATE, setupStr(message.setupMode()));
+    //    }
+    //
+    //    if (message.legionellaOrAirductChanged())
+    //    {
+    //        publishi(HMI_SUBTOPIC, HMI_LEGIONELLA, message.antiLegionellaModePerMonth());
+    //        publishString(HMI_SUBTOPIC, HMI_AIR_DUCT_CONFIG,
+    //        aquamqtt::message::airDuctConfigStr(message.airDuctConfig()));
+    //    }
+    //
+    //    if (message.testModeChanged())
+    //    {
+    //        publishString(HMI_SUBTOPIC, HMI_TEST_MODE, testModeStr(message.testMode()));
+    //    }
+    //
+    //    if (message.installationConfigChanged())
+    //    {
+    //        publishString(HMI_SUBTOPIC, HMI_INSTALLATION_CONFIG, installationModeStr(message.installationMode()));
+    //    }
+    //
+    //    if (message.exhaustFanChanged())
+    //    {
+    //        publishString(HMI_SUBTOPIC, HMI_FAN_EXHAUST_CONFIG, exhaustModeStr(message.fanExhaust()));
+    //    }
+    //
+    //    if (message.timerModeOneChanged())
+    //    {
+    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                HMI_SUBTOPIC,
+    //                HMI_TIMER_WINDOW_A);
+    //        message.timerWindowStr(true, reinterpret_cast<char*>(mPayloadBuffer));
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //    }
+    //
+    //    if (message.timerModeTwoChanged())
+    //    {
+    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                HMI_SUBTOPIC,
+    //                HMI_TIMER_WINDOW_B);
+    //        message.timerWindowStr(false, reinterpret_cast<char*>(mPayloadBuffer));
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //    }
+    //
+    //    // publish the error number to the request id
+    //    if (message.errorRequestChanged() && message.errorRequestId() != 0)
+    //    {
+    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%u/%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                ERROR_SUBTOPIC,
+    //                message.errorRequestId(),
+    //                ERROR_ERROR_NUMBER);
+    //        itoa(message.errorNumberRequested(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //    }
 
     if (config::DEBUG_RAW_SERIAL_MESSAGES)
     {
@@ -751,55 +752,55 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
 
 void MQTTTask::updateEnergyStats(bool fullUpdate)
 {
-//    message::MainEnergyMessage message(mTransferBuffer);
-//    message.compareWith(fullUpdate ? nullptr : mLastProcessedEnergyMessage);
-//
-//    if (message.totalHeatpumpHoursChanged())
-//    {
-//        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HEATPUMP_HOURS, message.totalHeatpumpHours(), true);
-//    }
-//    if (message.totalHeatingElemHoursChanged())
-//    {
-//        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HEATING_ELEM_HOURS, message.totalHeatingElemHours(), true);
-//    }
-//    if (message.totalHoursChanged())
-//    {
-//        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HOURS, message.totalHours(), true);
-//    }
-//    if (message.totalEnergyCounterChanged())
-//    {
-//        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_ENERGY_WH, message.totalEnergyCounter(), true);
-//    }
-//
-//    if (message.powerHeatpumpChanged())
-//    {
-//        publishul(ENERGY_SUBTOPIC, ENERGY_POWER_HEATPUMP, message.powerHeatpump());
-//        if (strlen(optionalPublishTopicHeatPumpCurrentPower) != 0)
-//        {
-//            sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s", optionalPublishTopicHeatPumpCurrentPower);
-//            mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//        }
-//    }
-//
-//    if (message.powerHeatElementChanged())
-//    {
-//        publishul(ENERGY_SUBTOPIC, ENERGY_POWER_HEAT_ELEMENT, message.powerHeatElement());
-//        if (strlen(optionalPublishTopicHeatElementCurrentPower) != 0)
-//        {
-//            sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s", optionalPublishTopicHeatElementCurrentPower);
-//            mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//        }
-//    }
-//
-//    if (message.powerOverallChanged())
-//    {
-//        publishul(ENERGY_SUBTOPIC, ENERGY_POWER_TOTAL, message.powerOverall());
-//    }
-//
-//    if (message.totalWaterProductionChanged())
-//    {
-//        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_WATER_PRODUCTION, message.totalWaterProduction());
-//    }
+    //    message::MainEnergyMessage message(mTransferBuffer);
+    //    message.compareWith(fullUpdate ? nullptr : mLastProcessedEnergyMessage);
+    //
+    //    if (message.totalHeatpumpHoursChanged())
+    //    {
+    //        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HEATPUMP_HOURS, message.totalHeatpumpHours(), true);
+    //    }
+    //    if (message.totalHeatingElemHoursChanged())
+    //    {
+    //        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HEATING_ELEM_HOURS, message.totalHeatingElemHours(), true);
+    //    }
+    //    if (message.totalHoursChanged())
+    //    {
+    //        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HOURS, message.totalHours(), true);
+    //    }
+    //    if (message.totalEnergyCounterChanged())
+    //    {
+    //        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_ENERGY_WH, message.totalEnergyCounter(), true);
+    //    }
+    //
+    //    if (message.powerHeatpumpChanged())
+    //    {
+    //        publishul(ENERGY_SUBTOPIC, ENERGY_POWER_HEATPUMP, message.powerHeatpump());
+    //        if (strlen(optionalPublishTopicHeatPumpCurrentPower) != 0)
+    //        {
+    //            sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s", optionalPublishTopicHeatPumpCurrentPower);
+    //            mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //        }
+    //    }
+    //
+    //    if (message.powerHeatElementChanged())
+    //    {
+    //        publishul(ENERGY_SUBTOPIC, ENERGY_POWER_HEAT_ELEMENT, message.powerHeatElement());
+    //        if (strlen(optionalPublishTopicHeatElementCurrentPower) != 0)
+    //        {
+    //            sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s", optionalPublishTopicHeatElementCurrentPower);
+    //            mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //        }
+    //    }
+    //
+    //    if (message.powerOverallChanged())
+    //    {
+    //        publishul(ENERGY_SUBTOPIC, ENERGY_POWER_TOTAL, message.powerOverall());
+    //    }
+    //
+    //    if (message.totalWaterProductionChanged())
+    //    {
+    //        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_WATER_PRODUCTION, message.totalWaterProduction());
+    //    }
 
     if (config::DEBUG_RAW_SERIAL_MESSAGES)
     {
@@ -817,119 +818,119 @@ void MQTTTask::updateEnergyStats(bool fullUpdate)
 
 void MQTTTask::updateErrorStatus()
 {
-//    message::ErrorMessage message(mTransferBuffer);
-//
-//    if (message.isEmpty())
-//    {
-//        return;
-//    }
-//
-//    sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//            "%s%s%s%u/%s",
-//            config::mqttPrefix,
-//            BASE_TOPIC,
-//            ERROR_SUBTOPIC,
-//            message.errorRequestId(),
-//            MAIN_ERROR_CODE);
-//    itoa(message.errorCode(), reinterpret_cast<char*>(mPayloadBuffer), 10);
-//    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//
-//    if (!message.isEmpty())
-//    {
-//        sprintf(reinterpret_cast<char*>(mPayloadBuffer),
-//                "%d.%d.%d",
-//                message.dateDay(),
-//                message.dateMonth(),
-//                message.dateYear());
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%u/%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                ERROR_SUBTOPIC,
-//                message.errorRequestId(),
-//                HMI_DATE);
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//
-//        sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%02d:%02d", message.timeHours(), message.timeMinutes());
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%u/%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                ERROR_SUBTOPIC,
-//                message.errorRequestId(),
-//                HMI_TIME);
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//
-//        dtostrf(message.hotWaterTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%u/%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                ERROR_SUBTOPIC,
-//                message.errorRequestId(),
-//                MAIN_HOT_WATER_TEMP);
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//
-//        dtostrf(message.airTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%u/%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                ERROR_SUBTOPIC,
-//                message.errorRequestId(),
-//                MAIN_SUPPLY_AIR_TEMP);
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//
-//        dtostrf(message.evaporatorLowerAirTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%u/%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                ERROR_SUBTOPIC,
-//                message.errorRequestId(),
-//                MAIN_EVAPORATOR_AIR_TEMP_LOWER);
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//
-//        dtostrf(message.evaporatorUpperAirTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%u/%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                ERROR_SUBTOPIC,
-//                message.errorRequestId(),
-//                MAIN_EVAPORATOR_AIR_TEMP_UPPER);
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//
-//        dtostrf(message.fanSpeedPwm(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%u/%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                ERROR_SUBTOPIC,
-//                message.errorRequestId(),
-//                MAIN_FAN_PWM);
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//
-//        ultoa(message.totalHeatpumpHours(), reinterpret_cast<char*>(mPayloadBuffer), 10);
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%u/%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                ERROR_SUBTOPIC,
-//                message.errorRequestId(),
-//                ENERGY_TOTAL_HEATPUMP_HOURS);
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//
-//        ultoa(message.totalHeatingElemHours(), reinterpret_cast<char*>(mPayloadBuffer), 10);
-//        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-//                "%s%s%s%u/%s",
-//                config::mqttPrefix,
-//                BASE_TOPIC,
-//                ERROR_SUBTOPIC,
-//                message.errorRequestId(),
-//                ENERGY_TOTAL_HEATING_ELEM_HOURS);
-//        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-//    }
+    //    message::ErrorMessage message(mTransferBuffer);
+    //
+    //    if (message.isEmpty())
+    //    {
+    //        return;
+    //    }
+    //
+    //    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //            "%s%s%s%u/%s",
+    //            config::mqttPrefix,
+    //            BASE_TOPIC,
+    //            ERROR_SUBTOPIC,
+    //            message.errorRequestId(),
+    //            MAIN_ERROR_CODE);
+    //    itoa(message.errorCode(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    //    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //
+    //    if (!message.isEmpty())
+    //    {
+    //        sprintf(reinterpret_cast<char*>(mPayloadBuffer),
+    //                "%d.%d.%d",
+    //                message.dateDay(),
+    //                message.dateMonth(),
+    //                message.dateYear());
+    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%u/%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                ERROR_SUBTOPIC,
+    //                message.errorRequestId(),
+    //                HMI_DATE);
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //
+    //        sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%02d:%02d", message.timeHours(),
+    //        message.timeMinutes()); sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%u/%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                ERROR_SUBTOPIC,
+    //                message.errorRequestId(),
+    //                HMI_TIME);
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //
+    //        dtostrf(message.hotWaterTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%u/%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                ERROR_SUBTOPIC,
+    //                message.errorRequestId(),
+    //                MAIN_HOT_WATER_TEMP);
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //
+    //        dtostrf(message.airTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%u/%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                ERROR_SUBTOPIC,
+    //                message.errorRequestId(),
+    //                MAIN_SUPPLY_AIR_TEMP);
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //
+    //        dtostrf(message.evaporatorLowerAirTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%u/%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                ERROR_SUBTOPIC,
+    //                message.errorRequestId(),
+    //                MAIN_EVAPORATOR_AIR_TEMP_LOWER);
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //
+    //        dtostrf(message.evaporatorUpperAirTemp(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%u/%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                ERROR_SUBTOPIC,
+    //                message.errorRequestId(),
+    //                MAIN_EVAPORATOR_AIR_TEMP_UPPER);
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //
+    //        dtostrf(message.fanSpeedPwm(), 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
+    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%u/%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                ERROR_SUBTOPIC,
+    //                message.errorRequestId(),
+    //                MAIN_FAN_PWM);
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //
+    //        ultoa(message.totalHeatpumpHours(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%u/%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                ERROR_SUBTOPIC,
+    //                message.errorRequestId(),
+    //                ENERGY_TOTAL_HEATPUMP_HOURS);
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //
+    //        ultoa(message.totalHeatingElemHours(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+    //                "%s%s%s%u/%s",
+    //                config::mqttPrefix,
+    //                BASE_TOPIC,
+    //                ERROR_SUBTOPIC,
+    //                message.errorRequestId(),
+    //                ENERGY_TOTAL_HEATING_ELEM_HOURS);
+    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    //    }
 
     if (config::DEBUG_RAW_SERIAL_MESSAGES)
     {

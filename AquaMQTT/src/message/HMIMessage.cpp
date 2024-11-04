@@ -26,8 +26,7 @@ HMIMessage::HMIMessage(uint8_t* data)
 }
 float HMIMessage::waterTempTarget()
 {
-    // TODO
-    return 0.0;
+    return mData[1];
 }
 void HMIMessage::setWaterTempTarget(float targetTemperature)
 {
@@ -35,17 +34,33 @@ void HMIMessage::setWaterTempTarget(float targetTemperature)
 }
 HMIOperationMode HMIMessage::operationMode() const
 {
-    // TODO
+    switch (mData[2] & 0x0F)
+    {
+        case 0:
+            return OM_AUTO;
+        case 1:
+            return OM_ECO_ACTIVE;
+        case 2:
+            return OM_ECO_INACTIVE;
+        case 9:
+            return OM_BOOST;
+            // TODO: implement absence
+        default:
+            return OM_UNKNOWN;
+    }
     return OM_UNKNOWN;
 }
 void HMIMessage::setOperationMode(HMIOperationMode operationMode) const
 {
-    // TODO
+// TODO
 }
 HMIOperationType HMIMessage::getOperationType() const
 {
-    // TODO
-    return HMIOperationType::ALWAYS_ON;
+    if (mData[3] & 0x40)
+    {
+        return HMIOperationType::ALWAYS_ON;
+    }
+    return HMIOperationType::TIMER;
 }
 
 void HMIMessage::setOperationType(HMIOperationType operationType) const
@@ -178,8 +193,9 @@ void HMIMessage::setDateMonthAndYear(uint8_t month, uint16_t year) const
 }
 uint8_t HMIMessage::dateMonth() const
 {
-    return (mData[17] >> 5) + ((mData[18] % 2) * 8);
+    return 1 + (mData[17] >> 5) + ((mData[18] % 2) * 8);
 }
+
 uint8_t HMIMessage::dateDay() const
 {
     return mData[17] & 0x1F;
@@ -217,6 +233,7 @@ uint8_t HMIMessage::errorRequestId() const
     // TODO
     return 0;
 }
+
 uint8_t HMIMessage::errorNumberRequested() const
 {
     // TODO
@@ -253,6 +270,12 @@ void HMIMessage::compareWith(uint8_t* data)
 
         switch (indiceChanged)
         {
+            case 1:
+                mTargetTempChanged = true;
+                break;
+            case 2:
+                mOperationModeChanged = true;
+                break;
             case 16:
             case 19:
             case 20:
