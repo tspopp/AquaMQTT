@@ -34,7 +34,7 @@ Checksum calculation is yet unknown.
 | 1           | 50            | Water Target Temperature       |                   |
 | 2           | 18            | Operation Mode, Operation Type | See table below   |
 | 3           | 0             | ?                              |                   |
-| 4           | 0             | ?                              |                   |
+| 4           | 0             | Anti-Legionella Mode / AirDuct Mode | See table below |
 | 5           | 0             | ?                              |                   |
 | 6           | 16            | ?                              |                   |
 | 7           | 0             | ?                              |                   |
@@ -51,8 +51,8 @@ Checksum calculation is yet unknown.
 | 18          | 30            | Date Year, Month               |                   |
 | 19          | 12            | Time Minutes                   |                   |
 | 20          | 12            | Time Hours                     |                   |
-| 21          | 0             | ?                              |                   |
-| 22          | 0             | ?                              |                   |
+| 21          | 0             | TestMode Status                |                   |
+| 22          | 64            | TestMode Fanspeed              | 00 ==standstill, 32 == slow, 64 == fast |
 | 23          | 0             | ?                              |                   |
 | 24          | 0             | ?                              |                   |
 | 25          | 78            | ?                              |                   |
@@ -68,11 +68,18 @@ Checksum calculation is yet unknown.
 
 ##### Byte No. 2: Operation Mode
 
-| Bit Number | Purpose/Function | Other Information                                                        |
-|------------|------------------|--------------------------------------------------------------------------|
-| 0 - 3      | Operation Mode   | Interpreted as integer, 0 == Auto, 1 == ECO ON, 2 == ECO OFF, 9 == BOOST |
-| 4 - 7      | Operation Type   | Interpreted as integer, 1 == Timer, 4 == Continious                      |
+| Bit Number | Purpose/Function | Other Information                                                                      |
+|------------|------------------|----------------------------------------------------------------------------------------|
+| 0 - 3      | Operation Mode   | Interpreted as integer, 0 == Auto, 1 == ECO ON, 2 == ECO OFF, 5 == Absence, 9 == BOOST |
+| 4 - 7      | Operation Type   | Interpreted as integer, 1 == Timer, 4 == Continious                                    |
 
+
+##### Byte No. 4: Anti-Legionella Mode / AirDuct Mode
+
+| Bit Number | Purpose/Function | Other Information                                                                      |
+|------------|------------------|----------------------------------------------------------------------------------------|
+| 0 - 3      | Operation Mode   | Interpreted as integer, 0 == Off, 1 == 1perMonth, 2 == 2perMonth, 3 == 3perMonth, 4 == 4/perMonth |
+| 4 - 7      | Operation Type   | Interpreted as integer, 0 == AirDuct INT/INT, 1 == AirDuct EXT/INT, 2 == AirDuct EXT/EXT          |
 
 
 ## Help Required:
