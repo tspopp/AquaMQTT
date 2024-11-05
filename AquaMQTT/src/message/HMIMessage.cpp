@@ -44,15 +44,16 @@ HMIOperationMode HMIMessage::operationMode() const
             return OM_ECO_INACTIVE;
         case 9:
             return OM_BOOST;
-            // TODO: implement absence
+        case 5:
+            return OM_ABSENCE;
         default:
             return OM_UNKNOWN;
     }
-    return OM_UNKNOWN;
 }
 void HMIMessage::setOperationMode(HMIOperationMode operationMode) const
 {
 // TODO
+// TODO: Sanity: If Mode OM_AUTO is set, water target temperature is set to 0x00
 }
 HMIOperationType HMIMessage::getOperationType() const
 {
@@ -69,18 +70,17 @@ void HMIMessage::setOperationType(HMIOperationType operationType) const
 }
 bool HMIMessage::isEmergencyModeEnabled() const
 {
-    // TODO
-    return false;
+    return mData[5] & 0x01;
 }
 bool HMIMessage::isHeatingElementEnabled() const
 {
-    // TODO
-    return false;
+    return mData[8] & 0x04;
 }
 
 bool HMIMessage::isPVInputActivated() const
 {
-    // TODO
+    //TODO
+    //return mData[8] & 0x02;
     return false;
 }
 
@@ -92,13 +92,21 @@ HMISetup HMIMessage::setupMode() const
 
 uint8_t HMIMessage::antiLegionellaModePerMonth() const
 {
-    // TODO
-    return 0;
+    return mData[4] & 0x0F;
 }
 HMIAirDuctConfig HMIMessage::airDuctConfig() const
 {
-    // TODO
-    return AD_UNKNOWN;
+    switch (mData[4] & 0xF0)
+    {
+        case 0:
+            return AD_INT_INT;
+        case 1:
+            return AD_INT_EXT;
+        case 2:
+            return AD_EXT_EXT;
+        default:
+            return AD_UNKNOWN;
+    }
 }
 
 void HMIMessage::setAirDuctConfig(HMIAirDuctConfig config) const
@@ -275,6 +283,15 @@ void HMIMessage::compareWith(uint8_t* data)
                 break;
             case 2:
                 mOperationModeChanged = true;
+                break;
+            case 4:
+                mLegionellaAirductChanged = true;
+                break;
+            case 5:
+                mEmergencyModeChanged = true;
+                break;
+            case 8:
+                mHeatingElemOrSetupStateOrPVActiveChanged = true;
                 break;
             case 16:
             case 19:

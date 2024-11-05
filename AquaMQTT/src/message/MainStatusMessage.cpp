@@ -7,49 +7,52 @@ namespace message
 
 float message::MainStatusMessage::hotWaterTemp()
 {
-    // TODO
-    return 0;
+    return mData[1];
 }
 
 void MainStatusMessage::setHotWaterTemp(float temp)
 {
-    // TODO
-    return;
+    // TODO: reimplement filter for new protocol (we can't store floats, since the original protocol only have ints)
 }
 
 float MainStatusMessage::airTemp()
 {
-    // TODO
-    return 0;
+    return mData[9];
 }
 
 void MainStatusMessage::setAirTemp(float temp)
 {
-    // TODO
-    return;
+    // TODO: reimplement filter for new protocol (we can't store floats, since the original protocol only have ints)
 }
 
 float MainStatusMessage::evaporatorLowerAirTemp()
 {
-    // TODO
-    return 0;
+    return mData[7];
 }
 
 void MainStatusMessage::setEvaporatorLowerAirTemp(float temp)
 {
-    // TODO
-    return;
+    // TODO: reimplement filter for new protocol (we can't store floats, since the original protocol only have ints)
 }
 
 float MainStatusMessage::evaporatorUpperAirTemp()
 {
-    // TODO
-    return 0;
+    return mData[5];
 }
 
 void MainStatusMessage::setEvaporatorUpperAirTemp(float temp)
-{  // TODO
-    return;
+{
+    // TODO: reimplement filter for new protocol (we can't store floats, since the original protocol only have ints)
+}
+
+float MainStatusMessage::compressorOutletTemp()
+{
+    return mData[3];
+}
+
+void MainStatusMessage::setCompressorTemp(float temp)
+{
+    // TODO: reimplement filter for new protocol (we can't store floats, since the original protocol only have ints)
 }
 
 float MainStatusMessage::fanSpeedPwm()
@@ -183,6 +186,7 @@ void MainStatusMessage::compareWith(uint8_t* data)
         mSettingCapabilitiesChanged         = true;
         mPVOrSolarStateChanged              = true;
         mErrorCodeChanged                   = true;
+        mCompresserOutletTempChanged        = true;
         return;
     }
 
@@ -196,6 +200,21 @@ void MainStatusMessage::compareWith(uint8_t* data)
 
         switch (indiceChanged)
         {
+            case 1:
+                mHotWaterTempChanged = true;
+                break;
+            case 3:
+                mCompresserOutletTempChanged = true;
+                break;
+            case 5:
+                mEvaporatorUpperChanged = true;
+                break;
+            case 7:
+                mEvaporatorLowerChanged = true;
+                break;
+            case 9:
+                mAirTempChanged = true;
+                break;
             default:
                 break;
         }
@@ -220,6 +239,7 @@ MainStatusMessage::MainStatusMessage(uint8_t* data)
     , mSettingCapabilitiesChanged(false)
     , mPVOrSolarStateChanged(false)
     , mErrorCodeChanged(false)
+    , mCompresserOutletTempChanged(false)
 {
 }
 bool MainStatusMessage::hotWaterTempChanged() const
@@ -238,6 +258,12 @@ bool MainStatusMessage::evaporatorUpperAirTempChanged() const
 {
     return mEvaporatorUpperChanged;
 }
+
+bool MainStatusMessage::compressorOutletTempChanged() const
+{
+    return mCompresserOutletTempChanged;
+}
+
 bool MainStatusMessage::fanSpeedChanged() const
 {
     return mFanSpeedChanged;
@@ -320,5 +346,6 @@ void MainStatusMessage::enableStateSolar(bool enabled)
         mData[22] &= ~0x20;
     }
 }
+
 }  // namespace message
 }  // namespace aquamqtt

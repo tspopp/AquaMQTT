@@ -57,6 +57,7 @@ private:
     SimpleKalmanFilter mEvaporatorUpperAirTempFilter;
     SimpleKalmanFilter mAirTempFilter;
     SimpleKalmanFilter mHotWaterTempFilter;
+    SimpleKalmanFilter mCompressorTempFilter;
 
     // helper to avoid code duplication
     void publishFloat(const char* subtopic, const char* topic, float value, bool retained = false);

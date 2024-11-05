@@ -33,6 +33,7 @@ MQTTTask::MQTTTask()
     , mAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
     , mEvaporatorLowerAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
     , mEvaporatorUpperAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mCompressorTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
 {
 }
 
@@ -514,28 +515,32 @@ void MQTTTask::updateStats()
 }
 void MQTTTask::updateMainStatus(bool fullUpdate)
 {
-    //    message::MainStatusMessage message(mTransferBuffer);
-    //
-    //    applyTemperatureFilter(&message);
-    //
-    //    message.compareWith(fullUpdate ? nullptr : mLastProcessedMainMessage);
-    //
-    //    if (message.hotWaterTempChanged())
-    //    {
-    //        publishFloat(MAIN_SUBTOPIC, MAIN_HOT_WATER_TEMP, message.hotWaterTemp());
-    //    }
-    //    if (message.airTempChanged())
-    //    {
-    //        publishFloat(MAIN_SUBTOPIC, MAIN_SUPPLY_AIR_TEMP, message.airTemp());
-    //    }
-    //    if (message.evaporatorLowerAirTempChanged())
-    //    {
-    //        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_LOWER, message.evaporatorLowerAirTemp());
-    //    }
-    //    if (message.evaporatorUpperAirTempChanged())
-    //    {
-    //        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_UPPER, message.evaporatorUpperAirTemp());
-    //    }
+    message::MainStatusMessage message(mTransferBuffer);
+
+    applyTemperatureFilter(&message);
+
+    message.compareWith(fullUpdate ? nullptr : mLastProcessedMainMessage);
+
+    if (message.hotWaterTempChanged())
+    {
+        publishFloat(MAIN_SUBTOPIC, MAIN_HOT_WATER_TEMP, message.hotWaterTemp());
+    }
+    if (message.airTempChanged())
+    {
+        publishFloat(MAIN_SUBTOPIC, MAIN_SUPPLY_AIR_TEMP, message.airTemp());
+    }
+    if (message.evaporatorLowerAirTempChanged())
+    {
+        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_LOWER, message.evaporatorLowerAirTemp());
+    }
+    if (message.evaporatorUpperAirTempChanged())
+    {
+        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_UPPER, message.evaporatorUpperAirTemp());
+    }
+    if (message.compressorOutletTempChanged())
+    {
+        publishFloat(MAIN_SUBTOPIC, MAIN_COMPRESSOR_OUTLET_TEMP, message.compressorOutletTemp());
+    }
     //    if (message.fanSpeedChanged())
     //    {
     //        publishFloat(MAIN_SUBTOPIC, MAIN_FAN_PWM, message.fanSpeedPwm());
@@ -625,12 +630,12 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
         publishFloat(HMI_SUBTOPIC, HMI_HOT_WATER_TEMP_TARGET, message.waterTempTarget());
     }
 
-        if (message.operationTypeOrModeChanged())
-        {
-            publishString(HMI_SUBTOPIC, HMI_OPERATION_MODE, operationModeStr(message.operationMode()));
+    if (message.operationTypeOrModeChanged())
+    {
+        publishString(HMI_SUBTOPIC, HMI_OPERATION_MODE, operationModeStr(message.operationMode()));
 
-            publishString(HMI_SUBTOPIC, HMI_OPERATION_TYPE, operationTypeStr(message.getOperationType()));
-        }
+        publishString(HMI_SUBTOPIC, HMI_OPERATION_TYPE, operationTypeStr(message.getOperationType()));
+    }
 
     if (config::MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE && message.timeChanged())
     {
@@ -663,25 +668,24 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
                 HMI_DATE);
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
-    //
-    //    if (message.emergencyModeChanged())
-    //    {
-    //        publishi(HMI_SUBTOPIC, HMI_EMERGENCY_MODE, message.isEmergencyModeEnabled());
-    //    }
-    //
-    //    if (message.heatingElemOrSetupStateOrPVActiveChanged())
-    //    {
-    //        publishi(HMI_SUBTOPIC, HMI_HEATING_ELEMENT_ENABLED, message.isHeatingElementEnabled());
-    //        publishi(HMI_SUBTOPIC, HMM_PV_INPUT_ACTIVATED, message.isPVInputActivated());
-    //        publishString(HMI_SUBTOPIC, HMI_SETUP_STATE, setupStr(message.setupMode()));
-    //    }
-    //
-    //    if (message.legionellaOrAirductChanged())
-    //    {
-    //        publishi(HMI_SUBTOPIC, HMI_LEGIONELLA, message.antiLegionellaModePerMonth());
-    //        publishString(HMI_SUBTOPIC, HMI_AIR_DUCT_CONFIG,
-    //        aquamqtt::message::airDuctConfigStr(message.airDuctConfig()));
-    //    }
+
+    if (message.emergencyModeChanged())
+    {
+        publishi(HMI_SUBTOPIC, HMI_EMERGENCY_MODE, message.isEmergencyModeEnabled());
+    }
+
+    if (message.heatingElemOrSetupStateOrPVActiveChanged())
+    {
+        publishi(HMI_SUBTOPIC, HMI_HEATING_ELEMENT_ENABLED, message.isHeatingElementEnabled());
+        // publishi(HMI_SUBTOPIC, HMM_PV_INPUT_ACTIVATED, message.isPVInputActivated());
+        // publishString(HMI_SUBTOPIC, HMI_SETUP_STATE, setupStr(message.setupMode()));
+    }
+
+    if (message.legionellaOrAirductChanged())
+    {
+        publishi(HMI_SUBTOPIC, HMI_LEGIONELLA, message.antiLegionellaModePerMonth());
+        publishString(HMI_SUBTOPIC, HMI_AIR_DUCT_CONFIG, aquamqtt::message::airDuctConfigStr(message.airDuctConfig()));
+    }
     //
     //    if (message.testModeChanged())
     //    {
@@ -1001,6 +1005,7 @@ void MQTTTask::applyTemperatureFilter(message::MainStatusMessage* message)
                 mEvaporatorUpperAirTempFilter.updateEstimate(message->evaporatorUpperAirTemp()));
         message->setAirTemp(mAirTempFilter.updateEstimate(message->airTemp()));
         message->setHotWaterTemp(mHotWaterTempFilter.updateEstimate(message->hotWaterTemp()));
+        message->setCompressorTemp(mCompressorTempFilter.updateEstimate(message->compressorOutletTemp()));
     }
 }
 

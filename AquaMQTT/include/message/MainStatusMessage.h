@@ -117,6 +117,12 @@ public:
 
     bool errorCodeChanged() const;
 
+    bool compressorOutletTempChanged() const;
+
+    float compressorOutletTemp();
+
+    void setCompressorTemp(float d);
+
 private:
     uint8_t* mData;
     bool     mHotWaterTempChanged;
@@ -136,6 +142,7 @@ private:
     bool     mSettingCapabilitiesChanged;
     bool     mPVOrSolarStateChanged;
     bool     mErrorCodeChanged;
+    bool     mCompresserOutletTempChanged;
 };
 
 }  // namespace message

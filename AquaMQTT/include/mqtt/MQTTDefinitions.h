@@ -77,6 +77,8 @@ constexpr char MAIN_HOT_WATER_TEMP[]            = { "waterTemp" };
 constexpr char MAIN_SUPPLY_AIR_TEMP[]           = { "supplyAirTemp" };
 constexpr char MAIN_EVAPORATOR_AIR_TEMP_UPPER[] = { "evaporatorAirTemp" };
 constexpr char MAIN_EVAPORATOR_AIR_TEMP_LOWER[] = { "evaporatorAirTempLower" };
+// TODO: provide mqtt discovery for this attribute
+constexpr char MAIN_COMPRESSOR_OUTLET_TEMP[]    = { "compressorOutletTemp" };
 constexpr char MAIN_FAN_PWM[]                   = { "fanPWM" };
 constexpr char MAIN_STATE_FAN[]                 = { "stateFan" };
 constexpr char MAIN_STATE_HEATPUMP[]            = { "stateHeatpump" };
