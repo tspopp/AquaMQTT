@@ -99,15 +99,15 @@ Checksum calculation is yet unknown.
 | Byte Number | Example (dec) | Purpose/Function | Other Information |
 |-------------|---------------|------------------|-------------------|
 | 0           | 35            | Length Field     |                   |
-| 1           | 46            | ?                |                   |
+| 1           | 46            | Hot Water Temp                |                   |
 | 2           | 0             | ?                |                   |
-| 3           | 35            | ?                |                   |
+| 3           | 35            | Compressor Outlet Temp                |                   |
 | 4           | 0             | ?                |                   |
-| 5           | 24            | ?                |                   |
+| 5           | 24            | Upper Evaporator Temp                |                   |
 | 6           | 0             | ?                |                   |
-| 7           | 24            | ?                |                   |
+| 7           | 24            | Lower Evaporator Temp               |                   |
 | 8           | 0             | ?                |                   |
-| 9           | 21            | ?                |                   |
+| 9           | 21            | Input Air Temp                |                   |
 | 10          | 0             | ?                |                   |
 | 11          | 0             | ?                |                   |
 | 12          | 0             | ?                |                   |
@@ -140,10 +140,10 @@ _To identify this attributes within the message, try to locate the information w
 and provide a photo of the HMI controller together with a dump of the *main* message. We should find the values shown in the HMI controller within the message. 
 For determining the values from super secret menu, you change a setting in the super secret menu of the hmi controller and watch the change of main message._
 
-- *TODO: Hot Water Temp*
-- *TODO: Input Air Temp*
-- *TODO: Lower Evaporator Temp*
-- *TODO: Upper Evaporator Temp*
+- *TODO: ~~Hot Water Temp~~*
+- *TODO: ~~Input Air Temp~~*
+- *TODO: ~~Lower Evaporator Temp~~*
+- *TODO: ~~Upper Evaporator Temp~~*
 - *TODO: PWM Level Settings (Super Secret Menu)*
 - *TODO: Status Bitmask (Fan On/Off, Defrost On/Off, PV On/Off, Solar On/Off, HeatElement On/Off, HeatPump On/Off, Boiler Backup On/Off)*
 - *TODO: Current Fan PWM Level*
