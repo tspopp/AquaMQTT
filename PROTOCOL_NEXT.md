@@ -36,7 +36,7 @@ Checksum calculation is yet unknown.
 | 3           | 0             | ?                              |                   |
 | 4           | 0             | Anti-Legionella Mode / AirDuct Mode | See table below |
 | 5           | 0             | Emergency-Mode                 | 0 == inactive, 1 == active |
-| 6           | 0             | InstallationConfig             | WP-Only == 0, WP+ExtBoiler-Prio-WP == 1, Wp+ExtBoiler-Opt-WP == 17, Wp+ExtBoiler-Opt-ExtBoiler == 33 , Wp+ExtBoiler-Prio-ExtBoiler == 49 , WP + Solar == 50   |
+| 6           | 0             | InstallationConfig             | WP-Only == 0, WP+ExtBoiler-Prio-WP == 1, Wp+ExtBoiler-Opt-WP == 17, Wp+ExtBoiler-Opt-ExtBoiler == 33 , Wp+ExtBoiler-Prio-ExtBoiler == 49 , WP + Solar == 50|
 | 7           | 0             | ?                              |                   |
 | 8           | 6             | Heating-Element                | 0 == Automatic, 4 == locked, 6 ==  PV System "Smart-Grid" Yes  |
 | 9           | 44            | ?                              |                   |
