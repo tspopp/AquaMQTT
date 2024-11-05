@@ -35,10 +35,10 @@ Checksum calculation is yet unknown.
 | 2           | 18            | Operation Mode, Operation Type | See table below   |
 | 3           | 0             | ?                              |                   |
 | 4           | 0             | Anti-Legionella Mode / AirDuct Mode | See table below |
-| 5           | 0             | ?                              |                   |
-| 6           | 16            | ?                              |                   |
+| 5           | 0             | Emergency-Mode                 | 0 == inactive, 1 == active |
+| 6           | 0             | InstallationConfig             | WP-Only == 0, WP+ExtBoiler-Prio-WP == 1, Wp+ExtBoiler-Opt-WP == 17, Wp+ExtBoiler-Opt-ExtBoiler == 33 , Wp+ExtBoiler-Prio-ExtBoiler == 49 , WP + Solar == 50   |
 | 7           | 0             | ?                              |                   |
-| 8           | 6             | ?                              |                   |
+| 8           | 6             | Heating-Element                | 0 == Automatic, 4 == locked, 6 ==  PV System "Smart-Grid" Yes  |
 | 9           | 44            | ?                              |                   |
 | 10          | 1             | ?                              |                   |
 | 11          | 208           | ?                              |                   |
@@ -51,8 +51,8 @@ Checksum calculation is yet unknown.
 | 18          | 30            | Date Year, Month               |                   |
 | 19          | 12            | Time Minutes                   |                   |
 | 20          | 12            | Time Hours                     |                   |
-| 21          | 0             | TestMode Status                |                   |
-| 22          | 64            | TestMode Fanspeed              | 00 ==standstill, 32 == slow, 64 == fast |
+| 21          | 8             | TestMode Status                | 1 == Heating-Element, 2 == Compressor, 8 == Fan, 32 == Defrost-Valve |
+| 22          | 50            | TestMode Fanspeed              | 0 == standstill, 50 == slow, 100 == fast |
 | 23          | 0             | ?                              |                   |
 | 24          | 0             | ?                              |                   |
 | 25          | 78            | ?                              |                   |
@@ -78,19 +78,20 @@ Checksum calculation is yet unknown.
 
 | Bit Number | Purpose/Function | Other Information                                                                      |
 |------------|------------------|----------------------------------------------------------------------------------------|
-| 0 - 3      | Operation Mode   | Interpreted as integer, 0 == Off, 1 == 1perMonth, 2 == 2perMonth, 3 == 3perMonth, 4 == 4/perMonth |
-| 4 - 7      | Operation Type   | Interpreted as integer, 0 == AirDuct INT/INT, 1 == AirDuct EXT/INT, 2 == AirDuct EXT/EXT          |
+| 0 - 3      | Anti-Legionella Mode   | Interpreted as integer, 0 == Off, 1 == 1perMonth, 2 == 2perMonth, 3 == 3perMonth, 4 == 4/perMonth |
+| 4 - 7      | AirDuct Mode   | Interpreted as integer, 0 == AirDuct INT/INT, 1 == AirDuct EXT/INT, 2 == AirDuct EXT/EXT          |
+
 
 
 ## Help Required:
 
-- *TODO: OperationMode: ~~Boost, Eco On, Eco Off, Auto,~~ Absence*
+- *TODO: OperationMode: ~~Boost, Eco On, Eco Off, Auto, Absence~~*
 - *TODO: TimerWindow A/B*
-- *TODO: Anti-Legionalla Setting*
-- *TODO: AirDuct Config: INT/INT, EXT/INT, EXT/EXT*
-- *TODO: Installation Config: WP-Only, WP+ExtBoiler-Prio-WP,...*
+- *TODO: Anti-Legionalla ~~Setting~~*
+- *TODO: AirDuct Config: ~~INT/INT, EXT/INT, EXT/EXT~~*
+- *TODO: Installation Config: ~~IWP-Only, WP+ExtBoiler-Prio-WP,...~~*
 - *TODO: Exhaust Fan Config: (Only in EXT/INT): STOP, LOW-SPEED, HIGH-SPEED*
-- *TODO: Heating Element Enabled On/Off*
+- *TODO: Heating Element ~~Enabled On/Off/PV~~*
 - *TODO: PV Mode allowed On/Off*
 
 ### Main Message (193)
