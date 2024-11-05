@@ -79,9 +79,7 @@ bool HMIMessage::isHeatingElementEnabled() const
 
 bool HMIMessage::isPVInputActivated() const
 {
-    //TODO
-    //return mData[8] & 0x02;
-    return false;
+    return mData[8] & 0x02;
 }
 
 HMISetup HMIMessage::setupMode() const

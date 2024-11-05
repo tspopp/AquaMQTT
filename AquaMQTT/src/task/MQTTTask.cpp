@@ -677,7 +677,7 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
     if (message.heatingElemOrSetupStateOrPVActiveChanged())
     {
         publishi(HMI_SUBTOPIC, HMI_HEATING_ELEMENT_ENABLED, message.isHeatingElementEnabled());
-        // publishi(HMI_SUBTOPIC, HMM_PV_INPUT_ACTIVATED, message.isPVInputActivated());
+        publishi(HMI_SUBTOPIC, HMM_PV_INPUT_ACTIVATED, message.isPVInputActivated());
         // publishString(HMI_SUBTOPIC, HMI_SETUP_STATE, setupStr(message.setupMode()));
     }
 
