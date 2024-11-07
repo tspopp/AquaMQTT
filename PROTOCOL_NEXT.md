@@ -37,13 +37,13 @@ Checksum calculation is yet unknown.
 | 4           | 0             | Anti-Legionella Mode / AirDuct Mode | See table below |
 | 5           | 0             | Emergency-Mode                 | 0 == inactive, 1 == active |
 | 6           | 0             | InstallationConfig             | WP-Only == 0, WP+ExtBoiler-Prio-WP == 1, Wp+ExtBoiler-Opt-WP == 17, Wp+ExtBoiler-Opt-ExtBoiler == 33 , Wp+ExtBoiler-Prio-ExtBoiler == 49 , WP + Solar == 50|
-| 7           | 0             | ?                              |                   |
+| 7           | 0             | ExhaustFanConfig               | Only AirDuct EXT/INT 0 == off, 1 == slow, 2 == fast         |
 | 8           | 6             | Heating-Element                | 0 == Automatic, 4 == locked, 6 ==  PV System "Smart-Grid" Yes  |
 | 9           | 44            | Timer Mode: Window 1 Start     | Byte 1/2 --> See table below          |
 | 10          | 1             | Timer Mode: Window 1 Start     | Byte 2/2 --> 44 + 256 = 300 / 60 = 5 --> 05:00        |
 | 11          | 240           | Timer Mode: Window 1 Length    | Byte 1/2 --> See table below          |
 | 12          | 0             | Timer Mode: Window 1 Length    | Byte 2/2 --> 240 + 0 = 240 / 60 = 4 --> 4h       |
-| 13          | 0             | ?                              |                   |
+| 13          | 14            | Absence Days                   | If the start is in the future, the value will only become visible then                  |
 | 14          | 0             | ?                              |                   |
 | 15          | 0             | ?                              |                   |
 | 16          | 59            | Time Seconds                   |                   |
