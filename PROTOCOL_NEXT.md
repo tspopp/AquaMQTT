@@ -39,10 +39,10 @@ Checksum calculation is yet unknown.
 | 6           | 0             | InstallationConfig             | WP-Only == 0, WP+ExtBoiler-Prio-WP == 1, Wp+ExtBoiler-Opt-WP == 17, Wp+ExtBoiler-Opt-ExtBoiler == 33 , Wp+ExtBoiler-Prio-ExtBoiler == 49 , WP + Solar == 50|
 | 7           | 0             | ?                              |                   |
 | 8           | 6             | Heating-Element                | 0 == Automatic, 4 == locked, 6 ==  PV System "Smart-Grid" Yes  |
-| 9           | 44            | ?                              |                   |
-| 10          | 1             | ?                              |                   |
-| 11          | 208           | ?                              |                   |
-| 12          | 2             | ?                              |                   |
+| 9           | 44            | Timer Mode: Window 1 Start     | Byte 1/2 --> See table below          |
+| 10          | 1             | Timer Mode: Window 1 Start     | Byte 2/2 --> 44 + 256 = 300 / 60 = 5 --> 05:00        |
+| 11          | 240           | Timer Mode: Window 1 Length    | Byte 1/2 --> See table below          |
+| 12          | 0             | Timer Mode: Window 1 Length    | Byte 2/2 --> 240 + 0 = 240 / 60 = 4 --> 4h       |
 | 13          | 0             | ?                              |                   |
 | 14          | 0             | ?                              |                   |
 | 15          | 0             | ?                              |                   |
@@ -59,10 +59,10 @@ Checksum calculation is yet unknown.
 | 26          | 69            | ?                              |                   |
 | 27          | 0             | ?                              |                   |
 | 28          | 0             | ?                              |                   |
-| 29          | 6             | ?                              |                   |
-| 30          | 4             | ?                              |                   |
-| 31          | 34            | ?                              |                   |
-| 32          | 1             | ?                              |                   |
+| 29          | 60            | Timer Mode: Window 2 Start     | Byte 1/2 --> See table below         |
+| 30          | 0             | Timer Mode: Window 2 Start     | Byte 2/2 --> 60 + 0 = 60 / 60 = 1 == 01:00       |
+| 31          | 240           | Timer Mode: Window 2 Length    | Byte 1/2 --> See table below         |
+| 32          | 0             | Timer Mode: Window 2 Length    | Byte 2/2 --> 240 + 0 = 240 / 60 = 4 == 4h       |
 | 33          | 62            | ?                              |                   |
 
 
@@ -81,6 +81,12 @@ Checksum calculation is yet unknown.
 | 0 - 3      | Anti-Legionella Mode   | Interpreted as integer, 0 == Off, 1 == 1perMonth, 2 == 2perMonth, 3 == 3perMonth, 4 == 4/perMonth |
 | 4 - 7      | AirDuct Mode   | Interpreted as integer, 0 == AirDuct INT/INT, 1 == AirDuct EXT/INT, 2 == AirDuct EXT/EXT          |
 
+##### Byte No. 9-12 + 29-32: Time window:
+
+Setting limitations:
+• One time window: Minimum duration of 8 hours, maximum duration of 12 hours.
+• Two time windows: Each at least 4 hours, combined maximum of 20 hours. 
+• Disable the second time window: Set the end time to less than 4 hours.
 
 
 ## Help Required:
