@@ -168,8 +168,8 @@ For determining the values from super secret menu, you change a setting in the s
 | 0           | 45            | Length Field     |                   |
 | 1           | 0             | ?                |                   |
 | 2           | 0             | ?                |                   |
-| 3           | 7             | ?                |                   |
-| 4           | 29            | ?                |                   |
+| 3           | 7             |  	Total Operation Hours (Heatpump)                |  Byte 1/2                 |
+| 4           | 29            |  	Total Operation Hours (Heatpump)                |  Byte 2/2 --> (29x256) + 7 = 7431h   |
 | 5           | 0             | ?                |                   |
 | 6           | 0             | ?                |                   |
 | 7           | 0             | ?                |                   |
@@ -178,16 +178,16 @@ For determining the values from super secret menu, you change a setting in the s
 | 10          | 0             | ?                |                   |
 | 11          | 0             | ?                |                   |
 | 12          | 0             | ?                |                   |
-| 13          | 7             | ?                |                   |
-| 14          | 29            | ?                |                   |
+| 13          | 7             | Total Operation Hours (Heatpump)                |  The same as Byte 3+4 or for a reset?    |
+| 14          | 29            | Total Operation Hours (Heatpump)                |  The same as Byte 3+4 or for a reset?    |
 | 15          | 0             | ?                |                   |
 | 16          | 0             | ?                |                   |
 | 17          | 238           | ?                |                   |
 | 18          | 178           | ?                |                   |
 | 19          | 57            | ?                |                   |
 | 20          | 0             | ?                |                   |
-| 21          | 0             | ?                |                   |
-| 22          | 0             | ?                |                   |
+| 21          | 251           | Power Consumption Heatpump |  Byte 1/2                  |
+| 22          | 1             | Power Consumption Heatpump  |  Byte 2/2 --> (1x256) + 151 = 507W ????                 |
 | 23          | 0             | ?                |                   |
 | 24          | 0             | ?                |                   |
 | 25          | 0             | ?                |                   |
