@@ -807,32 +807,32 @@ void MQTTTask::updateEnergyStats(bool fullUpdate, message::ProtocolVersion& vers
 
     message->compareWith(fullUpdate ? nullptr : mLastProcessedEnergyMessage);
 
-    //    if (message.totalHeatpumpHoursChanged())
-    //    {
-    //        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HEATPUMP_HOURS, message.totalHeatpumpHours(), true);
-    //    }
+    if (message->totalHeatpumpHoursChanged())
+    {
+        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HEATPUMP_HOURS, message->totalHeatpumpHours(), true);
+    }
     //    if (message.totalHeatingElemHoursChanged())
     //    {
     //        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HEATING_ELEM_HOURS, message.totalHeatingElemHours(), true);
     //    }
-    //    if (message.totalHoursChanged())
-    //    {
-    //        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HOURS, message.totalHours(), true);
-    //    }
+    if (message->totalHoursChanged())
+    {
+        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HOURS, message->totalHours(), true);
+    }
     //    if (message.totalEnergyCounterChanged())
     //    {
     //        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_ENERGY_WH, message.totalEnergyCounter(), true);
     //    }
     //
-    //    if (message.powerHeatpumpChanged())
-    //    {
-    //        publishul(ENERGY_SUBTOPIC, ENERGY_POWER_HEATPUMP, message.powerHeatpump());
-    //        if (strlen(optionalPublishTopicHeatPumpCurrentPower) != 0)
-    //        {
-    //            sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s", optionalPublishTopicHeatPumpCurrentPower);
-    //            mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-    //        }
-    //    }
+    if (message->powerHeatpumpChanged())
+    {
+        publishul(ENERGY_SUBTOPIC, ENERGY_POWER_HEATPUMP, message->powerHeatpump());
+        if (strlen(optionalPublishTopicHeatPumpCurrentPower) != 0)
+        {
+            sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s", optionalPublishTopicHeatPumpCurrentPower);
+            mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+        }
+    }
     //
     //    if (message.powerHeatElementChanged())
     //    {
