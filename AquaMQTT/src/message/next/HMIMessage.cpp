@@ -1,10 +1,12 @@
-#include "message/HMIMessage.h"
+#include "message/next/HMIMessage.h"
 
 #include <cstdio>
 
 namespace aquamqtt
 {
 namespace message
+{
+namespace next
 {
 
 HMIMessage::HMIMessage(uint8_t* data)
@@ -52,8 +54,8 @@ HMIOperationMode HMIMessage::operationMode() const
 }
 void HMIMessage::setOperationMode(HMIOperationMode operationMode) const
 {
-// TODO
-// TODO: Sanity: If Mode OM_AUTO is set, water target temperature is set to 0x00
+    // TODO
+    // TODO: Sanity: If Mode OM_AUTO is set, water target temperature is set to 0x00
 }
 HMIOperationType HMIMessage::getOperationType() const
 {
@@ -113,8 +115,27 @@ void HMIMessage::setAirDuctConfig(HMIAirDuctConfig config) const
 }
 HMIInstallation HMIMessage::installationMode()
 {
-    // TODO
-    return HMIInstallation::INST_HP_UNKNOWN;
+    if (mData[6] & 0x02)
+    {
+        return INST_HP_AND_SOLAR;
+    }
+    if (mData[6] & 0x01)
+    {
+        if (mData[6] & 0x10 && mData[6] & 0x20)
+        {
+            return HMIInstallation::INST_HP_AND_EXT_PRIO_EXT;
+        }
+        if (!(mData[6] & 0x10) && mData[6] & 0x20)
+        {
+            return HMIInstallation::INST_HP_AND_EXT_OPT_EXT;
+        }
+        if (mData[6] & 0x10 && !(mData[6] & 0x20))
+        {
+            return HMIInstallation::INST_HP_AND_EXT_OPT_HP;
+        }
+        return HMIInstallation::INST_HP_AND_EXT_PRIO_HP;
+    }
+    return HMIInstallation::INST_HP_ONLY;
 }
 
 HMIFanExhaust HMIMessage::fanExhaust() const
@@ -266,9 +287,9 @@ void HMIMessage::compareWith(uint8_t* data)
         return;
     }
 
-    uint8_t diffIndices[HMI_MESSAGE_LENGTH] = { 0 };
+    uint8_t diffIndices[HMI_MESSAGE_LENGTH_NEXT] = { 0 };
     size_t  numDiffs                        = 0;
-    compareBuffers(mData, data, HMI_MESSAGE_LENGTH, diffIndices, &numDiffs);
+    compareBuffers(mData, data, HMI_MESSAGE_LENGTH_NEXT, diffIndices, &numDiffs);
 
     for (int i = 0; i < numDiffs; ++i)
     {
@@ -287,6 +308,9 @@ void HMIMessage::compareWith(uint8_t* data)
                 break;
             case 5:
                 mEmergencyModeChanged = true;
+                break;
+            case 6:
+                mInstallConfigChanged = true;
                 break;
             case 8:
                 mHeatingElemOrSetupStateOrPVActiveChanged = true;
@@ -354,6 +378,10 @@ bool HMIMessage::errorRequestChanged() const
 {
     return mErrorRequestChanged;
 }
-
+uint8_t HMIMessage::getLength()
+{
+    return HMI_MESSAGE_LENGTH_NEXT;
+}
+}
 }  // namespace message
 }  // namespace aquamqtt

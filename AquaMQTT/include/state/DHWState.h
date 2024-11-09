@@ -37,6 +37,10 @@ private:
 public:
     DHWState& operator=(const DHWState&) = delete;
 
+    message::ProtocolVersion getVersion();
+
+    void setVersion(message::ProtocolVersion version);
+
     void setListener(TaskHandle_t handle);
 
     void storeFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* payload);
@@ -45,22 +49,24 @@ public:
 
     BufferStatistics getFrameBufferStatistics(uint8_t source);
 
-    bool copyFrame(uint8_t frameId, uint8_t* buffer);
+    size_t copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVersion& version);
 
 private:
     TaskHandle_t mNotify;
 
     SemaphoreHandle_t mMutex;
 
+    message::ProtocolVersion mProtocolVersion;
+
     bool mHasHmiMessage;
     bool mHasMainMessage;
     bool mHasEnergyMessage;
     bool mHasErrorMessage;
 
-    uint8_t mMessageHmi[aquamqtt::message::HMI_MESSAGE_LENGTH];
-    uint8_t mMessageMain[aquamqtt::message::MAIN_MESSAGE_LENGTH];
-    uint8_t mMessageEnergy[aquamqtt::message::ENERGY_MESSAGE_LENGTH];
-    uint8_t mMessageError[aquamqtt::message::ERROR_MESSAGE_LENGTH];
+    uint8_t mMessageHmi[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageMain[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageEnergy[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageError[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
 
     BufferStatistics mHmiStats;
     BufferStatistics mMainStats;

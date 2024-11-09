@@ -1,8 +1,10 @@
-#include "message/ErrorMessage.h"
+#include "message/next/ErrorMessage.h"
 
 namespace aquamqtt
 {
 namespace message
+{
+namespace next
 {
 
 ErrorMessage::ErrorMessage(uint8_t* data) : mData(data)
@@ -99,6 +101,11 @@ uint8_t ErrorMessage::dateDay()
 {
     // TODO
     return 0;
+}
+uint8_t ErrorMessage::getLength()
+{
+    return ERROR_MESSAGE_LENGTH_NEXT;
+}
 }
 }  // namespace message
 }  // namespace aquamqtt

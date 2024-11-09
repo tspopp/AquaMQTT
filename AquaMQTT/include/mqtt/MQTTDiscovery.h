@@ -62,6 +62,7 @@ enum class MQTT_ITEM_SENSOR
     STATS_MAIN_MSG_SENT,
     STATS_MAIN_MSG_CRC_NOK,
     STATS_MAIN_DROPPED_BYTES,
+    MAIN_COMPRESSOR_OUTLET_TEMP,
     RESERVED_COUNT
 };
 
@@ -196,6 +197,16 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
             doc["ic"]           = "mdi:thermometer";
             doc["uniq_id"]      = make_unique(temp, identifier, "main_evoAirTempLower");
             break;
+        case MQTT_ITEM_SENSOR::MAIN_COMPRESSOR_OUTLET_TEMP:
+            // FIXME: only if new protocol is detected
+            doc["name"]         = "Compressor Outlet Temp";
+            doc["stat_t"]       = "~/main/compressorOutletTemp";
+            doc["stat_cla"]     = "measurement";
+            doc["unit_of_meas"] = "°C";
+            doc["ic"]           = "mdi:thermometer";
+            doc["uniq_id"]      = make_unique(temp, identifier, "main_compressorOutletTemp");
+            break;
+
         case MQTT_ITEM_SENSOR::MAIN_FAN_PWM:
             doc["name"]         = "Fan PWM";
             doc["stat_t"]       = "~/main/fanPWM";
@@ -585,6 +596,7 @@ static bool buildConfiguration(uint8_t* buffer, uint16_t identifier, MQTT_ITEM_S
         case MQTT_ITEM_SENSOR::RESERVED_COUNT:
         default:
             return false;
+
     }
 
     serializeJson(doc, buffer, config::MQTT_MAX_PAYLOAD_SIZE);

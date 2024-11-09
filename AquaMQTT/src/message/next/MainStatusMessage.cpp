@@ -1,11 +1,13 @@
-#include "message/MainStatusMessage.h"
+#include "message/next/MainStatusMessage.h"
 
 namespace aquamqtt
 {
 namespace message
 {
+namespace next
+{
 
-float message::MainStatusMessage::hotWaterTemp()
+float MainStatusMessage::hotWaterTemp()
 {
     return mData[1];
 }
@@ -190,9 +192,9 @@ void MainStatusMessage::compareWith(uint8_t* data)
         return;
     }
 
-    uint8_t diffIndices[MAIN_MESSAGE_LENGTH] = { 0 };
+    uint8_t diffIndices[MAIN_MESSAGE_LENGTH_NEXT] = { 0 };
     size_t  numDiffs                         = 0;
-    compareBuffers(mData, data, MAIN_MESSAGE_LENGTH, diffIndices, &numDiffs);
+    compareBuffers(mData, data, MAIN_MESSAGE_LENGTH_NEXT, diffIndices, &numDiffs);
 
     for (int i = 0; i < numDiffs; ++i)
     {
@@ -346,6 +348,10 @@ void MainStatusMessage::enableStateSolar(bool enabled)
         mData[22] &= ~0x20;
     }
 }
-
+uint8_t MainStatusMessage::getLength()
+{
+    return MAIN_MESSAGE_LENGTH_NEXT;
+}
+}  // namespace next
 }  // namespace message
 }  // namespace aquamqtt

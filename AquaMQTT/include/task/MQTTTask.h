@@ -6,10 +6,9 @@
 
 #include "SimpleKalmanFilter.h"
 #include "config/Configuration.h"
-#include "message/HMIMessage.h"
-#include "message/MainEnergyMessage.h"
-#include "message/MainStatusMessage.h"
 #include "message/MessageConstants.h"
+#include "message/IMainMessage.h"
+
 
 namespace aquamqtt
 {
@@ -33,10 +32,10 @@ private:
 
     static void messageReceived(String& topic, String& payload);
 
-    void updateMainStatus(bool triggerFullUpdate);
-    void updateHMIStatus(bool triggerFullUpdate);
-    void updateEnergyStats(bool triggerFullUpdate);
-    void updateErrorStatus();
+    void updateMainStatus(bool triggerFullUpdate, message::ProtocolVersion& version);
+    void updateHMIStatus(bool triggerFullUpdate, message::ProtocolVersion& version);
+    void updateEnergyStats(bool triggerFullUpdate, message::ProtocolVersion& version);
+    void updateErrorStatus(message::ProtocolVersion& version);
     void updateStats();
 
 private:
@@ -70,7 +69,7 @@ private:
             const char*   topic,
             unsigned long value,
             bool          retained = false);
-    void applyTemperatureFilter(message::MainStatusMessage* pMessage);
+    void applyTemperatureFilter(std::unique_ptr<message::IMainMessage>& message);
 
     void enableDiscovery();
     template <typename T>

@@ -6,7 +6,17 @@
 
 #include "FastCRC.h"
 #include "config/Configuration.h"
-#include "message/ErrorMessage.h"
+#include "message/IEnergyMessage.h"
+#include "message/IErrorMessage.h"
+#include "message/IHMIMessage.h"
+#include "message/legacy/ErrorMessage.h"
+#include "message/legacy/HMIMessage.h"
+#include "message/legacy/MainEnergyMessage.h"
+#include "message/legacy/MainStatusMessage.h"
+#include "message/next/ErrorMessage.h"
+#include "message/next/HMIMessage.h"
+#include "message/next/MainEnergyMessage.h"
+#include "message/next/MainStatusMessage.h"
 #include "mqtt/MQTTDefinitions.h"
 #include "mqtt/MQTTDiscovery.h"
 #include "state/HMIStateProxy.h"
@@ -347,51 +357,58 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 8) != 0 || fullUpdate)
     {
-        if (HMIStateProxy::getInstance().copyFrame(HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
+        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
+        size_t length = HMIStateProxy::getInstance().copyFrame(HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+        if (length > 0)
         {
-            updateHMIStatus(fullUpdate);
+            updateHMIStatus(fullUpdate, version);
 
             if (mLastProcessedHMIMessage == nullptr)
             {
-                mLastProcessedHMIMessage = new uint8_t[HMI_MESSAGE_LENGTH];
+                mLastProcessedHMIMessage = new uint8_t[length];
             }
-            memcpy(mLastProcessedHMIMessage, mTransferBuffer, HMI_MESSAGE_LENGTH);
+            memcpy(mLastProcessedHMIMessage, mTransferBuffer, length);
         }
     }
 
     if ((notify & 1 << 7) != 0 || fullUpdate)
     {
-        if (MainStateProxy::getInstance().copyFrame(MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
+        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
+        size_t length = MainStateProxy::getInstance().copyFrame(MAIN_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+        if (length > 0)
         {
-            updateMainStatus(fullUpdate);
+            updateMainStatus(fullUpdate, version);
 
             if (mLastProcessedMainMessage == nullptr)
             {
-                mLastProcessedMainMessage = new uint8_t[MAIN_MESSAGE_LENGTH];
+                mLastProcessedMainMessage = new uint8_t[length];
             }
-            memcpy(mLastProcessedMainMessage, mTransferBuffer, MAIN_MESSAGE_LENGTH);
+            memcpy(mLastProcessedMainMessage, mTransferBuffer, length);
         }
     }
 
     if ((notify & 1 << 6) != 0 || fullUpdate)
     {
-        if (MainStateProxy::getInstance().copyFrame(ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
+        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
+        size_t length = MainStateProxy::getInstance().copyFrame(ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+        if (length > 0)
         {
-            updateEnergyStats(fullUpdate);
+            updateEnergyStats(fullUpdate, version);
 
             if (mLastProcessedEnergyMessage == nullptr)
             {
-                mLastProcessedEnergyMessage = new uint8_t[ENERGY_MESSAGE_LENGTH];
+                mLastProcessedEnergyMessage = new uint8_t[length];
             }
-            memcpy(mLastProcessedEnergyMessage, mTransferBuffer, ENERGY_MESSAGE_LENGTH);
+            memcpy(mLastProcessedEnergyMessage, mTransferBuffer, length);
         }
     }
 
     if ((notify & 1 << 5) != 0)
     {
-        if (MainStateProxy::getInstance().copyFrame(ERROR_MESSAGE_IDENTIFIER, mTransferBuffer))
+        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
+        if (MainStateProxy::getInstance().copyFrame(ERROR_MESSAGE_IDENTIFIER, mTransferBuffer, version))
         {
-            updateErrorStatus();
+            updateErrorStatus(version);
         }
     }
 
@@ -427,6 +444,8 @@ void MQTTTask::updateStats()
     publishString(STATS_SUBTOPIC, STATS_AQUAMQTT_ADDR, WiFi.localIP().toString().c_str());
 
     publishi(STATS_SUBTOPIC, STATS_AQUAMQTT_RSSI, WiFi.RSSI());
+
+    publishString(STATS_SUBTOPIC, STATS_AQUAMQTT_PROTOCOL, protocolVersionStr(DHWState::getInstance().getVersion()));
 
     if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
     {
@@ -513,33 +532,41 @@ void MQTTTask::updateStats()
                 HMIStateProxy::getInstance().isPVModeHeatElementEnabled());
     }
 }
-void MQTTTask::updateMainStatus(bool fullUpdate)
+void MQTTTask::updateMainStatus(bool fullUpdate, message::ProtocolVersion& version)
 {
-    message::MainStatusMessage message(mTransferBuffer);
+    std::unique_ptr<message::IMainMessage> message;
+    if (version == ProtocolVersion::PROTOCOL_NEXT)
+    {
+        message = std::make_unique<message::next::MainStatusMessage>(mTransferBuffer);
+    }
+    else
+    {
+        message = std::make_unique<message::legacy::MainStatusMessage>(mTransferBuffer);
+    }
 
-    applyTemperatureFilter(&message);
+    applyTemperatureFilter(message);
 
-    message.compareWith(fullUpdate ? nullptr : mLastProcessedMainMessage);
+    message->compareWith(fullUpdate ? nullptr : mLastProcessedMainMessage);
 
-    if (message.hotWaterTempChanged())
+    if (message->hotWaterTempChanged())
     {
-        publishFloat(MAIN_SUBTOPIC, MAIN_HOT_WATER_TEMP, message.hotWaterTemp());
+        publishFloat(MAIN_SUBTOPIC, MAIN_HOT_WATER_TEMP, message->hotWaterTemp());
     }
-    if (message.airTempChanged())
+    if (message->airTempChanged())
     {
-        publishFloat(MAIN_SUBTOPIC, MAIN_SUPPLY_AIR_TEMP, message.airTemp());
+        publishFloat(MAIN_SUBTOPIC, MAIN_SUPPLY_AIR_TEMP, message->airTemp());
     }
-    if (message.evaporatorLowerAirTempChanged())
+    if (message->evaporatorLowerAirTempChanged())
     {
-        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_LOWER, message.evaporatorLowerAirTemp());
+        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_LOWER, message->evaporatorLowerAirTemp());
     }
-    if (message.evaporatorUpperAirTempChanged())
+    if (message->evaporatorUpperAirTempChanged())
     {
-        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_UPPER, message.evaporatorUpperAirTemp());
+        publishFloat(MAIN_SUBTOPIC, MAIN_EVAPORATOR_AIR_TEMP_UPPER, message->evaporatorUpperAirTemp());
     }
-    if (message.compressorOutletTempChanged())
+    if (message->compressorOutletTempChanged())
     {
-        publishFloat(MAIN_SUBTOPIC, MAIN_COMPRESSOR_OUTLET_TEMP, message.compressorOutletTemp());
+        publishFloat(MAIN_SUBTOPIC, MAIN_COMPRESSOR_OUTLET_TEMP, message->compressorOutletTemp());
     }
     //    if (message.fanSpeedChanged())
     //    {
@@ -615,35 +642,44 @@ void MQTTTask::updateMainStatus(bool fullUpdate)
                 MAIN_SUBTOPIC,
                 DEBUG);
 
-        toHexStr(mTransferBuffer, MAIN_MESSAGE_LENGTH, reinterpret_cast<char*>(mPayloadBuffer));
+        toHexStr(mTransferBuffer, message->getLength(), reinterpret_cast<char*>(mPayloadBuffer));
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 }
 
-void MQTTTask::updateHMIStatus(bool fullUpdate)
+void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& version)
 {
-    message::HMIMessage message(mTransferBuffer);
-    message.compareWith(fullUpdate ? nullptr : mLastProcessedHMIMessage);
-
-    if (message.waterTempTargetChanged())
+    std::unique_ptr<message::IHMIMessage> message;
+    if (version == ProtocolVersion::PROTOCOL_NEXT)
     {
-        publishFloat(HMI_SUBTOPIC, HMI_HOT_WATER_TEMP_TARGET, message.waterTempTarget());
+        message = std::make_unique<message::next::HMIMessage>(mTransferBuffer);
+    }
+    else
+    {
+        message = std::make_unique<message::legacy::HMIMessage>(mTransferBuffer);
     }
 
-    if (message.operationTypeOrModeChanged())
-    {
-        publishString(HMI_SUBTOPIC, HMI_OPERATION_MODE, operationModeStr(message.operationMode()));
+    message->compareWith(fullUpdate ? nullptr : mLastProcessedHMIMessage);
 
-        publishString(HMI_SUBTOPIC, HMI_OPERATION_TYPE, operationTypeStr(message.getOperationType()));
+    if (message->waterTempTargetChanged())
+    {
+        publishFloat(HMI_SUBTOPIC, HMI_HOT_WATER_TEMP_TARGET, message->waterTempTarget());
     }
 
-    if (config::MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE && message.timeChanged())
+    if (message->operationTypeOrModeChanged())
+    {
+        publishString(HMI_SUBTOPIC, HMI_OPERATION_MODE, operationModeStr(message->operationMode()));
+
+        publishString(HMI_SUBTOPIC, HMI_OPERATION_TYPE, operationTypeStr(message->getOperationType()));
+    }
+
+    if (config::MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE && message->timeChanged())
     {
         sprintf(reinterpret_cast<char*>(mPayloadBuffer),
                 "%02d:%02d:%02d",
-                message.timeHours(),
-                message.timeMinutes(),
-                message.timeSeconds());
+                message->timeHours(),
+                message->timeMinutes(),
+                message->timeSeconds());
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%s",
                 config::mqttPrefix,
@@ -653,13 +689,13 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 
-    if (config::MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE && message.dateChanged())
+    if (config::MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE && message->dateChanged())
     {
         sprintf(reinterpret_cast<char*>(mPayloadBuffer),
                 "%d.%d.%d",
-                message.dateDay(),
-                message.dateMonth(),
-                message.dateYear());
+                message->dateDay(),
+                message->dateMonth(),
+                message->dateYear());
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%s",
                 config::mqttPrefix,
@@ -669,22 +705,25 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 
-    if (message.emergencyModeChanged())
+    if (message->emergencyModeChanged())
     {
-        publishi(HMI_SUBTOPIC, HMI_EMERGENCY_MODE, message.isEmergencyModeEnabled());
+        publishi(HMI_SUBTOPIC, HMI_EMERGENCY_MODE, message->isEmergencyModeEnabled());
     }
 
-    if (message.heatingElemOrSetupStateOrPVActiveChanged())
+    if (message->heatingElemOrSetupStateOrPVActiveChanged())
     {
-        publishi(HMI_SUBTOPIC, HMI_HEATING_ELEMENT_ENABLED, message.isHeatingElementEnabled());
-        publishi(HMI_SUBTOPIC, HMM_PV_INPUT_ACTIVATED, message.isPVInputActivated());
+        publishi(HMI_SUBTOPIC, HMI_HEATING_ELEMENT_ENABLED, message->isHeatingElementEnabled());
+        publishi(HMI_SUBTOPIC, HMM_PV_INPUT_ACTIVATED, message->isPVInputActivated());
         // publishString(HMI_SUBTOPIC, HMI_SETUP_STATE, setupStr(message.setupMode()));
     }
 
-    if (message.legionellaOrAirductChanged())
+    if (message->legionellaOrAirductChanged())
     {
-        publishi(HMI_SUBTOPIC, HMI_LEGIONELLA, message.antiLegionellaModePerMonth());
-        publishString(HMI_SUBTOPIC, HMI_AIR_DUCT_CONFIG, aquamqtt::message::airDuctConfigStr(message.airDuctConfig()));
+        publishi(HMI_SUBTOPIC, HMI_LEGIONELLA, message->antiLegionellaModePerMonth());
+        publishString(
+                HMI_SUBTOPIC,
+                HMI_AIR_DUCT_CONFIG,
+                aquamqtt::message::airDuctConfigStr(message->airDuctConfig()));
     }
     //
     //    if (message.testModeChanged())
@@ -692,10 +731,10 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
     //        publishString(HMI_SUBTOPIC, HMI_TEST_MODE, testModeStr(message.testMode()));
     //    }
     //
-    //    if (message.installationConfigChanged())
-    //    {
-    //        publishString(HMI_SUBTOPIC, HMI_INSTALLATION_CONFIG, installationModeStr(message.installationMode()));
-    //    }
+    if (message->installationConfigChanged())
+    {
+        publishString(HMI_SUBTOPIC, HMI_INSTALLATION_CONFIG, installationModeStr(message->installationMode()));
+    }
     //
     //    if (message.exhaustFanChanged())
     //    {
@@ -749,16 +788,25 @@ void MQTTTask::updateHMIStatus(bool fullUpdate)
                 HMI_SUBTOPIC,
                 DEBUG);
 
-        toHexStr(mTransferBuffer, HMI_MESSAGE_LENGTH, reinterpret_cast<char*>(mPayloadBuffer));
+        toHexStr(mTransferBuffer, message->getLength(), reinterpret_cast<char*>(mPayloadBuffer));
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 }
 
-void MQTTTask::updateEnergyStats(bool fullUpdate)
+void MQTTTask::updateEnergyStats(bool fullUpdate, message::ProtocolVersion& version)
 {
-    //    message::MainEnergyMessage message(mTransferBuffer);
-    //    message.compareWith(fullUpdate ? nullptr : mLastProcessedEnergyMessage);
-    //
+    std::unique_ptr<message::IEnergyMessage> message;
+    if (version == ProtocolVersion::PROTOCOL_NEXT)
+    {
+        message = std::make_unique<message::next::MainEnergyMessage>(mTransferBuffer);
+    }
+    else
+    {
+        message = std::make_unique<message::legacy::MainEnergyMessage>(mTransferBuffer);
+    }
+
+    message->compareWith(fullUpdate ? nullptr : mLastProcessedEnergyMessage);
+
     //    if (message.totalHeatpumpHoursChanged())
     //    {
     //        publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_HEATPUMP_HOURS, message.totalHeatpumpHours(), true);
@@ -815,20 +863,28 @@ void MQTTTask::updateEnergyStats(bool fullUpdate)
                 ENERGY_SUBTOPIC,
                 DEBUG);
 
-        toHexStr(mTransferBuffer, ENERGY_MESSAGE_LENGTH, reinterpret_cast<char*>(mPayloadBuffer));
+        toHexStr(mTransferBuffer, message->getLength(), reinterpret_cast<char*>(mPayloadBuffer));
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 }
 
-void MQTTTask::updateErrorStatus()
+void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
 {
-    //    message::ErrorMessage message(mTransferBuffer);
-    //
-    //    if (message.isEmpty())
-    //    {
-    //        return;
-    //    }
-    //
+    std::unique_ptr<message::IErrorMessage> message;
+    if (version == ProtocolVersion::PROTOCOL_NEXT)
+    {
+        message = std::make_unique<message::next::ErrorMessage>(mTransferBuffer);
+    }
+    else
+    {
+        message = std::make_unique<message::legacy::ErrorMessage>(mTransferBuffer);
+    }
+
+    if (message->isEmpty())
+    {
+        return;
+    }
+
     //    sprintf(reinterpret_cast<char*>(mTopicBuffer),
     //            "%s%s%s%u/%s",
     //            config::mqttPrefix,
@@ -945,7 +1001,7 @@ void MQTTTask::updateErrorStatus()
                 ERROR_SUBTOPIC,
                 DEBUG);
 
-        toHexStr(mTransferBuffer, ERROR_MESSAGE_LENGTH, reinterpret_cast<char*>(mPayloadBuffer));
+        toHexStr(mTransferBuffer, message->getLength(), reinterpret_cast<char*>(mPayloadBuffer));
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 }
@@ -995,7 +1051,7 @@ void MQTTTask::publishul(
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), retained, 0);
 }
 
-void MQTTTask::applyTemperatureFilter(message::MainStatusMessage* message)
+void MQTTTask::applyTemperatureFilter(std::unique_ptr<message::IMainMessage>& message)
 {
     if (config::MQTT_FILTER_TEMPERATURE_NOISE)
     {

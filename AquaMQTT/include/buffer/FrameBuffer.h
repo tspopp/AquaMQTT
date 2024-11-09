@@ -24,6 +24,9 @@ public:
     uint64_t getHandledCount() const;
 
 private:
+
+    aquamqtt::message::ProtocolVersion mLockedProtocol;
+
     int handleFrame();
 
     bool isSync();

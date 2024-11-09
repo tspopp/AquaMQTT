@@ -144,14 +144,20 @@ void ControllerTask::flushReadBuffer()
 }
 void ControllerTask::sendMessage194()
 {
-    if (HMIStateProxy::getInstance().copyFrame(message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
+    message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
+    size_t length = HMIStateProxy::getInstance().copyFrame(message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+    if (version == message::PROTOCOL_LEGACY)
     {
-        uint16_t crc = mCRC.ccitt(mTransferBuffer, message::HMI_MESSAGE_LENGTH);
-        Serial2.write(mTransferBuffer, message::HMI_MESSAGE_LENGTH);
+        uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
+        Serial2.write(mTransferBuffer, length);
         Serial2.write((uint8_t) (crc >> 8));
         Serial2.write((uint8_t) (crc & 0xFF));
         Serial2.flush();
         mMessagesSent++;
+    }
+    else if(version == message::PROTOCOL_NEXT){
+        // TODO
+        Serial.println("[main] mitm is not yet implemented for protocol next");
     }
     else
     {

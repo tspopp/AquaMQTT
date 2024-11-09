@@ -21,6 +21,9 @@ constexpr char ENUM_UNKNOWN[] = { "UNKNOWN" };
 constexpr char ENUM_AQUAMQTT_MODE_LISTENER[] = { "LISTENER" };
 constexpr char ENUM_AQUAMQTT_MODE_MITM[]     = { "MITM" };
 
+constexpr char ENUM_AQUAMQTT_PROTOCOL_LEGACY[] = { "LEGACY" };
+constexpr char ENUM_AQUAMQTT_PROTOCL_NEXT[]    = { "NEXT" };
+
 constexpr char ENUM_BRAND_ATLANTIC[] = { "Atlantic" };
 constexpr char ENUM_BRAND_THERMOR[]  = { "Thermor" };
 constexpr char ENUM_BRAND_SAUTER[]   = { "Sauter" };
@@ -77,7 +80,6 @@ constexpr char MAIN_HOT_WATER_TEMP[]            = { "waterTemp" };
 constexpr char MAIN_SUPPLY_AIR_TEMP[]           = { "supplyAirTemp" };
 constexpr char MAIN_EVAPORATOR_AIR_TEMP_UPPER[] = { "evaporatorAirTemp" };
 constexpr char MAIN_EVAPORATOR_AIR_TEMP_LOWER[] = { "evaporatorAirTempLower" };
-// TODO: provide mqtt discovery for this attribute
 constexpr char MAIN_COMPRESSOR_OUTLET_TEMP[]    = { "compressorOutletTemp" };
 constexpr char MAIN_FAN_PWM[]                   = { "fanPWM" };
 constexpr char MAIN_STATE_FAN[]                 = { "stateFan" };
@@ -145,6 +147,7 @@ constexpr char STATS_ACTIVE_OVERRIDES[]           = { "activeOverrides" };
 constexpr char STATS_ACTIVE_OVERRIDES_MAIN[]      = { "activeOverridesMain" };
 constexpr char STATS_ENABLE_FLAG_PV_HEATPUMP[]    = { "flagPVModeHeatPump" };
 constexpr char STATS_ENABLE_FLAG_PV_HEATELEMENT[] = { "flagPVModeHeatElement" };
+constexpr char STATS_AQUAMQTT_PROTOCOL[]          = { "protocolVersion" };
 
 constexpr char DEBUG[] = { "debug" };
 

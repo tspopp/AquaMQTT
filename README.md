@@ -24,8 +24,9 @@ AquaMQTT has been designed and tested with the [Windhager AquaWin Air3](https://
 
 - [Atlantic Explorer V4](https://github.com/tspopp/AquaMQTT/issues/14)
 - [Austria Email Explorer Evo 2](https://github.com/tspopp/AquaMQTT/issues/22)
+- [Austria Email Explorer Evo 2 200WT](https://github.com/tspopp/AquaMQTT/issues/45) ([NEXT](./PROTOCOL_NEXT.md))
 - [Thermor Aeromax 5](https://github.com/tspopp/AquaMQTT/issues/18)
-- [Windhager AquaWin Air3](https://www.windhager.com/en/products/hot-water-tanks/aquawin-air3/) 
+- [Windhager AquaWin Air3](https://www.windhager.com/en/products/hot-water-tanks/aquawin-air3/)
 
 ### Other potential compatible devices include, but are not limited to:
 

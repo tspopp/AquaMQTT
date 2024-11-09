@@ -1,10 +1,12 @@
-#include "message/MainEnergyMessage.h"
+#include "message/next/MainEnergyMessage.h"
 
 #include "message/MessageConstants.h"
 
 namespace aquamqtt
 {
 namespace message
+{
+namespace next
 {
 
 uint32_t MainEnergyMessage::totalHeatpumpHours()
@@ -64,9 +66,9 @@ void MainEnergyMessage::compareWith(uint8_t* data)
         return;
     }
 
-    uint8_t diffIndices[ENERGY_MESSAGE_LENGTH] = { 0 };
+    uint8_t diffIndices[ENERGY_MESSAGE_LENGTH_NEXT] = { 0 };
     size_t  numDiffs                           = 0;
-    compareBuffers(mData, data, ENERGY_MESSAGE_LENGTH, diffIndices, &numDiffs);
+    compareBuffers(mData, data, ENERGY_MESSAGE_LENGTH_NEXT, diffIndices, &numDiffs);
 
     for (int i = 0; i < numDiffs; ++i)
     {
@@ -123,6 +125,11 @@ bool MainEnergyMessage::totalWaterProductionChanged() const
 {
     return mTotalWaterProductionChanged;
 }
+uint8_t MainEnergyMessage::getLength()
+{
+    return ENERGY_MESSAGE_LENGTH_NEXT;
+}
 
+}
 }  // namespace message
 }  // namespace aquamqtt

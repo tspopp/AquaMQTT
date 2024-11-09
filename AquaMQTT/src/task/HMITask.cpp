@@ -3,8 +3,11 @@
 #include <esp_task_wdt.h>
 
 #include "config/Configuration.h"
-#include "message/ErrorMessage.h"
+#include "message/IErrorMessage.h"
+#include "message/IHMIMessage.h"
 #include "message/MessageConstants.h"
+#include "message/legacy/ErrorMessage.h"
+#include "message/legacy/HMIMessage.h"
 #include "state/HMIStateProxy.h"
 #include "state/MainStateProxy.h"
 
@@ -166,15 +169,27 @@ void HMITask::flushReadBuffer()
 }
 void HMITask::sendMessage193()
 {
-    if (MainStateProxy::getInstance().copyFrame(message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer))
+    message::ProtocolVersion version;
+    size_t                   length = MainStateProxy::getInstance().copyFrame(
+            message::MAIN_MESSAGE_IDENTIFIER,
+            mTransferBuffer,
+            version);
+    if (length > 0)
     {
-        uint16_t crc = mCRC.ccitt(mTransferBuffer, message::MAIN_MESSAGE_LENGTH);
-        Serial1.write(message::MAIN_MESSAGE_IDENTIFIER);
-        Serial1.write(mTransferBuffer, message::MAIN_MESSAGE_LENGTH);
-        Serial1.write((uint8_t) (crc >> 8));
-        Serial1.write((uint8_t) (crc & 0xFF));
-        Serial1.flush();
-        mMessagesSent++;
+        if (version == message::PROTOCOL_LEGACY)
+        {
+            uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
+            Serial1.write(message::MAIN_MESSAGE_IDENTIFIER);
+            Serial1.write(mTransferBuffer, length);
+            Serial1.write((uint8_t) (crc >> 8));
+            Serial1.write((uint8_t) (crc & 0xFF));
+            Serial1.flush();
+            mMessagesSent++;
+        }
+        else
+        {
+            // TOOD: not implemented
+        }
     }
     else
     {
@@ -183,15 +198,27 @@ void HMITask::sendMessage193()
 }
 void HMITask::sendMessage67()
 {
-    if (MainStateProxy::getInstance().copyFrame(message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer))
+    message::ProtocolVersion version;
+    size_t                   length = MainStateProxy::getInstance().copyFrame(
+            message::ENERGY_MESSAGE_IDENTIFIER,
+            mTransferBuffer,
+            version);
+    if (length > 0)
     {
-        uint16_t crc = mCRC.ccitt(mTransferBuffer, message::ENERGY_MESSAGE_LENGTH);
-        Serial1.write(message::ENERGY_MESSAGE_IDENTIFIER);
-        Serial1.write(mTransferBuffer, message::ENERGY_MESSAGE_LENGTH);
-        Serial1.write((uint8_t) (crc >> 8));
-        Serial1.write((uint8_t) (crc & 0xFF));
-        Serial1.flush();
-        mMessagesSent++;
+        if (version == message::PROTOCOL_LEGACY)
+        {
+            uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
+            Serial1.write(message::ENERGY_MESSAGE_IDENTIFIER);
+            Serial1.write(mTransferBuffer, length);
+            Serial1.write((uint8_t) (crc >> 8));
+            Serial1.write((uint8_t) (crc & 0xFF));
+            Serial1.flush();
+            mMessagesSent++;
+        }
+        else
+        {
+            // TOOD: not implemented
+        }
     }
     else
     {
@@ -204,10 +231,22 @@ void HMITask::sendMessage74()
     // check if the HMI is requesting an error message
     uint8_t requestId = UINT8_MAX;
     {
-        if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer))
+        message::ProtocolVersion version;
+        size_t                   length = MainStateProxy::getInstance().copyFrame(
+                aquamqtt::message::HMI_MESSAGE_IDENTIFIER,
+                mTransferBuffer,
+                version);
+        if (length > 0)
         {
-            aquamqtt::message::HMIMessage hmiMessage(mTransferBuffer);
-            requestId = hmiMessage.errorRequestId();
+            if (version == message::PROTOCOL_LEGACY)
+            {
+                aquamqtt::message::legacy::HMIMessage hmiMessage(mTransferBuffer);
+                requestId = hmiMessage.errorRequestId();
+            }
+            else
+            {
+                // TODO: not implemented
+            }
         }
     }
 
@@ -219,26 +258,41 @@ void HMITask::sendMessage74()
     }
 
     // check if we have the requested error message in cache
-    uint8_t availableRequestId = 0;
+    uint8_t                  availableRequestId = 0;
+    message::ProtocolVersion version;
+    size_t                   length = MainStateProxy::getInstance().copyFrame(
+            aquamqtt::message::ERROR_MESSAGE_IDENTIFIER,
+            mTransferBuffer,
+            version);
+    if (length > 0)
     {
-        if (MainStateProxy::getInstance().copyFrame(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER, mTransferBuffer))
+        if (version == message::PROTOCOL_LEGACY)
         {
-            aquamqtt::message::ErrorMessage errorMessage(mTransferBuffer);
+            aquamqtt::message::legacy::ErrorMessage errorMessage(mTransferBuffer);
             availableRequestId = errorMessage.errorRequestId();
+        }
+        else
+        {
+            // TODO: not implemented
         }
     }
 
     // emit the error message
     if (requestId == availableRequestId)
     {
-        uint16_t crc = mCRC.ccitt(mTransferBuffer, aquamqtt::message::ERROR_MESSAGE_LENGTH);
-        Serial1.write(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER);
-        Serial1.write(mTransferBuffer, aquamqtt::message::ERROR_MESSAGE_LENGTH);
-        Serial1.write((uint8_t) (crc >> 8));
-        Serial1.write((uint8_t) (crc & 0xFF));
-        Serial1.flush();
-        mMessagesSent++;
-        mLastEmittedRequestId = requestId;
+        if(version == message::PROTOCOL_LEGACY)
+        {
+            uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
+            Serial1.write(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER);
+            Serial1.write(mTransferBuffer, length);
+            Serial1.write((uint8_t) (crc >> 8));
+            Serial1.write((uint8_t) (crc & 0xFF));
+            Serial1.flush();
+            mMessagesSent++;
+            mLastEmittedRequestId = requestId;
+        } else {
+            // TODO: not implemented
+        }
     }
 }
 
