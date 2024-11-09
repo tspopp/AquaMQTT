@@ -164,27 +164,33 @@ HMITestMode HMIMessage::testMode()
 }
 void HMIMessage::timerWindowStr(bool firstWindow, char* buffer)
 {
-    // TODO
+    uint16_t start    = firstWindow ? timerWindowAStart() : timerWindowBStart();
+    uint16_t duration = firstWindow ? timerWindowALength() : timerWindowBLength();
+
+    const uint8_t beginHours    = start / 60;
+    const uint8_t beginMinutes  = start % 60;
+    const uint8_t lengthHours   = duration / 60;
+    const uint8_t lengthMinutes = duration % 60;
+    const uint8_t endMinutes    = (beginMinutes + lengthMinutes) % 60;
+    const uint8_t hourOverlap   = (beginMinutes + lengthMinutes) / 60;
+    const uint8_t endHours      = (beginHours + lengthHours) % 24 + hourOverlap;
+    sprintf(buffer, "%02d:%02d-%02d:%02d", beginHours, beginMinutes, endHours, endMinutes);
 }
 uint16_t HMIMessage::timerWindowAStart() const
 {
-    // TODO
-    return 0;
+   return  ((uint16_t) mData[10] << 8) | (uint16_t) mData[9];
 }
 uint16_t HMIMessage::timerWindowALength() const
 {
-    // TODO
-    return 0;
+    return ((uint16_t) mData[12] << 8) | (uint16_t) mData[11];
 }
 uint16_t HMIMessage::timerWindowBStart() const
 {
-    // TODO
-    return 0;
+    return  ((uint16_t) mData[30] << 8) | (uint16_t) mData[29];
 }
 uint16_t HMIMessage::timerWindowBLength() const
 {
-    // TODO
-    return 0;
+    return ((uint16_t) mData[32] << 8) | (uint16_t) mData[31];
 }
 uint8_t HMIMessage::timeHours() const
 {
@@ -288,7 +294,7 @@ void HMIMessage::compareWith(uint8_t* data)
     }
 
     uint8_t diffIndices[HMI_MESSAGE_LENGTH_NEXT] = { 0 };
-    size_t  numDiffs                        = 0;
+    size_t  numDiffs                             = 0;
     compareBuffers(mData, data, HMI_MESSAGE_LENGTH_NEXT, diffIndices, &numDiffs);
 
     for (int i = 0; i < numDiffs; ++i)
@@ -315,6 +321,19 @@ void HMIMessage::compareWith(uint8_t* data)
             case 8:
                 mHeatingElemOrSetupStateOrPVActiveChanged = true;
                 break;
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+                mTimerModeOneChanged = true;
+                break;
+            case 29:
+            case 30:
+            case 31:
+            case 32:
+                mTimerModeTwoChanged = true;
+                break;
+
             case 16:
             case 19:
             case 20:
@@ -382,6 +401,6 @@ uint8_t HMIMessage::getLength()
 {
     return HMI_MESSAGE_LENGTH_NEXT;
 }
-}
+}  // namespace next
 }  // namespace message
 }  // namespace aquamqtt

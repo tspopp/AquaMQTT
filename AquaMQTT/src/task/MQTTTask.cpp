@@ -741,29 +741,29 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
     //        publishString(HMI_SUBTOPIC, HMI_FAN_EXHAUST_CONFIG, exhaustModeStr(message.fanExhaust()));
     //    }
     //
-    //    if (message.timerModeOneChanged())
-    //    {
-    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-    //                "%s%s%s%s",
-    //                config::mqttPrefix,
-    //                BASE_TOPIC,
-    //                HMI_SUBTOPIC,
-    //                HMI_TIMER_WINDOW_A);
-    //        message.timerWindowStr(true, reinterpret_cast<char*>(mPayloadBuffer));
-    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-    //    }
-    //
-    //    if (message.timerModeTwoChanged())
-    //    {
-    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-    //                "%s%s%s%s",
-    //                config::mqttPrefix,
-    //                BASE_TOPIC,
-    //                HMI_SUBTOPIC,
-    //                HMI_TIMER_WINDOW_B);
-    //        message.timerWindowStr(false, reinterpret_cast<char*>(mPayloadBuffer));
-    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-    //    }
+    if (message->timerModeOneChanged())
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%s%s%s",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                HMI_SUBTOPIC,
+                HMI_TIMER_WINDOW_A);
+        message->timerWindowStr(true, reinterpret_cast<char*>(mPayloadBuffer));
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
+
+    if (message->timerModeTwoChanged())
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%s%s%s",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                HMI_SUBTOPIC,
+                HMI_TIMER_WINDOW_B);
+        message->timerWindowStr(false, reinterpret_cast<char*>(mPayloadBuffer));
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
     //
     //    // publish the error number to the request id
     //    if (message.errorRequestChanged() && message.errorRequestId() != 0)
