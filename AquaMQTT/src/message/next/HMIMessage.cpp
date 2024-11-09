@@ -140,8 +140,17 @@ HMIInstallation HMIMessage::installationMode()
 
 HMIFanExhaust HMIMessage::fanExhaust() const
 {
-    // TODO
-    return EXHAUST_UNKNOWN;
+    switch ((uint8_t) (mData[7] & 0x03))
+    {
+        case 0:
+            return EXHAUST_STOP;
+        case 1:
+            return EXHAUST_LOW_SPEED;
+        case 2:
+            return EXHAUST_HIGH_SPEED;
+        default:
+            return EXHAUST_UNKNOWN;
+    }
 }
 void HMIMessage::setFanExhaustMode(HMIFanExhaust mode) const
 {
@@ -317,6 +326,9 @@ void HMIMessage::compareWith(uint8_t* data)
                 break;
             case 6:
                 mInstallConfigChanged = true;
+                break;
+            case 7:
+                mExhaustFanChanged = true;
                 break;
             case 8:
                 mHeatingElemOrSetupStateOrPVActiveChanged = true;

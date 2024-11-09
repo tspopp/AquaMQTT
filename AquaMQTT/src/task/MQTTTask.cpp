@@ -735,12 +735,12 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
     {
         publishString(HMI_SUBTOPIC, HMI_INSTALLATION_CONFIG, installationModeStr(message->installationMode()));
     }
-    //
-    //    if (message.exhaustFanChanged())
-    //    {
-    //        publishString(HMI_SUBTOPIC, HMI_FAN_EXHAUST_CONFIG, exhaustModeStr(message.fanExhaust()));
-    //    }
-    //
+
+    if (message->exhaustFanChanged())
+    {
+        publishString(HMI_SUBTOPIC, HMI_FAN_EXHAUST_CONFIG, exhaustModeStr(message->fanExhaust()));
+    }
+
     if (message->timerModeOneChanged())
     {
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
