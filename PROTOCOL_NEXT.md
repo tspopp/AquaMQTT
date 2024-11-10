@@ -44,7 +44,7 @@ Checksum calculation is yet unknown.
 | 11          | 240           | Timer Mode: Window 1 Length    | Byte 1/2 --> See table below          |
 | 12          | 0             | Timer Mode: Window 1 Length    | Byte 2/2 --> 240 + 0 = 240 / 60 = 4 --> 4h       |
 | 13          | 14            | Absence Days                   | If the start is in the future, the value will only become visible then                  |
-| 14          | 0             | ?                              |                   |
+| 14          | 7             | Boost Days                     |  7 Days max       |
 | 15          | 0             | ?                              |                   |
 | 16          | 59            | Time Seconds                   |                   |
 | 17          | 33            | Date Day, Month                |                   |
