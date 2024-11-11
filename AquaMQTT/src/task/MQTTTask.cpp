@@ -874,16 +874,19 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
     if (version == ProtocolVersion::PROTOCOL_NEXT)
     {
         message = std::make_unique<message::next::ErrorMessage>(mTransferBuffer);
+
+        // there are no empty error messages in next protocol
     }
     else
     {
         message = std::make_unique<message::legacy::ErrorMessage>(mTransferBuffer);
+
+        if (message->isEmpty())
+        {
+            return;
+        }
     }
 
-    if (message->isEmpty())
-    {
-        return;
-    }
 
     //    sprintf(reinterpret_cast<char*>(mTopicBuffer),
     //            "%s%s%s%u/%s",

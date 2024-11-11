@@ -9,7 +9,7 @@ namespace aquamqtt
 {
 namespace message
 {
-constexpr uint8_t HEATPUMP_MAX_FRAME_LENGTH = 50;
+constexpr uint8_t HEATPUMP_MAX_FRAME_LENGTH = 70;
 
 constexpr uint8_t MESSAGE_PERIOD_MS = 100;
 
@@ -20,22 +20,21 @@ enum ProtocolVersion
     PROTOCOL_NEXT    = 1
 };
 
-constexpr uint8_t HMI_MESSAGE_IDENTIFIER  = 194;
-constexpr uint8_t HMI_MESSAGE_LENGTH_NEXT = 34;
-constexpr uint8_t HMI_MESSAGE_LENGTH_LEGACY      = 35;
+constexpr uint8_t HMI_MESSAGE_IDENTIFIER    = 194;
+constexpr uint8_t HMI_MESSAGE_LENGTH_NEXT   = 34;
+constexpr uint8_t HMI_MESSAGE_LENGTH_LEGACY = 35;
 
-constexpr uint8_t MAIN_MESSAGE_IDENTIFIER  = 193;
-constexpr uint8_t MAIN_MESSAGE_LENGTH_NEXT = 35;
-constexpr uint8_t MAIN_MESSAGE_LENGTH_LEGACY     = 37;
+constexpr uint8_t MAIN_MESSAGE_IDENTIFIER    = 193;
+constexpr uint8_t MAIN_MESSAGE_LENGTH_NEXT   = 35;
+constexpr uint8_t MAIN_MESSAGE_LENGTH_LEGACY = 37;
 
-constexpr uint8_t ENERGY_MESSAGE_IDENTIFIER  = 67;
-constexpr uint8_t ENERGY_MESSAGE_LENGTH_NEXT = 45;
-constexpr uint8_t ENERGY_MESSAGE_LENGTH_LEGACY      = 31;
+constexpr uint8_t ENERGY_MESSAGE_IDENTIFIER    = 67;
+constexpr uint8_t ENERGY_MESSAGE_LENGTH_NEXT   = 45;
+constexpr uint8_t ENERGY_MESSAGE_LENGTH_LEGACY = 31;
 
-constexpr uint8_t ERROR_MESSAGE_IDENTIFIER  = 74;
-// TODO: analyze serial protocol for error messages
-constexpr uint8_t ERROR_MESSAGE_LENGTH_NEXT = 0;
-constexpr uint8_t ERROR_MESSAGE_LENGTH_LEGACY      = 35;
+constexpr uint8_t ERROR_MESSAGE_IDENTIFIER    = 74;
+constexpr uint8_t ERROR_MESSAGE_LENGTH_NEXT   = 65;
+constexpr uint8_t ERROR_MESSAGE_LENGTH_LEGACY = 35;
 
 // this will work as long as they will always differ in length
 static ProtocolVersion getVersionByIdentifier(uint8_t identifier, uint8_t length)
