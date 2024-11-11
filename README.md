@@ -18,16 +18,7 @@ AquaMQTT is a project designed to monitor and control your DHW heat pump locally
 
 ## Compatible Devices
 
-AquaMQTT has been designed and tested with the [Windhager AquaWin Air3](https://www.windhager.com/en/products/hot-water-tanks/aquawin-air3/) DHW heat pump. While specifically tailored to this model, it's highly likely that AquaMQTT is compatible with similar heat pumps manufactured by the [Groupe Atlantic](https://www.groupe-atlantic.fr/) and branded for various companies. 
-
-### Proofen compatible devices:
-
-- [Atlantic Explorer V4](https://github.com/tspopp/AquaMQTT/issues/14)
-- [Austria Email Explorer Evo 2](https://github.com/tspopp/AquaMQTT/issues/22)
-- [Thermor Aeromax 5](https://github.com/tspopp/AquaMQTT/issues/18)
-- [Windhager AquaWin Air3](https://www.windhager.com/en/products/hot-water-tanks/aquawin-air3/) 
-
-### Other potential compatible devices include, but are not limited to:
+AquaMQTT has been designed and tested with the [Windhager AquaWin Air3](https://www.windhager.com/en/products/hot-water-tanks/aquawin-air3/) DHW heat pump. While specifically tailored to this model, it has been proofen that AquaMQTT is compatible to similar heat pumps manufactured by the [Groupe Atlantic](https://www.groupe-atlantic.fr/) and branded for various companies such as:
 
 - [Atlantic Explorer](https://www.atlantic-comfort.com/Water-Heaters/Heat-pump-water-heaters/Explorer)
 - [Austria Email Explorer](https://www.austria-email.de/produkte/waermepumpensysteme/waermepumpen-trinkwasser/explorer-evo-2/)
@@ -35,8 +26,7 @@ AquaMQTT has been designed and tested with the [Windhager AquaWin Air3](https://
 - [Sauter Confort Pagosa Green](https://www.confort-sauter.com/chauffe-eau/pagosa-green)
 - [Thermor Aeromax](https://www.thermor.com/our-solutions/renewable-energy-solutions/heat-pump-water-heaters/aeromax-premium)
 
-
-If you have a heat pump with similar characteristics or branding, AquaMQTT might be compatible. Feel free to explore and adapt the project for your specific device, and share your experience.
+A list of community proofen compatible devices is [here](./DEVICES.md).
 
 ## How does it work?
 
