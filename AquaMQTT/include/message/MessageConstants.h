@@ -34,7 +34,7 @@ constexpr uint8_t ENERGY_MESSAGE_LENGTH_LEGACY      = 31;
 
 constexpr uint8_t ERROR_MESSAGE_IDENTIFIER  = 74;
 // TODO: analyze serial protocol for error messages
-constexpr uint8_t ERROR_MESSAGE_LENGTH_NEXT = 255;
+constexpr uint8_t ERROR_MESSAGE_LENGTH_NEXT = 0;
 constexpr uint8_t ERROR_MESSAGE_LENGTH_LEGACY      = 35;
 
 // this will work as long as they will always differ in length
