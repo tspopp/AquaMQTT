@@ -272,14 +272,12 @@ void HMIMessage::setAntiLegionellaModePerMonth(uint8_t value)
 
 uint8_t HMIMessage::errorRequestId() const
 {
-    // TODO
-    return 0;
+    return mData[28];
 }
 
 uint8_t HMIMessage::errorNumberRequested() const
 {
-    // TODO
-    return 0;
+    return mData[27];
 }
 
 void HMIMessage::compareWith(uint8_t* data)
@@ -355,6 +353,9 @@ void HMIMessage::compareWith(uint8_t* data)
             case 18:
                 mDateChanged = true;
                 break;
+            case 27:
+            case 28:
+                mErrorRequestChanged = true;
             default:
                 break;
         }

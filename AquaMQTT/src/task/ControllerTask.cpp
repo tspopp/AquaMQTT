@@ -3,6 +3,7 @@
 #include <esp_task_wdt.h>
 
 #include "config/Configuration.h"
+#include "message/MessageConstants.h"
 #include "state/HMIStateProxy.h"
 
 namespace aquamqtt
@@ -146,6 +147,7 @@ void ControllerTask::sendMessage194()
 {
     message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
     size_t length = HMIStateProxy::getInstance().copyFrame(message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+    // TODO: refactor this
     if (version == message::PROTOCOL_LEGACY)
     {
         uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
@@ -155,9 +157,13 @@ void ControllerTask::sendMessage194()
         Serial2.flush();
         mMessagesSent++;
     }
-    else if(version == message::PROTOCOL_NEXT){
-        // TODO
-        Serial.println("[main] mitm is not yet implemented for protocol next");
+    else if (version == message::PROTOCOL_NEXT)
+    {
+        uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
+        Serial2.write(mTransferBuffer, length);
+        Serial2.write(checksum);
+        Serial2.flush();
+        mMessagesSent++;
     }
     else
     {

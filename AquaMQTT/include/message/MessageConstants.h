@@ -72,6 +72,17 @@ static const char* protocolVersionStr(ProtocolVersion version)
     }
 }
 
+static uint8_t generateNextChecksum(const uint8_t* buffer, uint8_t length){
+    int desiredChecksum = 0;
+    // checksum is calculated on length field and payload
+    for (size_t i = 0; i < length; i++)
+    {
+        // XOR the current byte with the accumulated checksum
+        desiredChecksum ^= buffer[i];
+    }
+    return desiredChecksum;
+}
+
 enum HMIOperationMode : int
 {
     OM_UNKNOWN      = -1,

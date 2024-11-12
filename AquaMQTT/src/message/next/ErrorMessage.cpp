@@ -13,26 +13,18 @@ ErrorMessage::ErrorMessage(uint8_t* data) : mData(data)
 
 bool ErrorMessage::isEmpty()
 {
-    // TODO
-    //    // i == 1, since we skip the first byte which is length field and always != 0
-    //    for (int i = 1; i < ERROR_MESSAGE_LENGTH; ++i)
-    //    {
-    //        if (mData[i] != 0)
-    //            return false;
-    //    }
-    return true;
+    // there are no empty messages in next protocol
+    return false;
 }
 
 uint8_t ErrorMessage::errorRequestId()
 {
-    // TODO
-    return 0;
+    return mData[1];
 }
 
 uint8_t ErrorMessage::errorCode()
 {
-    // TODO
-    return 0;
+    return mData[2];
 }
 
 float ErrorMessage::hotWaterTemp()

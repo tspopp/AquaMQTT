@@ -83,59 +83,12 @@ int FrameBuffer::handleFrame()
         if (protocolVersion == ProtocolVersion::PROTOCOL_NEXT)
         {
             // move checksum out of ringbuffer
-            int checksum;
-            mBuffer.pop(checksum);
+            int actualChecksum;
+            mBuffer.pop(actualChecksum);
 
-            //            int32_t sum = frameId;
-            //            if (frameId == 194)
-            //            {
-            //                Serial.print("msg ");
-            //                Serial.print(frameId);
-            //                Serial.print(" checksum is ");
-            //                Serial.print(checksum);
-            //                Serial.print(" ");
-            //            }
-            //            for (size_t i = 1; i < payloadLength; i++)
-            //            {
-            //                auto val = mTransferBuffer[i];
-            //
-            //                // even
-            //                if (val % 2 == 0)
-            //                {
-            //                    sum += mTransferBuffer[i];
-            //                }
-            //                else
-            //                {
-            //                    sum -= mTransferBuffer[i];
-            //                }
-            //
-            //                if (frameId == 194)
-            //                {
-            //                    Serial.print(mTransferBuffer[i]);
-            //                }
-            //            }
-            //            if (frameId == 194)
-            //            {
-            //                Serial.println();
-            //                Serial.print("msg: ");
-            //                Serial.print(frameId);
-            //                Serial.print("sum: ");
-            //                Serial.println(sum);
-            //                Serial.print("sum + checksum ");
-            //                Serial.println(sum + checksum);
-            //                Serial.print("sum - checksum ");
-            //                Serial.println(sum - checksum);
-            //                Serial.println("sum mod 256/255");
-            //                Serial.println(sum % 256);
-            //                Serial.println(sum % 255);
-            //                Serial.println(sum % 256 + checksum);
-            //                Serial.println((sum % 256) - checksum);
-            //                Serial.println(sum % 255 + checksum);
-            //                Serial.println((sum % 255) - checksum);
-            //            }
+            int desiredChecksum = generateNextChecksum(mTransferBuffer, payloadLength);
 
-            // FIXME: analyze checksum calulation
-            crcResult = true;
+            crcResult = actualChecksum == desiredChecksum;
         }
         else
         {

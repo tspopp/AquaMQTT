@@ -3,11 +3,11 @@
 #include <esp_task_wdt.h>
 
 #include "config/Configuration.h"
-#include "message/IErrorMessage.h"
-#include "message/IHMIMessage.h"
 #include "message/MessageConstants.h"
 #include "message/legacy/ErrorMessage.h"
 #include "message/legacy/HMIMessage.h"
+#include "message/next/ErrorMessage.h"
+#include "message/next/HMIMessage.h"
 #include "state/HMIStateProxy.h"
 #include "state/MainStateProxy.h"
 
@@ -176,6 +176,7 @@ void HMITask::sendMessage193()
             version);
     if (length > 0)
     {
+        // TODO: refactor this
         if (version == message::PROTOCOL_LEGACY)
         {
             uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
@@ -188,7 +189,12 @@ void HMITask::sendMessage193()
         }
         else
         {
-            // TOOD: not implemented
+            uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
+            Serial1.write(message::MAIN_MESSAGE_IDENTIFIER);
+            Serial1.write(mTransferBuffer, length);
+            Serial1.write(checksum);
+            Serial1.flush();
+            mMessagesSent++;
         }
     }
     else
@@ -205,6 +211,7 @@ void HMITask::sendMessage67()
             version);
     if (length > 0)
     {
+        // TODO: refactor this
         if (version == message::PROTOCOL_LEGACY)
         {
             uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
@@ -217,7 +224,12 @@ void HMITask::sendMessage67()
         }
         else
         {
-            // TOOD: not implemented
+            uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
+            Serial1.write(message::ENERGY_MESSAGE_IDENTIFIER);
+            Serial1.write(mTransferBuffer, length);
+            Serial1.write(checksum);
+            Serial1.flush();
+            mMessagesSent++;
         }
     }
     else
@@ -238,6 +250,7 @@ void HMITask::sendMessage74()
                 version);
         if (length > 0)
         {
+            // TODO: refactor this
             if (version == message::PROTOCOL_LEGACY)
             {
                 aquamqtt::message::legacy::HMIMessage hmiMessage(mTransferBuffer);
@@ -245,7 +258,8 @@ void HMITask::sendMessage74()
             }
             else
             {
-                // TODO: not implemented
+                aquamqtt::message::next::HMIMessage hmiMessage(mTransferBuffer);
+                requestId = hmiMessage.errorRequestId();
             }
         }
     }
@@ -266,6 +280,7 @@ void HMITask::sendMessage74()
             version);
     if (length > 0)
     {
+        // TODO: refactor this
         if (version == message::PROTOCOL_LEGACY)
         {
             aquamqtt::message::legacy::ErrorMessage errorMessage(mTransferBuffer);
@@ -273,13 +288,15 @@ void HMITask::sendMessage74()
         }
         else
         {
-            // TODO: not implemented
+            aquamqtt::message::next::ErrorMessage errorMessage(mTransferBuffer);
+            availableRequestId = errorMessage.errorRequestId();
         }
     }
 
     // emit the error message
     if (requestId == availableRequestId)
     {
+        // TODO: refactor this
         if(version == message::PROTOCOL_LEGACY)
         {
             uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
@@ -291,7 +308,13 @@ void HMITask::sendMessage74()
             mMessagesSent++;
             mLastEmittedRequestId = requestId;
         } else {
-            // TODO: not implemented
+            uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
+            Serial1.write(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER);
+            Serial1.write(mTransferBuffer, length);
+            Serial1.write(checksum);
+            Serial1.flush();
+            mMessagesSent++;
+            mLastEmittedRequestId = requestId;
         }
     }
 }

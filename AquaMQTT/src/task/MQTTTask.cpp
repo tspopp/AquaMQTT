@@ -764,20 +764,20 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
         message->timerWindowStr(false, reinterpret_cast<char*>(mPayloadBuffer));
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
-    //
-    //    // publish the error number to the request id
-    //    if (message.errorRequestChanged() && message.errorRequestId() != 0)
-    //    {
-    //        sprintf(reinterpret_cast<char*>(mTopicBuffer),
-    //                "%s%s%s%u/%s",
-    //                config::mqttPrefix,
-    //                BASE_TOPIC,
-    //                ERROR_SUBTOPIC,
-    //                message.errorRequestId(),
-    //                ERROR_ERROR_NUMBER);
-    //        itoa(message.errorNumberRequested(), reinterpret_cast<char*>(mPayloadBuffer), 10);
-    //        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-    //    }
+
+    // publish the error number to the request id
+    if (message->errorRequestChanged() && message->errorRequestId() != 0)
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%s%s%u/%s",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                ERROR_SUBTOPIC,
+                message->errorRequestId(),
+                ERROR_ERROR_NUMBER);
+        itoa(message->errorNumberRequested(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
 
     if (config::DEBUG_RAW_SERIAL_MESSAGES)
     {
@@ -874,30 +874,27 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
     if (version == ProtocolVersion::PROTOCOL_NEXT)
     {
         message = std::make_unique<message::next::ErrorMessage>(mTransferBuffer);
-
-        // there are no empty error messages in next protocol
     }
     else
     {
         message = std::make_unique<message::legacy::ErrorMessage>(mTransferBuffer);
-
-        if (message->isEmpty())
-        {
-            return;
-        }
     }
 
+    if (message->isEmpty())
+    {
+        return;
+    }
 
-    //    sprintf(reinterpret_cast<char*>(mTopicBuffer),
-    //            "%s%s%s%u/%s",
-    //            config::mqttPrefix,
-    //            BASE_TOPIC,
-    //            ERROR_SUBTOPIC,
-    //            message.errorRequestId(),
-    //            MAIN_ERROR_CODE);
-    //    itoa(message.errorCode(), reinterpret_cast<char*>(mPayloadBuffer), 10);
-    //    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
-    //
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%s%s%u/%s",
+            config::mqttPrefix,
+            BASE_TOPIC,
+            ERROR_SUBTOPIC,
+            message->errorRequestId(),
+            MAIN_ERROR_CODE);
+    itoa(message->errorCode(), reinterpret_cast<char*>(mPayloadBuffer), 10);
+    mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+
     //    if (!message.isEmpty())
     //    {
     //        sprintf(reinterpret_cast<char*>(mPayloadBuffer),
