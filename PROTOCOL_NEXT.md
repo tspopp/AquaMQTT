@@ -121,12 +121,12 @@ Setting limitations:
 | 14          | 0             | ?                |                   |
 | 15          | 0             | ?                |                   |
 | 16          | 0             | ?                |                   |
-| 17          | 0             | ?                |                   |
-| 18          | 0             | ?                |                   |
+| 17          | 0             | Picture Bitmask  | See table below   |
+| 18          | 50            | Fan-Speed        | 50 == low, 100 == high         |
 | 19          | 0             | ?                |                   |
 | 20          | 0             | ?                |                   |
 | 21          | 0             | ?                |                   |
-| 22          | 130           | ?                |                   |
+| 22          | 20            | State: PV and Solar Input | 20 == PV Enabled and Active, ?? == Solar Input Triggered |
 | 23          | 0             | ?                |                   |
 | 24          | 0             | ?                |                   |
 | 25          | 0             | ?                |                   |
@@ -139,6 +139,38 @@ Setting limitations:
 | 32          | 14            | ?                |                   |
 | 33          | 1             | ?                |                   |
 | 34          | 17            | ?                |                   |
+
+
+##### Byte No 17: Picture Bitmask
+
+Findings...
+
+```
+0dec   | 0000 0000: Nothing Shown on HMI
+24dec  | 0001 1000: Fan is turned on (observed via testmode)
+? 8dec   | 0000 1001: Heating Element
+26dec  | 0001 1010: Heatpump
+27dec  | 0001 1011: Heatpump + Heating Element
+? 14dec  | 0000 1110: Heatpump + Boiler Backup
+? 15dec  | 0000 1111: Heatpump + Heating Element + Boiler Backup
+32dec  | 0010 0000: Defrost
+58dec  | 0011 1010: Defrost + Heatpump
+? 40dec  | 0010 1000: Defrost + Fan
+? 41dec  | 0010 1001: Defrost + Fan + Heating Element
+? 64dec  | 0100 0000: Unknown, Observed while triggering Error 7
+? 192dec | 1100 0000: Unknown, Observed while triggering Error 7
+```
+
+| Bit Number | Purpose/Function       | Other Information |
+|------------|------------------------|-------------------|
+| 0          | Heating Element On/Off |                   |
+| 1          | Heatpump On/Off        |                   |
+| 2          | ? Boiler Backup On/Off   |                   |
+| 3          | Fan On/Off.            |                   |
+| 4          | ? Aktiv                     |                   |
+| 5          | Defrost On/Off         |                   |
+| 6          | ?                      |                   |
+| 7          | ?                      |                   |
 
 ## Help Required:
 
