@@ -81,24 +81,27 @@ Checksum calculation is yet unknown.
 | 0 - 3      | Anti-Legionella Mode   | Interpreted as integer, 0 == Off, 1 == 1perMonth, 2 == 2perMonth, 3 == 3perMonth, 4 == 4/perMonth |
 | 4 - 7      | AirDuct Mode   | Interpreted as integer, 0 == AirDuct INT/INT, 1 == AirDuct EXT/INT, 2 == AirDuct EXT/EXT          |
 
-##### Byte No. 9-12 + 29-32: Time window:
+
+##### Byte No. 9-12 + 29-32: Time Window:
 
 Setting limitations:
-• One time window: Minimum duration of 8 hours, maximum duration of 12 hours.
-• Two time windows: Each at least 4 hours, combined maximum of 20 hours. 
-• Disable the second time window: Set the end time to less than 4 hours.
+| | Information|
+|-------------|---------------|
+| One Time Window | Minimum duration of 8 hours, maximum duration of 12 hours |
+| Two Time Windows | Each at least 4 hours, combined maximum of 20 hours |
+| Disable the second Time Window | Set the end time to less than 4 hours |
 
 
 ## Help Required:
 
 - *TODO: OperationMode: ~~Boost, Eco On, Eco Off, Auto, Absence~~*
-- *TODO: TimerWindow A/B*
+- *TODO: TimerWindow ~~A/B~~*
 - *TODO: Anti-Legionalla ~~Setting~~*
 - *TODO: AirDuct Config: ~~INT/INT, EXT/INT, EXT/EXT~~*
 - *TODO: Installation Config: ~~IWP-Only, WP+ExtBoiler-Prio-WP,...~~*
-- *TODO: Exhaust Fan Config: (Only in EXT/INT): STOP, LOW-SPEED, HIGH-SPEED*
+- *TODO: Exhaust Fan Config:~~(Only in EXT/INT): STOP, LOW-SPEED, HIGH-SPEED~~*
 - *TODO: Heating Element ~~Enabled On/Off/PV~~*
-- *TODO: PV Mode allowed On/Off*
+- *TODO: PV Mode allowed ~~On/Off~~*
 
 ### Main Message (193)
 
@@ -182,16 +185,16 @@ For determining the values from super secret menu, you change a setting in the s
 - *TODO: ~~Input Air Temp~~*
 - *TODO: ~~Lower Evaporator Temp~~*
 - *TODO: ~~Upper Evaporator Temp~~*
-- *TODO: PWM Level Settings (Super Secret Menu)*
+- *TODO: PWM Level Settings (Super Secret Menu)* --> Option not available
 - *TODO: Status Bitmask (Fan On/Off, Defrost On/Off, PV On/Off, Solar On/Off, HeatElement On/Off, HeatPump On/Off, Boiler Backup On/Off)*
-- *TODO: Current Fan PWM Level*
-- *TODO: Min T Target (Super Secret Menu)*                                                                   
-- *TODO: Anti-Legionella T Target (Super Secret Menu)*
+- *TODO: Current Fan PWM Level* --> Only two levels possible: low and high
+- *TODO: Min T Target (Super Secret Menu)* --> Option not available                                                                  
+- *TODO: Anti-Legionella T Target (Super Secret Menu)* --> Option not available
 - *TODO: Error Codes*
-- *TODO: Wattage Heat Element (Super Secret Menu)*
-- *TODO: Boiler Capacity (Super Secret Menu)*
-- *TODO: Brand (Super Secret Menu)*
-- *TODO: Setting Bitflags (Super Secret Menu)*
+- *TODO: Wattage Heat Element (Super Secret Menu)* --> Option not available
+- *TODO: Boiler Capacity (Super Secret Menu)* --> Option not available
+- *TODO: Brand (Super Secret Menu)* --> Option not available
+- *TODO: Setting Bitflags (Super Secret Menu)* --> Option not available
 
 ### Energy Message (67)
 
@@ -249,15 +252,20 @@ For determining the values from super secret menu, you change a setting in the s
 _To identify this attributes within the message, try to locate the information within the HMI controller,
 and provide a photo of the HMI controller together with a dump of the *energy* message. We should find the values shown in the HMI controller within the message._
 
-- *TODO: Power Consumption Heatpump*        
-- *TODO: Power Consumption Heating Element*
-- *TODO: Power Consumption Total (Both)*         
-- *TODO: Total Water Production (l)*            
-- *TODO: Total Operation Hours (Heatpump)*     
-- *TODO: Total Operation Hours (Heating Element)*
-- *TODO: Total Operation Hours (Both)*           
-- *TODO: Total Energy Counter (Wh)*
+- *TODO: Power Consumption Heatpump* --> Cannot be displayed on the HMI       
+- *TODO: Power Consumption Heating Element* --> Cannot be displayed on the HMI
+- *TODO: Power Consumption Total (Both)*  -->  Cannot be displayed on the HMI       
+- *TODO: Total Water Production (l)* -->  Cannot be displayed on the HMI           
+- *TODO: ~~Total Operation Hours (Heatpump)~~*     
+- *TODO: ~~Total Operation Hours (Heating Element)~~*
+- *TODO: Total Operation Hours (Both)*  -->  Cannot be displayed on the HMI         
+- *TODO: Total Energy Counter (Wh)* -->  Cannot be displayed on the HMI
 
 ### Error Message
 
-*TODO: Requires a running AquaDebug raw trace while opening the [super secret menu](https://github.com/tspopp/AquaMQTT/issues/17) in the hmi controller.*
+*TODO: ~~Requires a running AquaDebug raw trace while opening the [super secret menu](https://github.com/tspopp/AquaMQTT/issues/17) in the hmi controller.~~*
+
+### Not yet assignable
+
+- *TODO: Number of restarts* 
+- *TODO: Operating time (ready)*
