@@ -53,13 +53,13 @@ void MainStateProxy::applyMainOverrides(uint8_t* buffer, message::ProtocolVersio
     if (mPVModeHeatElement)
     {
         // let the hmi show the pv icon in case the heat element pv state is enabled
-        message->enableStatePV(true);
+        message->setAttr(message::MAIN_ATTR_BOOL::STATE_PV, true);
     }
 
     if (mPVModeHeatPump)
     {
         // let the hmi show the solar icon in case the heat element pv state is enabled
-        message->enableStateSolar(true);
+        message->setAttr(message::MAIN_ATTR_BOOL::STATE_SOLAR, true);
     }
 
     xSemaphoreGive(mMutex);

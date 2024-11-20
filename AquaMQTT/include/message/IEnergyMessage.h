@@ -3,10 +3,28 @@
 
 #include "MessageConstants.h"
 
-namespace aquamqtt
+namespace aquamqtt::message
 {
-namespace message
+
+enum class ENERGY_ATTR_U16
 {
+    POWER_HEATPUMP,
+    POWER_HEATELEMENT,
+    POWER_TOTAL,
+    WATER_TOTAL
+};
+
+enum class ENERGY_ATTR_U32
+{
+    TOTAL_HEATPUMP_HOURS,
+    TOTAL_HEATING_ELEMENT_HOURS,
+    TOTAL_HOURS,
+};
+
+enum class ENERGY_ATTR_U64
+{
+    TOTAL_ENERGY,
+};
 
 class IEnergyMessage
 {
@@ -15,41 +33,18 @@ public:
 
     virtual uint8_t getLength() = 0;
 
-    virtual uint32_t totalHeatpumpHours() = 0;
+    virtual uint64_t getAttr(ENERGY_ATTR_U64 attr) = 0;
+    virtual uint32_t getAttr(ENERGY_ATTR_U32 attr) = 0;
+    virtual uint16_t getAttr(ENERGY_ATTR_U16 attr) = 0;
 
-    virtual uint32_t totalHeatingElemHours() = 0;
+    virtual bool hasAttr(ENERGY_ATTR_U64 attr) const = 0;
+    virtual bool hasAttr(ENERGY_ATTR_U32 attr) const = 0;
+    virtual bool hasAttr(ENERGY_ATTR_U16 attr) const = 0;
 
-    virtual uint32_t totalHours() = 0;
-
-    virtual uint64_t totalEnergyCounter() = 0;
-
-    virtual uint16_t powerHeatpump() = 0;
-
-    virtual uint16_t powerHeatElement() = 0;
-
-    virtual uint16_t powerOverall() = 0;
-
-    virtual uint16_t totalWaterProduction() = 0;
-
-    virtual void compareWith(uint8_t* data) = 0;
-
-    virtual bool totalHeatpumpHoursChanged() const = 0;
-
-    virtual bool totalHeatingElemHoursChanged() const = 0;
-
-    virtual bool totalHoursChanged() const = 0;
-
-    virtual bool totalEnergyCounterChanged() const = 0;
-
-    virtual bool powerHeatpumpChanged() const = 0;
-
-    virtual bool powerHeatElementChanged() const = 0;
-
-    virtual bool powerOverallChanged() const = 0;
-
-    virtual bool totalWaterProductionChanged() const = 0;
+    virtual bool hasChanged(ENERGY_ATTR_U64 attr) const = 0;
+    virtual bool hasChanged(ENERGY_ATTR_U32 attr) const = 0;
+    virtual bool hasChanged(ENERGY_ATTR_U16 attr) const = 0;
 };
-}  // namespace message
-}  // namespace aquamqtt
+}  // namespace aquamqtt::message
 
 #endif  // AQUAMQTT_IENERGYMESSAGE_H

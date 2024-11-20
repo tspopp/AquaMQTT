@@ -69,7 +69,7 @@ private:
             const char*   topic,
             unsigned long value,
             bool          retained = false);
-    void applyTemperatureFilter(std::unique_ptr<message::IMainMessage>& message);
+    void applyTemperatureFilter(message::ProtocolVersion& version);
 
     void enableDiscovery();
     template <typename T>

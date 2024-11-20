@@ -2,66 +2,23 @@
 
 #include "message/MessageConstants.h"
 
-namespace aquamqtt
-{
-namespace message
-{
-namespace next
+namespace aquamqtt::message::next
 {
 
-uint32_t MainEnergyMessage::totalHeatpumpHours()
+MainEnergyMessage::MainEnergyMessage(uint8_t* data, uint8_t* previous)
+    : mData(data)
+    , mHasChangedU16()
+    , mHasChangedU32()
+    , mHasChangedU64()
 {
-    return ((uint32_t) mData[16] << 24) | ((uint32_t) mData[15] << 16) | ((uint32_t) mData[14] << 8)
-           | (uint32_t) mData[13];
-}
-uint32_t MainEnergyMessage::totalHeatingElemHours()
-{
-    // TODO
-    return 0;
-}
-uint32_t MainEnergyMessage::totalHours()
-{
-    return ((uint32_t) mData[6] << 24) | ((uint32_t) mData[5] << 16) | ((uint32_t) mData[4] << 8)
-           | (uint32_t) mData[3];
-}
-uint64_t MainEnergyMessage::totalEnergyCounter()
-{
-    // TODO
-    return 0;
-}
-uint16_t MainEnergyMessage::powerHeatpump()
-{
-    return ((uint16_t) mData[22] << 8) | (uint16_t) mData[21];
-}
-uint16_t MainEnergyMessage::powerHeatElement()
-{
-    // TODO
-    return 0;
-}
-uint16_t MainEnergyMessage::powerOverall()
-{
-    // TODO
-    return 0;
-}
-
-uint16_t MainEnergyMessage::totalWaterProduction()
-{
-    // TODO
-    return 0;
+    mCreatedWithoutPrevious = previous == nullptr;
+    compareWith(previous);
 }
 
 void MainEnergyMessage::compareWith(uint8_t* data)
 {
     if (data == nullptr)
     {
-        mPowerHeatpumpChanged         = true;
-        mPowerHeatelementChanged      = true;
-        mPowerOverallChanged          = true;
-        mTotalHeatpumpHoursChanged    = true;
-        mTotalHeatElementHoursChanged = true;
-        mTotalHoursChanged            = true;
-        mTotalEnergyChanged           = true;
-        mTotalWaterProductionChanged  = true;
         return;
     }
 
@@ -79,72 +36,119 @@ void MainEnergyMessage::compareWith(uint8_t* data)
             case 4:
             case 5:
             case 6:
-                mTotalHoursChanged = true;
+                mHasChangedU32.insert(ENERGY_ATTR_U32::TOTAL_HOURS);
                 break;
             case 13:
             case 14:
             case 15:
             case 16:
-                mTotalHeatpumpHoursChanged = true;
+                mHasChangedU32.insert(ENERGY_ATTR_U32::TOTAL_HEATPUMP_HOURS);
                 break;
             case 21:
             case 22:
-                mPowerHeatpumpChanged = true;
+                mHasChangedU16.insert(ENERGY_ATTR_U16::POWER_HEATPUMP);
                 break;
             default:
                 break;
         }
     }
 }
-MainEnergyMessage::MainEnergyMessage(uint8_t* data)
-    : mData(data)
-    , mPowerHeatpumpChanged(false)
-    , mPowerHeatelementChanged(false)
-    , mPowerOverallChanged(false)
-    , mTotalHeatpumpHoursChanged(false)
-    , mTotalHeatElementHoursChanged(false)
-    , mTotalHoursChanged(false)
-    , mTotalEnergyChanged(false)
-    , mTotalWaterProductionChanged(false)
-{
-}
-bool MainEnergyMessage::totalHeatpumpHoursChanged() const
-{
-    return mTotalHeatpumpHoursChanged;
-}
-bool MainEnergyMessage::totalHeatingElemHoursChanged() const
-{
-    return mTotalHeatElementHoursChanged;
-}
-bool MainEnergyMessage::totalHoursChanged() const
-{
-    return mTotalHoursChanged;
-}
-bool MainEnergyMessage::totalEnergyCounterChanged() const
-{
-    return mTotalEnergyChanged;
-}
-bool MainEnergyMessage::powerHeatpumpChanged() const
-{
-    return mPowerHeatpumpChanged;
-}
-bool MainEnergyMessage::powerHeatElementChanged() const
-{
-    return mPowerHeatelementChanged;
-}
-bool MainEnergyMessage::powerOverallChanged() const
-{
-    return mPowerOverallChanged;
-}
-bool MainEnergyMessage::totalWaterProductionChanged() const
-{
-    return mTotalWaterProductionChanged;
-}
+
 uint8_t MainEnergyMessage::getLength()
 {
     return ENERGY_MESSAGE_LENGTH_NEXT;
 }
 
-}  // namespace next
-}  // namespace message
-}  // namespace aquamqtt
+uint64_t MainEnergyMessage::getAttr(ENERGY_ATTR_U64 attr)
+{
+    switch (attr)
+    {
+        case ENERGY_ATTR_U64::TOTAL_ENERGY:
+            break;
+    }
+    return 0;
+}
+
+uint32_t MainEnergyMessage::getAttr(ENERGY_ATTR_U32 attr)
+{
+    switch (attr)
+    {
+        case ENERGY_ATTR_U32::TOTAL_HEATPUMP_HOURS:
+            return ((uint32_t) mData[16] << 24) | ((uint32_t) mData[15] << 16) | ((uint32_t) mData[14] << 8)
+                   | (uint32_t) mData[13];
+        case ENERGY_ATTR_U32::TOTAL_HOURS:
+            return ((uint32_t) mData[6] << 24) | ((uint32_t) mData[5] << 16) | ((uint32_t) mData[4] << 8)
+                   | (uint32_t) mData[3];
+        case ENERGY_ATTR_U32::TOTAL_HEATING_ELEMENT_HOURS:
+            break;
+    }
+    return 0;
+}
+
+uint16_t MainEnergyMessage::getAttr(ENERGY_ATTR_U16 attr)
+{
+    switch (attr)
+    {
+        case ENERGY_ATTR_U16::POWER_HEATPUMP:
+            return ((uint16_t) mData[22] << 8) | (uint16_t) mData[21];
+        case ENERGY_ATTR_U16::POWER_HEATELEMENT:
+        case ENERGY_ATTR_U16::POWER_TOTAL:
+        case ENERGY_ATTR_U16::WATER_TOTAL:
+            break;
+    }
+    return 0;
+}
+
+bool MainEnergyMessage::hasAttr(ENERGY_ATTR_U64 attr) const
+{
+    switch (attr)
+    {
+        case ENERGY_ATTR_U64::TOTAL_ENERGY:
+            break;
+    }
+    return false;
+}
+
+bool MainEnergyMessage::hasAttr(ENERGY_ATTR_U32 attr) const
+{
+    switch (attr)
+    {
+        case ENERGY_ATTR_U32::TOTAL_HEATPUMP_HOURS:
+        case ENERGY_ATTR_U32::TOTAL_HOURS:
+            return true;
+        case ENERGY_ATTR_U32::TOTAL_HEATING_ELEMENT_HOURS:
+            break;
+    }
+    return false;
+}
+
+bool MainEnergyMessage::hasAttr(ENERGY_ATTR_U16 attr) const
+{
+    switch (attr)
+    {
+        case ENERGY_ATTR_U16::POWER_HEATPUMP:
+            return true;
+        case ENERGY_ATTR_U16::POWER_HEATELEMENT:
+        case ENERGY_ATTR_U16::POWER_TOTAL:
+        case ENERGY_ATTR_U16::WATER_TOTAL:
+            break;
+    }
+    return false;
+}
+
+bool MainEnergyMessage::hasChanged(ENERGY_ATTR_U64 attr) const
+{
+    return mCreatedWithoutPrevious || mHasChangedU64.find(attr) != mHasChangedU64.end();
+}
+
+bool MainEnergyMessage::hasChanged(ENERGY_ATTR_U32 attr) const
+{
+    return mCreatedWithoutPrevious || mHasChangedU32.find(attr) != mHasChangedU32.end();
+}
+
+bool MainEnergyMessage::hasChanged(ENERGY_ATTR_U16 attr) const
+{
+    return mCreatedWithoutPrevious || mHasChangedU16.find(attr) != mHasChangedU16.end();
+}
+
+}  // namespace aquamqtt::message::next

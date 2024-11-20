@@ -3,7 +3,6 @@
 #include "state/DHWState.h"
 
 #define FRAME_ID_LEN_BYTES 1
-#define CRC_LEN_BYTES      1
 
 using namespace aquamqtt;
 using namespace aquamqtt::message;
@@ -56,7 +55,8 @@ int FrameBuffer::handleFrame()
         int payloadLength = mBuffer[1];
 
         // wait until buffer holds a complete frame.
-        if (mBuffer.size() < FRAME_ID_LEN_BYTES + payloadLength + CRC_LEN_BYTES)
+        uint8_t crcLen = mLockedProtocol == PROTOCOL_NEXT ? 1 : 2;
+        if (mBuffer.size() < FRAME_ID_LEN_BYTES + payloadLength + crcLen)
         {
             return 0;
         }
@@ -158,22 +158,25 @@ bool FrameBuffer::isSync()
                     || (mBuffer[0] == HMI_MESSAGE_IDENTIFIER && mBuffer[1] == HMI_MESSAGE_LENGTH_LEGACY)
                     || (mBuffer[0] == MAIN_MESSAGE_IDENTIFIER && mBuffer[1] == MAIN_MESSAGE_LENGTH_LEGACY)
                     || (mBuffer[0] == ENERGY_MESSAGE_IDENTIFIER && mBuffer[1] == ENERGY_MESSAGE_LENGTH_LEGACY)
-                    || (mBuffer[0] == ERROR_MESSAGE_IDENTIFIER && mBuffer[1] == ERROR_MESSAGE_LENGTH_LEGACY)
-                    );
+                    || (mBuffer[0] == ERROR_MESSAGE_IDENTIFIER && mBuffer[1] == ERROR_MESSAGE_LENGTH_LEGACY));
     }
 }
+
 uint64_t FrameBuffer::getDroppedCount() const
 {
     return mDroppedCount;
 }
+
 uint64_t FrameBuffer::getCRCFailedCount() const
 {
     return mCRCFailCount;
 }
+
 uint64_t FrameBuffer::getUnhandledCount() const
 {
     return mUnhandledCount;
 }
+
 uint64_t FrameBuffer::getHandledCount() const
 {
     return mHandledCount;

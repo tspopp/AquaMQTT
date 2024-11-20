@@ -145,25 +145,28 @@ size_t DHWState::copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVe
         return length;
     }
 
-    if (frameId == HMI_MESSAGE_IDENTIFIER && mHasHmiMessage)
+    if(mProtocolVersion != PROTOCOL_UNKNOWN)
     {
-        length = mProtocolVersion == PROTOCOL_LEGACY ? HMI_MESSAGE_LENGTH_LEGACY : HMI_MESSAGE_LENGTH_NEXT;
-        memcpy(buffer, mMessageHmi, length);
-    }
-    else if (frameId == MAIN_MESSAGE_IDENTIFIER && mHasMainMessage)
-    {
-        length = mProtocolVersion == PROTOCOL_LEGACY ? MAIN_MESSAGE_LENGTH_LEGACY : MAIN_MESSAGE_LENGTH_NEXT;
-        memcpy(buffer, mMessageMain, length);
-    }
-    else if (frameId == ENERGY_MESSAGE_IDENTIFIER && mHasEnergyMessage)
-    {
-        length = mProtocolVersion == PROTOCOL_LEGACY ? ENERGY_MESSAGE_LENGTH_LEGACY : ENERGY_MESSAGE_LENGTH_NEXT;
-        memcpy(buffer, mMessageEnergy, length);
-    }
-    else if (frameId == ERROR_MESSAGE_IDENTIFIER && mHasErrorMessage)
-    {
-        length = mProtocolVersion == PROTOCOL_LEGACY ? ERROR_MESSAGE_LENGTH_LEGACY : ERROR_MESSAGE_LENGTH_NEXT;
-        memcpy(buffer, mMessageError, length);
+        if (frameId == HMI_MESSAGE_IDENTIFIER && mHasHmiMessage)
+        {
+            length = mProtocolVersion == PROTOCOL_LEGACY ? HMI_MESSAGE_LENGTH_LEGACY : HMI_MESSAGE_LENGTH_NEXT;
+            memcpy(buffer, mMessageHmi, length);
+        }
+        else if (frameId == MAIN_MESSAGE_IDENTIFIER && mHasMainMessage)
+        {
+            length = mProtocolVersion == PROTOCOL_LEGACY ? MAIN_MESSAGE_LENGTH_LEGACY : MAIN_MESSAGE_LENGTH_NEXT;
+            memcpy(buffer, mMessageMain, length);
+        }
+        else if (frameId == ENERGY_MESSAGE_IDENTIFIER && mHasEnergyMessage)
+        {
+            length = mProtocolVersion == PROTOCOL_LEGACY ? ENERGY_MESSAGE_LENGTH_LEGACY : ENERGY_MESSAGE_LENGTH_NEXT;
+            memcpy(buffer, mMessageEnergy, length);
+        }
+        else if (frameId == ERROR_MESSAGE_IDENTIFIER && mHasErrorMessage)
+        {
+            length = mProtocolVersion == PROTOCOL_LEGACY ? ERROR_MESSAGE_LENGTH_LEGACY : ERROR_MESSAGE_LENGTH_NEXT;
+            memcpy(buffer, mMessageError, length);
+        }
     }
 
     version = mProtocolVersion;

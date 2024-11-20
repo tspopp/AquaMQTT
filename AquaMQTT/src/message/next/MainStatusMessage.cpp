@@ -1,199 +1,27 @@
 #include "message/next/MainStatusMessage.h"
 
-namespace aquamqtt
-{
-namespace message
-{
-namespace next
+namespace aquamqtt::message::next
 {
 
-float MainStatusMessage::hotWaterTemp()
+MainStatusMessage::MainStatusMessage(uint8_t* data, uint8_t* previous)
+    : mData(data)
+    , mHasChangedFloat()
+    , mHasChangedU8()
+    , mHasChangedBool()
 {
-    return mData[1];
+    mCreatedWithoutPrevious = previous == nullptr;
+    compareWith(previous);
 }
 
-void MainStatusMessage::setHotWaterTemp(float temp)
-{
-    // TODO: reimplement filter for new protocol (we can't store floats, since the original protocol only have ints)
-}
-
-float MainStatusMessage::airTemp()
-{
-    return mData[9];
-}
-
-void MainStatusMessage::setAirTemp(float temp)
-{
-    // TODO: reimplement filter for new protocol (we can't store floats, since the original protocol only have ints)
-}
-
-float MainStatusMessage::evaporatorLowerAirTemp()
-{
-    return mData[7];
-}
-
-void MainStatusMessage::setEvaporatorLowerAirTemp(float temp)
-{
-    // TODO: reimplement filter for new protocol (we can't store floats, since the original protocol only have ints)
-}
-
-float MainStatusMessage::evaporatorUpperAirTemp()
-{
-    return mData[5];
-}
-
-void MainStatusMessage::setEvaporatorUpperAirTemp(float temp)
-{
-    // TODO: reimplement filter for new protocol (we can't store floats, since the original protocol only have ints)
-}
-
-float MainStatusMessage::compressorOutletTemp()
-{
-    return mData[3];
-}
-
-void MainStatusMessage::setCompressorTemp(float temp)
-{
-    // TODO: reimplement filter for new protocol (we can't store floats, since the original protocol only have ints)
-}
-
-float MainStatusMessage::fanSpeedPwm()
-{
-    // TODO
-    return 0;
-}
-
-bool MainStatusMessage::stateHeatingElement()
-{
-    // TODO
-    return false;
-}
-bool MainStatusMessage::stateHeatpump()
-{
-    // TODO
-    return false;
-}
-bool MainStatusMessage::stateBoilerBackup()
-{
-    // TODO
-    return false;
-}
-bool MainStatusMessage::stateFan()
-{
-    // TODO
-    return false;
-}
-bool MainStatusMessage::stateDefrost()
-{
-    // TODO
-    return false;
-}
-
-bool MainStatusMessage::statePV()
-{
-    // TODO
-    return false;
-}
-
-bool MainStatusMessage::stateSolar()
-{
-    // TODO
-    return false;
-}
-
-uint8_t MainStatusMessage::settingMinTTarget()
-{
-    // TODO
-    return 0;
-}
-uint8_t MainStatusMessage::settingPwmFirst()
-{
-    // TODO
-    return 0;
-}
-uint8_t MainStatusMessage::settingPwmSecond()
-{
-    // TODO
-    return 0;
-}
-uint8_t MainStatusMessage::settingPwmThird()
-{
-    // TODO
-    return 0;
-}
-uint8_t MainStatusMessage::settingLegionellaTTarget()
-{
-    // TODO
-    return 0;
-}
-uint16_t MainStatusMessage::settingWattageHeatingElement()
-{
-    // TODO
-    return 0;
-}
-uint16_t MainStatusMessage::settingBoilerCapacity()
-{
-    // TODO
-    return 0;
-}
-MAINBrands MainStatusMessage::settingBrand()
-{
-    // TODO
-    return MAINBrands::BR_UNKNOWN;
-}
-
-bool MainStatusMessage::capabilityHasHeatExchanger()
-{
-    // TODO
-    return false;
-}
-bool MainStatusMessage::capabilityHasCirculation()
-{
-    // TODO
-    return false;
-}
-bool MainStatusMessage::capabilityHasPVInput()
-{
-    // TODO
-    return false;
-}
-bool MainStatusMessage::capabilityHasCommunication()
-{
-    // TODO
-    return false;
-}
-bool MainStatusMessage::capabilityHasAntiDryHeating()
-{
-    // TODO
-    return false;
-}
 void MainStatusMessage::compareWith(uint8_t* data)
 {
     if (data == nullptr)
     {
-        mHotWaterTempChanged                = true;
-        mAirTempChanged                     = true;
-        mEvaporatorLowerChanged             = true;
-        mEvaporatorUpperChanged             = true;
-        mFanSpeedChanged                    = true;
-        mStatesChanged                      = true;
-        mSettingMinTChanged                 = true;
-        mSettingPwmFirstChanged             = true;
-        mSettingPwmSecondChanged            = true;
-        mSettingPwmThirdChanged             = true;
-        mSettingAntiLegionellaTargetChanged = true;
-        mSettingWattageHeatElementChanged   = true;
-        mSettingBoilerCapacityChanged       = true;
-        mSettingBoilerBrandChanged          = true;
-        mSettingCapabilitiesChanged         = true;
-        mPVOrSolarStateChanged              = true;
-        mErrorCodeChanged                   = true;
-        mCompresserOutletTempChanged        = true;
         return;
     }
 
     uint8_t diffIndices[MAIN_MESSAGE_LENGTH_NEXT] = { 0 };
-    size_t  numDiffs                         = 0;
+    size_t  numDiffs                              = 0;
     compareBuffers(mData, data, MAIN_MESSAGE_LENGTH_NEXT, diffIndices, &numDiffs);
 
     for (int i = 0; i < numDiffs; ++i)
@@ -203,155 +31,131 @@ void MainStatusMessage::compareWith(uint8_t* data)
         switch (indiceChanged)
         {
             case 1:
-                mHotWaterTempChanged = true;
+                mHasChangedFloat.insert(MAIN_ATTR_FLOAT::WATER_TEMPERATURE);
                 break;
             case 3:
-                mCompresserOutletTempChanged = true;
+                mHasChangedFloat.insert(MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE);
                 break;
             case 5:
-                mEvaporatorUpperChanged = true;
+                mHasChangedFloat.insert(MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE);
                 break;
             case 7:
-                mEvaporatorLowerChanged = true;
+                mHasChangedFloat.insert(MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE);
                 break;
             case 9:
-                mAirTempChanged = true;
+                mHasChangedFloat.insert(MAIN_ATTR_FLOAT::AIR_TEMPERATURE);
                 break;
             default:
                 break;
         }
     }
 }
-MainStatusMessage::MainStatusMessage(uint8_t* data)
-    : mData(data)
-    , mHotWaterTempChanged(false)
-    , mAirTempChanged(false)
-    , mEvaporatorLowerChanged(false)
-    , mEvaporatorUpperChanged(false)
-    , mFanSpeedChanged(false)
-    , mStatesChanged(false)
-    , mSettingMinTChanged(false)
-    , mSettingPwmFirstChanged(false)
-    , mSettingPwmSecondChanged(false)
-    , mSettingPwmThirdChanged(false)
-    , mSettingAntiLegionellaTargetChanged(false)
-    , mSettingWattageHeatElementChanged(false)
-    , mSettingBoilerCapacityChanged(false)
-    , mSettingBoilerBrandChanged(false)
-    , mSettingCapabilitiesChanged(false)
-    , mPVOrSolarStateChanged(false)
-    , mErrorCodeChanged(false)
-    , mCompresserOutletTempChanged(false)
+
+float MainStatusMessage::getAttr(MAIN_ATTR_FLOAT attr)
 {
-}
-bool MainStatusMessage::hotWaterTempChanged() const
-{
-    return mHotWaterTempChanged;
-}
-bool MainStatusMessage::airTempChanged() const
-{
-    return mAirTempChanged;
-}
-bool MainStatusMessage::evaporatorLowerAirTempChanged() const
-{
-    return mEvaporatorLowerChanged;
-}
-bool MainStatusMessage::evaporatorUpperAirTempChanged() const
-{
-    return mEvaporatorUpperChanged;
+    switch (attr)
+    {
+        case MAIN_ATTR_FLOAT::WATER_TEMPERATURE:
+            return mData[1];
+        case MAIN_ATTR_FLOAT::AIR_TEMPERATURE:
+            return mData[9];
+        case MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE:
+            return mData[5];
+        case MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE:
+            return mData[7];
+        case MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE:
+            return mData[3];
+        case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
+            break;
+    }
+    return 0;
 }
 
-bool MainStatusMessage::compressorOutletTempChanged() const
+bool MainStatusMessage::getAttr(MAIN_ATTR_BOOL attr)
 {
-    return mCompresserOutletTempChanged;
+    return false;
 }
 
-bool MainStatusMessage::fanSpeedChanged() const
+uint8_t MainStatusMessage::getAttr(MAIN_ATTR_U8 attr)
 {
-    return mFanSpeedChanged;
+    return 0;
 }
-bool MainStatusMessage::statesChanged() const
+
+uint16_t MainStatusMessage::getAttr(MAIN_ATTR_U16 attr)
 {
-    return mStatesChanged;
+    return 0;
 }
-bool MainStatusMessage::settingPwmFirstChanged() const
+
+void MainStatusMessage::setAttr(MAIN_ATTR_FLOAT attr, float value)
 {
-    return mSettingPwmFirstChanged;
+    // TODO: reimplement filter for temp values, kalman filter tries to store updated values here
 }
-bool MainStatusMessage::settingPwmSecondChanged() const
+
+void MainStatusMessage::setAttr(MAIN_ATTR_BOOL attr, bool value)
 {
-    return mSettingPwmSecondChanged;
 }
-bool MainStatusMessage::settingPwmThirdChanged() const
+
+void MainStatusMessage::setAttr(MAIN_ATTR_U8 attr, uint8_t value)
 {
-    return mSettingPwmThirdChanged;
 }
-bool MainStatusMessage::settingMinTTargetChanged() const
+
+void MainStatusMessage::setAttr(MAIN_ATTR_U16 attr, uint16_t value)
 {
-    return mSettingMinTChanged;
 }
-bool MainStatusMessage::settingLegionellaTTargetChanged() const
+
+bool MainStatusMessage::hasAttr(MAIN_ATTR_FLOAT attr) const
 {
-    return mSettingAntiLegionellaTargetChanged;
-}
-bool MainStatusMessage::settingWattageHeatingElementChanged() const
-{
-    return mSettingWattageHeatElementChanged;
-}
-bool MainStatusMessage::settingBoilerCapacityChanged() const
-{
-    return mSettingBoilerCapacityChanged;
-}
-bool MainStatusMessage::settingBrandChanged() const
-{
-    return mSettingBoilerBrandChanged;
-}
-bool MainStatusMessage::settingCapabilitiesChanged() const
-{
-    return mSettingCapabilitiesChanged;
-}
-bool MainStatusMessage::statePVOrSolarChanged() const
-{
-    return mPVOrSolarStateChanged;
-}
-bool MainStatusMessage::errorCodeChanged() const
-{
-    return mErrorCodeChanged;
-}
-uint8_t MainStatusMessage::errorCode() const
-{
-    if (mData[23] == UINT8_MAX)
+    switch (attr)
     {
-        return 0;
+        case MAIN_ATTR_FLOAT::WATER_TEMPERATURE:
+        case MAIN_ATTR_FLOAT::AIR_TEMPERATURE:
+        case MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE:
+        case MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE:
+        case MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE:
+            return true;
+        case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
+            return false;
     }
-    return mData[23];
+    return false;
 }
-void MainStatusMessage::enableStatePV(bool enabled)
+
+bool MainStatusMessage::hasAttr(MAIN_ATTR_BOOL attr) const
 {
-    if (enabled)
-    {
-        mData[22] |= 0x10;
-    }
-    else
-    {
-        mData[22] &= ~0x10;
-    }
+    return false;
 }
-void MainStatusMessage::enableStateSolar(bool enabled)
+
+bool MainStatusMessage::hasAttr(MAIN_ATTR_U8 attr) const
 {
-    if (enabled)
-    {
-        mData[22] |= 0x20;
-    }
-    else
-    {
-        mData[22] &= ~0x20;
-    }
+    return false;
 }
+
+bool MainStatusMessage::hasAttr(MAIN_ATTR_U16 attr) const
+{
+    return false;
+}
+
+bool MainStatusMessage::hasChanged(MAIN_ATTR_FLOAT attr) const
+{
+    return mCreatedWithoutPrevious || mHasChangedFloat.find(attr) != mHasChangedFloat.end();
+}
+
+bool MainStatusMessage::hasChanged(MAIN_ATTR_BOOL attr) const
+{
+    return mCreatedWithoutPrevious || mHasChangedBool.find(attr) != mHasChangedBool.end();
+}
+
+bool MainStatusMessage::hasChanged(MAIN_ATTR_U8 attr) const
+{
+    return mCreatedWithoutPrevious || mHasChangedU8.find(attr) != mHasChangedU8.end();
+}
+
+bool MainStatusMessage::hasChanged(MAIN_ATTR_U16 attr) const
+{
+    return mCreatedWithoutPrevious || mHasChangedU16.find(attr) != mHasChangedU16.end();
+}
+
 uint8_t MainStatusMessage::getLength()
 {
     return MAIN_MESSAGE_LENGTH_NEXT;
 }
-}  // namespace next
-}  // namespace message
-}  // namespace aquamqtt
+}  // namespace aquamqtt::message::next

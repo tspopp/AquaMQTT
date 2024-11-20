@@ -5,9 +5,7 @@
 
 #include "mqtt/MQTTDefinitions.h"
 
-namespace aquamqtt
-{
-namespace message
+namespace aquamqtt::message
 {
 constexpr uint8_t HEATPUMP_MAX_FRAME_LENGTH = 70;
 
@@ -72,7 +70,8 @@ static const char* protocolVersionStr(ProtocolVersion version)
     }
 }
 
-static uint8_t generateNextChecksum(const uint8_t* buffer, uint8_t length){
+static uint8_t generateNextChecksum(const uint8_t* buffer, uint8_t length)
+{
     int desiredChecksum = 0;
     // checksum is calculated on length field and payload
     for (size_t i = 0; i < length; i++)
@@ -131,12 +130,12 @@ static const char* operationTypeStr(HMIOperationType type)
     }
 }
 
-enum HMIAirDuctConfig : int
+enum HMIAirDuctConfig : uint8_t
 {
-    AD_UNKNOWN = -1,
-    AD_INT_INT = 0,   // Umluft
-    AD_INT_EXT = 16,  // 1 Kanal Luftanschluss
-    AD_EXT_EXT = 32   // 2 Kanal Luftanschluss
+    AD_UNKNOWN,
+    AD_INT_INT,
+    AD_INT_EXT,
+    AD_EXT_EXT
 };
 
 static const char* airDuctConfigStr(HMIAirDuctConfig config)
@@ -154,17 +153,17 @@ static const char* airDuctConfigStr(HMIAirDuctConfig config)
     }
 }
 
-enum HMITestMode : int
+enum HMITestMode : uint8_t
 {
-    TM_UNKNOWN           = -1,
-    TM_OFF               = 0,
-    TM_ENTERED           = 1,
-    TM_HEAT_PUMP         = 2,
-    TM_HEAT_ELEMENT      = 3,
-    TM_FAN_LOW           = 4,
-    TM_FAN_HIGH          = 5,
-    TM_DEFROST           = 6,
-    TM_HEAT_PUMP_AND_EXT = 8
+    TM_UNKNOWN,
+    TM_OFF,
+    TM_ENTERED,
+    TM_HEAT_PUMP,
+    TM_HEAT_ELEMENT,
+    TM_FAN_LOW,
+    TM_FAN_HIGH,
+    TM_DEFROST,
+    TM_HEAT_PUMP_AND_EXT
 };
 
 static const char* testModeStr(HMITestMode config)
@@ -192,12 +191,12 @@ static const char* testModeStr(HMITestMode config)
     }
 }
 
-enum HMIFanExhaust
+enum HMIFanExhaust : uint8_t
 {
-    EXHAUST_UNKNOWN    = -1,
-    EXHAUST_STOP       = 0,
-    EXHAUST_LOW_SPEED  = 1,
-    EXHAUST_HIGH_SPEED = 2
+    EXHAUST_UNKNOWN,
+    EXHAUST_STOP,
+    EXHAUST_LOW_SPEED,
+    EXHAUST_HIGH_SPEED
 };
 
 static const char* exhaustModeStr(HMIFanExhaust mode)
@@ -215,15 +214,15 @@ static const char* exhaustModeStr(HMIFanExhaust mode)
     }
 }
 
-enum HMIInstallation
+enum HMIInstallation : uint8_t
 {
-    INST_HP_UNKNOWN          = -1,
-    INST_HP_ONLY             = 0,   // 0000 0000
-    INST_HP_AND_EXT_PRIO_HP  = 1,   // 0000 0001
-    INST_HP_AND_EXT_OPT_HP   = 17,  // 0001 0001
-    INST_HP_AND_EXT_OPT_EXT  = 33,  // 0010 0001
-    INST_HP_AND_EXT_PRIO_EXT = 49,  // 0011 0001
-    INST_HP_AND_SOLAR        = 2,   // 0000 0010
+    INST_HP_UNKNOWN,
+    INST_HP_ONLY,
+    INST_HP_AND_EXT_PRIO_HP,
+    INST_HP_AND_EXT_OPT_HP,
+    INST_HP_AND_EXT_OPT_EXT,
+    INST_HP_AND_EXT_PRIO_EXT,
+    INST_HP_AND_SOLAR,
 };
 
 static const char* installationModeStr(HMIInstallation installation)
@@ -247,7 +246,7 @@ static const char* installationModeStr(HMIInstallation installation)
     }
 }
 
-enum HMISetup
+enum HMISetup : uint8_t
 {
     COMPLETED,
     INCOMPLETE,
@@ -279,7 +278,7 @@ static void toHexStr(uint8_t* data, uint8_t data_len, char* buffer)
     buffer[num_bytes * 2] = '\0';
 }
 
-enum MAINBrands
+enum MAINBrands : uint8_t
 {
     BR_ATLANTIC,
     BR_NONAME,
@@ -322,7 +321,6 @@ void static compareBuffers(
     }
 }
 
-}  // namespace message
-}  // namespace aquamqtt
+}  // namespace aquamqtt::message
 
 #endif  // AQUAMQTT_MESSAGECONSTANTS_H

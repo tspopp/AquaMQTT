@@ -79,5 +79,8 @@ void setup()
     }
 
     // provide the message information via mqtt and enables overrides via mqtt
-    mqttTask.spawn();
+    if(!config::DEBUG_DISABLE_ENTIRE_MQTT)
+    {
+        mqttTask.spawn();
+    }
 }
