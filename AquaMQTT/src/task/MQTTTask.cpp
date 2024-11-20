@@ -40,10 +40,15 @@ MQTTTask::MQTTTask()
     , mLastProcessedEnergyMessage(nullptr)
     , mLastProcessedMainMessage(nullptr)
     , mHotWaterTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mHotWaterTempFiltered(0.0)
     , mAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mAirTempFiltered(0.0)
     , mEvaporatorLowerAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mEvaporatorLowerAirTempFiltered(0.0)
     , mEvaporatorUpperAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mEvaporatorUpperAirTempFiltered(0.0)
     , mCompressorTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mCompressorTempFiltered(0.0)
 {
 }
 
@@ -553,8 +558,6 @@ void MQTTTask::updateStats()
 
 void MQTTTask::updateMainStatus(bool fullUpdate, message::ProtocolVersion& version)
 {
-    applyTemperatureFilter(version);
-
     std::unique_ptr<message::IMainMessage> message;
     if (version == ProtocolVersion::PROTOCOL_NEXT)
     {
@@ -569,54 +572,45 @@ void MQTTTask::updateMainStatus(bool fullUpdate, message::ProtocolVersion& versi
                 fullUpdate ? nullptr : mLastProcessedMainMessage);
     }
 
-    if (message->hasAttr(MAIN_ATTR_FLOAT::WATER_TEMPERATURE))
-    {
-        if (fullUpdate || message->hasChanged(MAIN_ATTR_FLOAT::WATER_TEMPERATURE))
-        {
-            publishFloat(MAIN_SUBTOPIC, MAIN_HOT_WATER_TEMP, message->getAttr(MAIN_ATTR_FLOAT::WATER_TEMPERATURE));
-        }
-    }
+    publishFiltered(
+            message,
+            MAIN_ATTR_FLOAT::WATER_TEMPERATURE,
+            mHotWaterTempFilter,
+            mHotWaterTempFiltered,
+            MAIN_HOT_WATER_TEMP,
+            fullUpdate);
 
-    if (message->hasAttr(MAIN_ATTR_FLOAT::AIR_TEMPERATURE))
-    {
-        if (fullUpdate || message->hasChanged(MAIN_ATTR_FLOAT::AIR_TEMPERATURE))
-        {
-            publishFloat(MAIN_SUBTOPIC, MAIN_SUPPLY_AIR_TEMP, message->getAttr(MAIN_ATTR_FLOAT::AIR_TEMPERATURE));
-        }
-    }
+    publishFiltered(
+            message,
+            MAIN_ATTR_FLOAT::AIR_TEMPERATURE,
+            mAirTempFilter,
+            mAirTempFiltered,
+            MAIN_SUPPLY_AIR_TEMP,
+            fullUpdate);
 
-    if (message->hasAttr(MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE))
-    {
-        if (fullUpdate || message->hasChanged(MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE))
-        {
-            publishFloat(
-                    MAIN_SUBTOPIC,
-                    MAIN_EVAPORATOR_AIR_TEMP_LOWER,
-                    message->getAttr(MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE));
-        }
-    }
+    publishFiltered(
+            message,
+            MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE,
+            mEvaporatorLowerAirTempFilter,
+            mEvaporatorLowerAirTempFiltered,
+            MAIN_EVAPORATOR_AIR_TEMP_LOWER,
+            fullUpdate);
 
-    if (message->hasAttr(MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE))
-    {
-        if (fullUpdate || message->hasChanged(MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE))
-        {
-            publishFloat(
-                    MAIN_SUBTOPIC,
-                    MAIN_EVAPORATOR_AIR_TEMP_UPPER,
-                    message->getAttr(MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE));
-        }
-    }
+    publishFiltered(
+            message,
+            MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE,
+            mEvaporatorUpperAirTempFilter,
+            mEvaporatorUpperAirTempFiltered,
+            MAIN_EVAPORATOR_AIR_TEMP_UPPER,
+            fullUpdate);
 
-    if (message->hasAttr(MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE))
-    {
-        if (fullUpdate || message->hasChanged(MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE))
-        {
-            publishFloat(
-                    MAIN_SUBTOPIC,
-                    MAIN_COMPRESSOR_OUTLET_TEMP,
-                    message->getAttr(MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE));
-        }
-    }
+    publishFiltered(
+            message,
+            MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE,
+            mCompressorTempFilter,
+            mCompressorTempFiltered,
+            MAIN_COMPRESSOR_OUTLET_TEMP,
+            fullUpdate);
 
     if (message->hasAttr(MAIN_ATTR_FLOAT::FAN_SPEED_PWM))
     {
@@ -1430,43 +1424,6 @@ void MQTTTask::publishul(
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), retained, 0);
 }
 
-void MQTTTask::applyTemperatureFilter(message::ProtocolVersion& version)
-{
-    if (config::MQTT_FILTER_TEMPERATURE_NOISE)
-    {
-        std::unique_ptr<message::IMainMessage> message;
-        if (version == ProtocolVersion::PROTOCOL_NEXT)
-        {
-            message = std::make_unique<message::next::MainStatusMessage>(
-                    mTransferBuffer, nullptr);
-        }
-        else
-        {
-            message = std::make_unique<message::legacy::MainStatusMessage>(
-                    mTransferBuffer, nullptr);
-        }
-
-        message->setAttr(
-                MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE,
-                mEvaporatorLowerAirTempFilter.updateEstimate(
-                        message->getAttr(MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE)));
-        message->setAttr(
-                MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE,
-                mEvaporatorUpperAirTempFilter.updateEstimate(
-                        message->getAttr(MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE)));
-        message->setAttr(
-                MAIN_ATTR_FLOAT::AIR_TEMPERATURE,
-                mAirTempFilter.updateEstimate(message->getAttr(MAIN_ATTR_FLOAT::AIR_TEMPERATURE)));
-        message->setAttr(
-                MAIN_ATTR_FLOAT::WATER_TEMPERATURE,
-                mHotWaterTempFilter.updateEstimate(message->getAttr(MAIN_ATTR_FLOAT::WATER_TEMPERATURE)));
-        message->setAttr(
-                MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE,
-                mCompressorTempFilter.updateEstimate(
-                        message->getAttr(MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE)));
-    }
-}
-
 // FIXME: discovery shall only include supported attributes, given by the protocol NEXT or LEGACY
 void MQTTTask::enableDiscovery()
 {
@@ -1506,6 +1463,39 @@ void MQTTTask::publishDiscovery(uint16_t identifier, const char* haCategory, T)
                     .publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), true, 0);
 
             mMQTTClient.loop();
+        }
+    }
+}
+
+void MQTTTask::publishFiltered(
+        std::unique_ptr<IMainMessage>& message,
+        MAIN_ATTR_FLOAT                attribute,
+        SimpleKalmanFilter&            filter,
+        float&                         mFilteredValue,
+        const char*                    topic,
+        bool                           fullUpdate)
+{
+
+    if (message->hasAttr(attribute))
+    {
+        float hotWaterTempRaw       = message->getAttr(attribute);
+        auto  previousFilteredValue = mFilteredValue;
+        mFilteredValue              = filter.updateEstimate(hotWaterTempRaw);
+
+        if (fullUpdate)
+        {
+            publishFloat(
+                    MAIN_SUBTOPIC,
+                    topic,
+                    config::MQTT_FILTER_TEMPERATURE_NOISE ? mFilteredValue : hotWaterTempRaw);
+        }
+        else if (!config::MQTT_FILTER_TEMPERATURE_NOISE && message->hasChanged(attribute))
+        {
+            publishFloat(MAIN_SUBTOPIC, topic, hotWaterTempRaw);
+        }
+        else if (config::MQTT_FILTER_TEMPERATURE_NOISE && (std::fabs(previousFilteredValue - mFilteredValue) >= 0.1))
+        {
+            publishFloat(MAIN_SUBTOPIC, topic, mFilteredValue);
         }
     }
 }

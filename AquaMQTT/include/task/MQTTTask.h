@@ -6,9 +6,8 @@
 
 #include "SimpleKalmanFilter.h"
 #include "config/Configuration.h"
-#include "message/MessageConstants.h"
 #include "message/IMainMessage.h"
-
+#include "message/MessageConstants.h"
 
 namespace aquamqtt
 {
@@ -53,10 +52,15 @@ private:
     uint8_t* mLastProcessedMainMessage;
 
     SimpleKalmanFilter mEvaporatorLowerAirTempFilter;
+    float              mEvaporatorLowerAirTempFiltered;
     SimpleKalmanFilter mEvaporatorUpperAirTempFilter;
+    float              mEvaporatorUpperAirTempFiltered;
     SimpleKalmanFilter mAirTempFilter;
+    float              mAirTempFiltered;
     SimpleKalmanFilter mHotWaterTempFilter;
+    float              mHotWaterTempFiltered;
     SimpleKalmanFilter mCompressorTempFilter;
+    float              mCompressorTempFiltered;
 
     // helper to avoid code duplication
     void publishFloat(const char* subtopic, const char* topic, float value, bool retained = false);
@@ -69,11 +73,18 @@ private:
             const char*   topic,
             unsigned long value,
             bool          retained = false);
-    void applyTemperatureFilter(message::ProtocolVersion& version);
 
     void enableDiscovery();
     template <typename T>
     void publishDiscovery(uint16_t identifier, const char* haCategory, T enumClass);
+
+    void publishFiltered(
+            std::unique_ptr<aquamqtt::message::IMainMessage>& message,
+            aquamqtt::message::MAIN_ATTR_FLOAT                attribute,
+            SimpleKalmanFilter&                               filter,
+            float&                                            mFilteredValue,
+            const char*                                       topic,
+            bool                                              fullUpdate);
 };
 }  // namespace aquamqtt
 
