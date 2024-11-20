@@ -56,36 +56,36 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 
 ### Main Message
 
-| Value                              | MQTT Topic                            | Format | Unit | Other Information                                                   | [LEGACY](./PROTOCOL.md)  | [NEXT](./PROTOCOL_NEXT.md)        |
-|------------------------------------|---------------------------------------|--------|------|---------------------------------------------------------------------|--------------------------|-----------------------------------|
-| Present Error Code                 | `$root/main/errorCode`                | uint8  |      | 0 if there is no present error, else the error-code                 | :heavy_check_mark:       | :x:                               |
-| Current Water Temperature          | `$root/main/waterTemp`                | float  | °C   |                                                                     | :heavy_check_mark:       | :heavy_check_mark:                |
-| Supply Air Temperature             | `$root/main/supplyAirTemp`            | float  | °C   |                                                                     | :heavy_check_mark:       | :heavy_check_mark:                |
-| Lower Evaporator Air Temperature   | `$root/main/evaporatorAirTempLower`   | float  | °C   |                                                                     | :heavy_check_mark:       | :heavy_check_mark:                |
-| Upper Evaporator Air Temperature   | `$root/main/evaporatorAirTemp`        | float  | °C   |                                                                     | :heavy_check_mark:       | :heavy_check_mark:                |
-| Compressor Outlet Temperature      | `$root/main/compressorOutletTemp`     | float  | °C   |                                                                     | :x:                      | :heavy_check_mark:                |
-| Fan-Level PWM                      | `$root/main/fanPWM`                   | float  | %    |                                                                     | :heavy_check_mark:       | :x:                               |
-| State: Fan On/Off                  | `$root/main/stateFan`                 | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| State: Heatpump On/Off             | `$root/main/stateHeatpump`            | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| State: Heating Element On/Off      | `$root/main/stateElement`             | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| State: Boiler Backup On/Off        | `$root/main/stateExtBoiler`           | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| State: Defrost On/Off              | `$root/main/stateDefrost`             | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| State: Solar Input Signal Detected | `$root/main/stateSolar`               | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| State: PV Input Signal Detected    | `$root/main/statePV`                  | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| Setting: 1st Fan-Level PWM         | `$root/main/settingPWM_1`             | uint8  | %    |                                                                     | :heavy_check_mark:       | :x:                               |
-| Setting: 2nd Fan-Level PWM         | `$root/main/settingPWM_2`             | uint8  | %    |                                                                     | :heavy_check_mark:       | :x:                               |
-| Setting: 3rd Fan-Level PWM         | `$root/main/settingPWM_3`             | uint8  | %    |                                                                     | :heavy_check_mark:       | :x:                               |
-| Setting: Min. Target Temp          | `$root/main/settingMinTargetTemp`     | uint8  | °C   |                                                                     | :heavy_check_mark:       | :x:                               |
-| Setting: Min. Anti-Legionella Temp | `$root/main/settingMinLegionellaTemp` | uint8  | °C   |                                                                     | :heavy_check_mark:       | :x:                               |
-| Setting: Wattage Heat Element      | `$root/main/settingWattageElement`    | uint16 | W    |                                                                     | :heavy_check_mark:       | :x:                               |
-| Setting: Boiler Capacity           | `$root/main/settingBoilerCapacity`    | uint16 | l    |                                                                     | :heavy_check_mark:       | :x:                               |
-| Setting: Boiler Brand              | `$root/main/settingBoilerBrand`       | Enum   |      | Atlantic, Thermor, Sauter, No Name                                  | :heavy_check_mark:       | :x:                               |
-| Capability: Has Heat Exchanger     | `$root/main/capabilityHeatExchanger`  | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| Capability: Has Circulation        | `$root/main/capabilityCirculation`    | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| Capability: Has PV-Input           | `$root/main/capabilityPVInput`        | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| Capability: Has Communication      | `$root/main/capabilityCommunication`  | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| Capability: Has Anti-Dry-Heating   | `$root/main/capabilityAntiDryHeating` | bool   |      |                                                                     | :heavy_check_mark:       | :x:                               |
-| Raw Message (Debug Mode Only)      | `$root/main/debug`                    | string |      |                                                                     | :heavy_check_mark:       | :heavy_check_mark:                |
+| Value                              | MQTT Topic                            | Format | Unit | Other Information                                                   | [LEGACY](./PROTOCOL.md)  | [NEXT](./PROTOCOL_NEXT.md) |
+|------------------------------------|---------------------------------------|--------|------|---------------------------------------------------------------------|--------------------------|----------------------------|
+| Present Error Code                 | `$root/main/errorCode`                | uint8  |      | 0 if there is no present error, else the error-code                 | :heavy_check_mark:       | :x:                        |
+| Current Water Temperature          | `$root/main/waterTemp`                | float  | °C   |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| Supply Air Temperature             | `$root/main/supplyAirTemp`            | float  | °C   |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| Lower Evaporator Air Temperature   | `$root/main/evaporatorAirTempLower`   | float  | °C   |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| Upper Evaporator Air Temperature   | `$root/main/evaporatorAirTemp`        | float  | °C   |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| Compressor Outlet Temperature      | `$root/main/compressorOutletTemp`     | float  | °C   |                                                                     | :x:                      | :heavy_check_mark:         |
+| Fan-Level PWM                      | `$root/main/fanPWM`                   | float  | %    |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| State: Fan On/Off                  | `$root/main/stateFan`                 | bool   |      |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| State: Heatpump On/Off             | `$root/main/stateHeatpump`            | bool   |      |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| State: Heating Element On/Off      | `$root/main/stateElement`             | bool   |      |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| State: Boiler Backup On/Off        | `$root/main/stateExtBoiler`           | bool   |      |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| State: Defrost On/Off              | `$root/main/stateDefrost`             | bool   |      |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| State: Solar Input Signal Detected | `$root/main/stateSolar`               | bool   |      |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| State: PV Input Signal Detected    | `$root/main/statePV`                  | bool   |      |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
+| Setting: 1st Fan-Level PWM         | `$root/main/settingPWM_1`             | uint8  | %    |                                                                     | :heavy_check_mark:       | :x:                        |
+| Setting: 2nd Fan-Level PWM         | `$root/main/settingPWM_2`             | uint8  | %    |                                                                     | :heavy_check_mark:       | :x:                        |
+| Setting: 3rd Fan-Level PWM         | `$root/main/settingPWM_3`             | uint8  | %    |                                                                     | :heavy_check_mark:       | :x:                        |
+| Setting: Min. Target Temp          | `$root/main/settingMinTargetTemp`     | uint8  | °C   |                                                                     | :heavy_check_mark:       | :x:                        |
+| Setting: Min. Anti-Legionella Temp | `$root/main/settingMinLegionellaTemp` | uint8  | °C   |                                                                     | :heavy_check_mark:       | :x:                        |
+| Setting: Wattage Heat Element      | `$root/main/settingWattageElement`    | uint16 | W    |                                                                     | :heavy_check_mark:       | :x:                        |
+| Setting: Boiler Capacity           | `$root/main/settingBoilerCapacity`    | uint16 | l    |                                                                     | :heavy_check_mark:       | :x:                        |
+| Setting: Boiler Brand              | `$root/main/settingBoilerBrand`       | Enum   |      | Atlantic, Thermor, Sauter, No Name                                  | :heavy_check_mark:       | :x:                        |
+| Capability: Has Heat Exchanger     | `$root/main/capabilityHeatExchanger`  | bool   |      |                                                                     | :heavy_check_mark:       | :x:                        |
+| Capability: Has Circulation        | `$root/main/capabilityCirculation`    | bool   |      |                                                                     | :heavy_check_mark:       | :x:                        |
+| Capability: Has PV-Input           | `$root/main/capabilityPVInput`        | bool   |      |                                                                     | :heavy_check_mark:       | :x:                        |
+| Capability: Has Communication      | `$root/main/capabilityCommunication`  | bool   |      |                                                                     | :heavy_check_mark:       | :x:                        |
+| Capability: Has Anti-Dry-Heating   | `$root/main/capabilityAntiDryHeating` | bool   |      |                                                                     | :heavy_check_mark:       | :x:                        |
+| Raw Message (Debug Mode Only)      | `$root/main/debug`                    | string |      |                                                                     | :heavy_check_mark:       | :heavy_check_mark:         |
 
 ### Energy Message
 
@@ -99,26 +99,26 @@ Using the prefix, the `$root` topic is created, which is `$prefix/aquamqtt/` and
 | Current Power Heatpump        | `$root/energy/powerHeatpump`         | uint16 | W    | Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h` | :heavy_check_mark:       | :heavy_check_mark:         |
 | Current Power Heating Element | `$root/energy/powerHeatingElem`      | uint16 | W    | Note: It is possible to define an additional custom mqtt topic for this attribute within `Configuration.h` | :heavy_check_mark:       | :x:                        |
 | Current Power Total           | `$root/energy/powerTotal`            | uint16 | W    |                                                                                                            | :heavy_check_mark:       | :x:                        |
-| Raw Message (Debug Mode Only) | `$root/energy/debug`                 | string |      |                                                                                                            | :heavy_check_mark:       | :x:                        |
+| Raw Message (Debug Mode Only) | `$root/energy/debug`                 | string |      |                                                                                                            | :heavy_check_mark:       | :heavy_check_mark:         |
 
 ### Error Messages
 
 Collected Error Messages are provided to mqtt, the latest/recent occurred error is always error number == 1. The values
 within the message reflect the state when the error has been created.
 
-| Value                            | MQTT Topic                                      | Format | Unit | Other Information | [LEGACY](./PROTOCOL.md)  | [NEXT](./PROTOCOL_NEXT.md)        |
-|----------------------------------|-------------------------------------------------|--------|------|-------------------|--------------------------|-----------------------------------|
-| Error Number                     | `$root/error/%requestId/errorNumber`            | uint8  |      |                   | :heavy_check_mark:       | :x:                               |
-| Error Code                       | `$root/error/%requestId/errorCode`              | uint8  |      |                   | :heavy_check_mark:       | :x:                               |
-| Date                             | `$root/error/%requestId/date`                   | string |      | e.g. 25.5.2024    | :heavy_check_mark:       | :x:                               |
-| Time (hh:ss)                     | `$root/error/%requestId/time`                   | string |      | e.g. 21:29        | :heavy_check_mark:       | :x:                               |
-| Water Temperature                | `$root/error/%requestId/waterTemp`              | float  |      |                   | :heavy_check_mark:       | :x:                               |
-| Lower Evaporator Air Temperature | `$root/error/%requestId/evaporatorAirTempLower` | float  |      |                   | :heavy_check_mark:       | :x:                               |
-| Upper Evaporator Air Temperature | `$root/error/%requestId/evaporatorAirTemp`      | float  |      |                   | :heavy_check_mark:       | :x:                               |
-| Fan-Level PWM                    | `$root/error/%requestId/fanPWM`                 | uint8  | %    |                   | :heavy_check_mark:       | :x:                               |
-| Total Heatpump Hours             | `$root/error/%requestId/totalHeatpumpHours`     | uint16 |      |                   | :heavy_check_mark:       | :x:                               |
-| Total Heating Element Hours      | `$root/error/%requestId/totalHeatingElemHours`  | uint16 |      |                   | :heavy_check_mark:       | :x:                               |
-| Raw Message (Debug Mode Only)    | `$root/error/debug`                             | string |      |                   | :heavy_check_mark:       | :x:                               |
+| Value                            | MQTT Topic                                      | Format | Unit | Other Information | [LEGACY](./PROTOCOL.md)  | [NEXT](./PROTOCOL_NEXT.md) |
+|----------------------------------|-------------------------------------------------|--------|------|-------------------|--------------------------|----------------------------|
+| Error Number                     | `$root/error/%requestId/errorNumber`            | uint8  |      |                   | :heavy_check_mark:       | :heavy_check_mark:         |
+| Error Code                       | `$root/error/%requestId/errorCode`              | uint8  |      |                   | :heavy_check_mark:       | :heavy_check_mark:         |
+| Date                             | `$root/error/%requestId/date`                   | string |      | e.g. 25.5.2024    | :heavy_check_mark:       | :x:                        |
+| Time (hh:ss)                     | `$root/error/%requestId/time`                   | string |      | e.g. 21:29        | :heavy_check_mark:       | :x:                        |
+| Water Temperature                | `$root/error/%requestId/waterTemp`              | float  |      |                   | :heavy_check_mark:       | :x:                        |
+| Lower Evaporator Air Temperature | `$root/error/%requestId/evaporatorAirTempLower` | float  |      |                   | :heavy_check_mark:       | :x:                        |
+| Upper Evaporator Air Temperature | `$root/error/%requestId/evaporatorAirTemp`      | float  |      |                   | :heavy_check_mark:       | :x:                        |
+| Fan-Level PWM                    | `$root/error/%requestId/fanPWM`                 | uint8  | %    |                   | :heavy_check_mark:       | :x:                        |
+| Total Heatpump Hours             | `$root/error/%requestId/totalHeatpumpHours`     | uint16 |      |                   | :heavy_check_mark:       | :x:                        |
+| Total Heating Element Hours      | `$root/error/%requestId/totalHeatingElemHours`  | uint16 |      |                   | :heavy_check_mark:       | :x:                        |
+| Raw Message (Debug Mode Only)    | `$root/error/debug`                             | string |      |                   | :heavy_check_mark:       | :heavy_check_mark:         |
 
 ## Subscribe Topics
 

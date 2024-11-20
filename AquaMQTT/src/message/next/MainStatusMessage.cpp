@@ -45,6 +45,20 @@ void MainStatusMessage::compareWith(uint8_t* data)
             case 9:
                 mHasChangedFloat.insert(MAIN_ATTR_FLOAT::AIR_TEMPERATURE);
                 break;
+            case 18:
+                mHasChangedFloat.insert(MAIN_ATTR_FLOAT::FAN_SPEED_PWM);
+                break;
+            case 17:
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_HEATING_ELEMENT);
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_HEATPUMP);
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_BOILER_BACKUP);
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_FAN);
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_DEFROST);
+                break;
+            case 22:
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_PV);
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_SOLAR);
+                break;
             default:
                 break;
         }
@@ -66,13 +80,36 @@ float MainStatusMessage::getAttr(MAIN_ATTR_FLOAT attr)
         case MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE:
             return mData[3];
         case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
-            break;
+            return mData[18];
     }
     return 0;
 }
 
 bool MainStatusMessage::getAttr(MAIN_ATTR_BOOL attr)
 {
+    switch (attr)
+    {
+        case MAIN_ATTR_BOOL::STATE_HEATING_ELEMENT:
+            return mData[17] & 0x01;
+        case MAIN_ATTR_BOOL::STATE_HEATPUMP:
+            return mData[17] & 0x02;
+        case MAIN_ATTR_BOOL::STATE_BOILER_BACKUP:
+            return mData[17] & 0x04;
+        case MAIN_ATTR_BOOL::STATE_FAN:
+            return mData[17] & 0x08;
+        case MAIN_ATTR_BOOL::STATE_DEFROST:
+            return mData[17] & 0x20;
+        case MAIN_ATTR_BOOL::STATE_PV:
+            return mData[22] & 0x10;
+        case MAIN_ATTR_BOOL::STATE_SOLAR:
+            return mData[22] & 0x20;
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_HEAT_EXCHANGER:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_CIRCULATION:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_PV_INPUT:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_COMMUNICATION:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_ANTI_DRY_HEATING:
+            break;
+    }
     return false;
 }
 
@@ -112,15 +149,31 @@ bool MainStatusMessage::hasAttr(MAIN_ATTR_FLOAT attr) const
         case MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE:
         case MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE:
         case MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE:
-            return true;
         case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
-            return false;
+            return true;
     }
     return false;
 }
 
 bool MainStatusMessage::hasAttr(MAIN_ATTR_BOOL attr) const
 {
+    switch (attr)
+    {
+        case MAIN_ATTR_BOOL::STATE_PV:
+        case MAIN_ATTR_BOOL::STATE_HEATING_ELEMENT:
+        case MAIN_ATTR_BOOL::STATE_HEATPUMP:
+        case MAIN_ATTR_BOOL::STATE_BOILER_BACKUP:
+        case MAIN_ATTR_BOOL::STATE_FAN:
+        case MAIN_ATTR_BOOL::STATE_DEFROST:
+        case MAIN_ATTR_BOOL::STATE_SOLAR:
+            return true;
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_HEAT_EXCHANGER:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_CIRCULATION:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_PV_INPUT:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_COMMUNICATION:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_ANTI_DRY_HEATING:
+            break;
+    }
     return false;
 }
 
