@@ -125,7 +125,6 @@ uint16_t MainStatusMessage::getAttr(MAIN_ATTR_U16 attr)
 
 void MainStatusMessage::setAttr(MAIN_ATTR_FLOAT attr, float value)
 {
-    // TODO: reimplement filter for temp values, kalman filter tries to store updated values here
 }
 
 void MainStatusMessage::setAttr(MAIN_ATTR_BOOL attr, bool value)

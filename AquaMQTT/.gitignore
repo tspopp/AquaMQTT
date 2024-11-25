@@ -1,3 +1,4 @@
 .pio
 include/config/CustomConfiguration.h
+include/config/CustomConfigurationProd.h
 .vscode

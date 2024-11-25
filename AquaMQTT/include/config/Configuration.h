@@ -4,7 +4,7 @@
 /**
  * Possibility to include your own configuration file (added to .gitignore)
  */
-#define CUSTOM_CONFIGURATION
+//#define CUSTOM_CONFIGURATION
 
 #ifdef CUSTOM_CONFIGURATION
 #    include "CustomConfiguration.h"
@@ -52,7 +52,7 @@ constexpr char ntpServer[] = "pool.ntp.org";
 /**
  * Enable HomeAssistant MQTT Discovery Mode
  */
-constexpr bool ENABLE_HOMEASSISTANT_DISCOVERY_MODE = false;
+constexpr bool ENABLE_HOMEASSISTANT_DISCOVERY_MODE = true;
 
 /**
  * Homeassistant MQTT Discovery Prefix
@@ -63,7 +63,7 @@ constexpr char haDiscoveryPrefix[] = "homeassistant/";
 /**
  * The OperationMode which is used for AquaMqtt. Refer to EOperationMode
  */
-constexpr EOperationMode OPERATION_MODE = EOperationMode::LISTENER;
+constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
 
 /**
  * Choose if the time and date values sent to the main controller should override the ones sent by the hmi controller.
@@ -73,7 +73,7 @@ constexpr bool OVERRIDE_TIME_AND_DATE_IN_MITM = true;
 /**
  * Choose to publish raw messages represented as hex-string on debug mqtt topics
  */
-constexpr bool DEBUG_RAW_SERIAL_MESSAGES = true;
+constexpr bool DEBUG_RAW_SERIAL_MESSAGES = false;
 
 /**
  * Choose to publish message statistics from the serial interfaces, if everything

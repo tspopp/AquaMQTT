@@ -1493,7 +1493,8 @@ void MQTTTask::publishFiltered(
         {
             publishFloat(MAIN_SUBTOPIC, topic, hotWaterTempRaw);
         }
-        else if (config::MQTT_FILTER_TEMPERATURE_NOISE && (std::fabs(previousFilteredValue - mFilteredValue) >= 0.1))
+        // FIXME: this is broken
+        else if (config::MQTT_FILTER_TEMPERATURE_NOISE/* && (std::fabs(previousFilteredValue - mFilteredValue) >= 0.01)*/)
         {
             publishFloat(MAIN_SUBTOPIC, topic, mFilteredValue);
         }
