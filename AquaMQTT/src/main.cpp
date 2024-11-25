@@ -39,7 +39,8 @@ void loop()
     otaHandler.loop();
 
     // handle real-time-clock module in main thread
-    rtcHandler.loop();
+    // FIXME: this breaks watchdog for some unknown reason
+    //rtcHandler.loop();
 }
 
 void setup()
