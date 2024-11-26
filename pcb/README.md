@@ -17,6 +17,10 @@ The board is designed using [Kicad](https://www.kicad.org/). You may need to ins
 additional [Arduino Kicad library](https://github.com/Alarm-Siren/arduino-kicad-library) before opening/editing the
 project.
 
+## RAST vs. 2x4 Connector
+
+Your [heat pump](./../DEVICES.md) may use a different connector such as the Thermor Aeromax 5. Happily [@tukutt](https://github.com/tukutt) designed an [adapter pcb](https://oshwlab.com/tukutt/aquamqtt-original-pcb-to-rast-co) to connect those heatpumps without cutting any cables. Read more about this in [#51](https://github.com/tspopp/AquaMQTT/issues/51).
+
 ## Changelog
 
 | Version |       Description |
