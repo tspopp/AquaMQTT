@@ -18,24 +18,6 @@ namespace aquamqtt
 {
 namespace config
 {
-
-// TODO: remove prior to merge
-// switches solely for debugging the crash from taloriko (protocol-next) and will be removed as soon as we determined the reason for the crash
-// if this switch is enabled, no mqtt is there at all, if this already crashes, there is something wrong with the protocol parser
-// if this is not crashing, reset this back to false
-constexpr bool DEBUG_DISABLE_ENTIRE_MQTT = false;
-
-// proceed with these, disable them all (set them all to true) and start with setting a single one to false, and see if it crashes
-// if not reset them all back to true, and set the another one to false, until you find the one which is responsible for the crash (we will analyze further)
-constexpr bool DEBUG_DISABLE_MQTT_STATS_MSG = false;
-constexpr bool DEBUG_DISABLE_MQTT_HMI_MSG = false;
-constexpr bool DEBUG_DISABLE_MQTT_MAIN_MSG = false;
-constexpr bool DEBUG_DISABLE_MQTT_ENERGY_MSG = false;
-constexpr bool DEBUG_DISABLE_MQTT_ERROR_MSG = false;
-
-/**
- * Defines the network name of your esp32 device in your network
- */
 constexpr char networkName[] = "aquamqtt";
 
 /**

@@ -415,6 +415,7 @@ void HMIMessage::setAttr(HMI_ATTR_U8 attr, uint8_t value)
         break;
         case HMI_ATTR_U8::OPERATION_MODE:
         {
+            // FIXME: do not use the enum value here
             auto operationMode = static_cast<HMIOperationMode>(value);
             if (operationMode != HMIOperationMode::OM_UNKNOWN)
             {

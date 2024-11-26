@@ -31,6 +31,7 @@ void loop()
 {
     // watchdog
     esp_task_wdt_reset();
+    delay(1);
 
     // handle wifi events
     wifiHandler.loop();
@@ -39,8 +40,7 @@ void loop()
     otaHandler.loop();
 
     // handle real-time-clock module in main thread
-    // FIXME: this breaks watchdog for some unknown reason
-    //rtcHandler.loop();
+    rtcHandler.loop();
 }
 
 void setup()
@@ -50,6 +50,7 @@ void setup()
     Serial.println("REBOOT");
 
     // initialize watchdog
+    esp_task_wdt_deinit();
     esp_task_wdt_init(&twdt_config);
     esp_task_wdt_add(nullptr);
 
@@ -80,8 +81,5 @@ void setup()
     }
 
     // provide the message information via mqtt and enables overrides via mqtt
-    if(!config::DEBUG_DISABLE_ENTIRE_MQTT)
-    {
-        mqttTask.spawn();
-    }
+    mqttTask.spawn();
 }

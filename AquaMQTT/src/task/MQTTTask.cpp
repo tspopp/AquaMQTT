@@ -360,84 +360,66 @@ void MQTTTask::loop()
 
     auto notify = ulTaskNotifyTake(pdTRUE, mqttCycle);
 
-    if (!config::DEBUG_DISABLE_MQTT_HMI_MSG)
+    if ((notify & 1 << 8) != 0 || fullUpdate)
     {
-        if ((notify & 1 << 8) != 0 || fullUpdate)
+        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
+        size_t length = HMIStateProxy::getInstance().copyFrame(HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+        if (length > 0)
         {
-            message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
-            size_t length = HMIStateProxy::getInstance().copyFrame(HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version);
-            if (length > 0)
-            {
-                updateHMIStatus(fullUpdate, version);
+            updateHMIStatus(fullUpdate, version);
 
-                if (mLastProcessedHMIMessage == nullptr)
-                {
-                    mLastProcessedHMIMessage = new uint8_t[length];
-                }
-                memcpy(mLastProcessedHMIMessage, mTransferBuffer, length);
+            if (mLastProcessedHMIMessage == nullptr)
+            {
+                mLastProcessedHMIMessage = new uint8_t[length];
             }
+            memcpy(mLastProcessedHMIMessage, mTransferBuffer, length);
         }
     }
 
-    if (!config::DEBUG_DISABLE_MQTT_MAIN_MSG)
+    if ((notify & 1 << 7) != 0 || fullUpdate)
     {
-        if ((notify & 1 << 7) != 0 || fullUpdate)
+        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
+        size_t length = MainStateProxy::getInstance().copyFrame(MAIN_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+        if (length > 0)
         {
-            message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
-            size_t length = MainStateProxy::getInstance().copyFrame(MAIN_MESSAGE_IDENTIFIER, mTransferBuffer, version);
-            if (length > 0)
-            {
-                updateMainStatus(fullUpdate, version);
+            updateMainStatus(fullUpdate, version);
 
-                if (mLastProcessedMainMessage == nullptr)
-                {
-                    mLastProcessedMainMessage = new uint8_t[length];
-                }
-                memcpy(mLastProcessedMainMessage, mTransferBuffer, length);
+            if (mLastProcessedMainMessage == nullptr)
+            {
+                mLastProcessedMainMessage = new uint8_t[length];
             }
+            memcpy(mLastProcessedMainMessage, mTransferBuffer, length);
         }
     }
 
-    if (!config::DEBUG_DISABLE_MQTT_ENERGY_MSG)
+    if ((notify & 1 << 6) != 0 || fullUpdate)
     {
-        if ((notify & 1 << 6) != 0 || fullUpdate)
+        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
+        size_t length = MainStateProxy::getInstance().copyFrame(ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+        if (length > 0)
         {
-            message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
-            size_t                   length  = MainStateProxy::getInstance().copyFrame(
-                    ENERGY_MESSAGE_IDENTIFIER,
-                    mTransferBuffer,
-                    version);
-            if (length > 0)
-            {
-                updateEnergyStats(fullUpdate, version);
+            updateEnergyStats(fullUpdate, version);
 
-                if (mLastProcessedEnergyMessage == nullptr)
-                {
-                    mLastProcessedEnergyMessage = new uint8_t[length];
-                }
-                memcpy(mLastProcessedEnergyMessage, mTransferBuffer, length);
+            if (mLastProcessedEnergyMessage == nullptr)
+            {
+                mLastProcessedEnergyMessage = new uint8_t[length];
             }
+            memcpy(mLastProcessedEnergyMessage, mTransferBuffer, length);
         }
     }
 
-    if (!config::DEBUG_DISABLE_MQTT_ERROR_MSG)
+    if ((notify & 1 << 5) != 0)
     {
-        if ((notify & 1 << 5) != 0)
+        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
+        if (MainStateProxy::getInstance().copyFrame(ERROR_MESSAGE_IDENTIFIER, mTransferBuffer, version))
         {
-            message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
-            if (MainStateProxy::getInstance().copyFrame(ERROR_MESSAGE_IDENTIFIER, mTransferBuffer, version))
-            {
-                updateErrorStatus(version);
-            }
+            updateErrorStatus(version);
         }
     }
 
-    if (!config::DEBUG_DISABLE_MQTT_STATS_MSG)
+    if (statsUpdate)
     {
-        if (statsUpdate)
-        {
-            updateStats();
-        }
+        updateStats();
     }
 
     if (statsUpdate)
