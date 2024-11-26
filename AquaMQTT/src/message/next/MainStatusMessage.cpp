@@ -129,6 +129,40 @@ void MainStatusMessage::setAttr(MAIN_ATTR_FLOAT attr, float value)
 
 void MainStatusMessage::setAttr(MAIN_ATTR_BOOL attr, bool value)
 {
+    switch (attr)
+    {
+        case MAIN_ATTR_BOOL::STATE_PV:
+            if (value)
+            {
+                mData[22] |= 0x10;
+            }
+            else
+            {
+                mData[22] &= ~0x10;
+            }
+            break;
+        case MAIN_ATTR_BOOL::STATE_SOLAR:
+            if (value)
+            {
+                mData[22] |= 0x20;
+            }
+            else
+            {
+                mData[22] &= ~0x20;
+            }
+            break;
+        case MAIN_ATTR_BOOL::STATE_HEATING_ELEMENT:
+        case MAIN_ATTR_BOOL::STATE_HEATPUMP:
+        case MAIN_ATTR_BOOL::STATE_BOILER_BACKUP:
+        case MAIN_ATTR_BOOL::STATE_FAN:
+        case MAIN_ATTR_BOOL::STATE_DEFROST:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_HEAT_EXCHANGER:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_CIRCULATION:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_PV_INPUT:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_COMMUNICATION:
+        case MAIN_ATTR_BOOL::CAPABILITY_HAS_ANTI_DRY_HEATING:
+            break;
+    }
 }
 
 void MainStatusMessage::setAttr(MAIN_ATTR_U8 attr, uint8_t value)

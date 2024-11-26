@@ -122,7 +122,7 @@ uint8_t HMIMessage::getAttr(HMI_ATTR_U8 attr)
     switch (attr)
     {
         case HMI_ATTR_U8::ANTI_LEGIONELLA_CYCLES:
-            return (uint8_t) (mData[5] & 0x0F);
+            return mData[5] & 0x0F;
         case HMI_ATTR_U8::TIME_SECONDS:
             return mData[17];
         case HMI_ATTR_U8::TIME_MINUTES:
@@ -133,7 +133,6 @@ uint8_t HMIMessage::getAttr(HMI_ATTR_U8 attr)
             return mData[18] & 0x1F;
         case HMI_ATTR_U8::DATE_MONTH:
             return (mData[18] >> 5) + ((mData[19] % 2) * 8);
-
         case HMI_ATTR_U8::STATE_SETUP:
             if (mData[9] & 0x80)
             {
@@ -189,13 +188,13 @@ uint8_t HMIMessage::getAttr(HMI_ATTR_U8 attr)
             }
             return HMIInstallation::INST_HP_ONLY;
         case HMI_ATTR_U8::CONFIG_AIRDUCT:
-            switch ((uint8_t) (mData[5] & 0xF0))
+            switch (mData[5] & 0xF0)
             {
-                case 0:
+                case 0x00:
                     return AD_INT_INT;
-                case 16:
+                case 0x10:
                     return AD_INT_EXT;
-                case 32:
+                case 0x20:
                     return AD_EXT_EXT;
                 default:
                     return AD_UNKNOWN;
@@ -415,11 +414,25 @@ void HMIMessage::setAttr(HMI_ATTR_U8 attr, uint8_t value)
         break;
         case HMI_ATTR_U8::OPERATION_MODE:
         {
-            // FIXME: do not use the enum value here
-            auto operationMode = static_cast<HMIOperationMode>(value);
-            if (operationMode != HMIOperationMode::OM_UNKNOWN)
+            switch (static_cast<HMIOperationMode>(value))
             {
-                mData[3] = (mData[3] & 0xF0) | (operationMode & 0x0F);
+                case OM_ABSENCE:
+                    mData[3] = (mData[3] & 0xF0) | (0 & 0x0F);
+                    break;
+                case OM_ECO_ACTIVE:
+                    mData[3] = (mData[3] & 0xF0) | (1 & 0x0F);
+                    break;
+                case OM_ECO_INACTIVE:
+                    mData[3] = (mData[3] & 0xF0) | (2 & 0x0F);
+                    break;
+                case OM_BOOST:
+                    mData[3] = (mData[3] & 0xF0) | (3 & 0x0F);
+                    break;
+                case OM_AUTO:
+                    mData[3] = (mData[3] & 0xF0) | (4 & 0x0F);
+                    break;
+                case OM_UNKNOWN:
+                    break;
             }
         }
         break;
@@ -437,12 +450,13 @@ void HMIMessage::setAttr(HMI_ATTR_U8 attr, uint8_t value)
         }
         break;
         case HMI_ATTR_U8::DATE_MONTH:
-            // use custom method for setting month and year
+
         case HMI_ATTR_U8::STATE_SETUP:
         case HMI_ATTR_U8::STATE_TEST:
         case HMI_ATTR_U8::HMI_ERROR_ID_REQUESTED:
         case HMI_ATTR_U8::HMI_ERROR_NO_REQUESTED:
         case HMI_ATTR_U8::ANTI_LEGIONELLA_CYCLES:
+            // TODO: implement this is needed
             break;
     }
 }
@@ -475,6 +489,7 @@ void HMIMessage::setAttr(HMI_ATTR_BOOL attr, bool value)
 
             break;
         case HMI_ATTR_BOOL::PV_INPUT_ALLOWED:
+            // TODO: implement this is needed
             break;
     }
 }
@@ -498,12 +513,12 @@ void HMIMessage::setAttr(HMI_ATTR_U16 attr, uint16_t value)
     switch (attr)
     {
         case HMI_ATTR_U16::TIMER_A_START:
-            break;
         case HMI_ATTR_U16::TIMER_A_LENGTH:
-            break;
         case HMI_ATTR_U16::TIMER_B_START:
-            break;
         case HMI_ATTR_U16::TIMER_B_LENGTH:
+            // TODO: implement this is needed
+        case HMI_ATTR_U16::DATE_YEAR:
+            // use custom method for setting month and year
             break;
     }
 }
