@@ -6,9 +6,7 @@
 
 #include "SimpleKalmanFilter.h"
 #include "config/Configuration.h"
-#include "message/HMIMessage.h"
-#include "message/MainEnergyMessage.h"
-#include "message/MainStatusMessage.h"
+#include "message/IMainMessage.h"
 #include "message/MessageConstants.h"
 
 namespace aquamqtt
@@ -33,10 +31,10 @@ private:
 
     static void messageReceived(String& topic, String& payload);
 
-    void updateMainStatus(bool triggerFullUpdate);
-    void updateHMIStatus(bool triggerFullUpdate);
-    void updateEnergyStats(bool triggerFullUpdate);
-    void updateErrorStatus();
+    void updateMainStatus(bool triggerFullUpdate, message::ProtocolVersion& version);
+    void updateHMIStatus(bool triggerFullUpdate, message::ProtocolVersion& version);
+    void updateEnergyStats(bool triggerFullUpdate, message::ProtocolVersion& version);
+    void updateErrorStatus(message::ProtocolVersion& version);
     void updateStats();
 
 private:
@@ -54,9 +52,15 @@ private:
     uint8_t* mLastProcessedMainMessage;
 
     SimpleKalmanFilter mEvaporatorLowerAirTempFilter;
+    float              mEvaporatorLowerAirTempFiltered;
     SimpleKalmanFilter mEvaporatorUpperAirTempFilter;
+    float              mEvaporatorUpperAirTempFiltered;
     SimpleKalmanFilter mAirTempFilter;
+    float              mAirTempFiltered;
     SimpleKalmanFilter mHotWaterTempFilter;
+    float              mHotWaterTempFiltered;
+    SimpleKalmanFilter mCompressorTempFilter;
+    float              mCompressorTempFiltered;
 
     // helper to avoid code duplication
     void publishFloat(const char* subtopic, const char* topic, float value, bool retained = false);
@@ -69,11 +73,18 @@ private:
             const char*   topic,
             unsigned long value,
             bool          retained = false);
-    void applyTemperatureFilter(message::MainStatusMessage* pMessage);
 
     void enableDiscovery();
     template <typename T>
     void publishDiscovery(uint16_t identifier, const char* haCategory, T enumClass);
+
+    void publishFiltered(
+            std::unique_ptr<aquamqtt::message::IMainMessage>& message,
+            aquamqtt::message::MAIN_ATTR_FLOAT                attribute,
+            SimpleKalmanFilter&                               filter,
+            float&                                            mFilteredValue,
+            const char*                                       topic,
+            bool                                              fullUpdate);
 };
 }  // namespace aquamqtt
 

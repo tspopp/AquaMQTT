@@ -2,6 +2,8 @@
 #define AQUAMQTT_IMQTTCALLBACK_H
 
 #include <memory>
+#include "../message/MessageConstants.h"
+
 namespace aquamqtt
 {
 namespace mqtt
