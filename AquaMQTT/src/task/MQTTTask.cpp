@@ -1474,6 +1474,7 @@ void MQTTTask::publishFiltered(
         auto  previousFilteredValue = mFilteredValue;
         mFilteredValue              = std::round(filter.updateEstimate(rawValue) * 10.0f) / 10.0f;
 
+
         if (fullUpdate)
         {
             publishFloat(
