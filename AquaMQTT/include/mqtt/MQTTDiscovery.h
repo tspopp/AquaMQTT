@@ -668,6 +668,7 @@ static bool buildConfiguration(
         case MQTT_ITEM_SENSOR::RESERVED_COUNT:
         default:
             return false;
+
     }
 
     serializeJson(doc, buffer, config::MQTT_MAX_PAYLOAD_SIZE);

@@ -18,10 +18,10 @@ namespace aquamqtt
 {
 namespace config
 {
-
 /**
  * Defines the network name of your esp32 device in your network
  */
+
 constexpr char networkName[] = "aquamqtt";
 
 /**
