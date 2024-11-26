@@ -49,6 +49,7 @@ MQTTTask::MQTTTask()
     , mEvaporatorUpperAirTempFiltered(0.0)
     , mCompressorTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
     , mCompressorTempFiltered(0.0)
+    , mPublishedDiscovery(false)
 {
 }
 
@@ -317,6 +318,7 @@ void MQTTTask::check_mqtt_connection()
         vTaskDelay(pdMS_TO_TICKS(1000));
         esp_task_wdt_reset();
     }
+    mPublishedDiscovery = false;
 
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
             "%s%s%s%s",
@@ -343,8 +345,6 @@ void MQTTTask::check_mqtt_connection()
         mMQTTClient.subscribe(reinterpret_cast<char*>(mTopicBuffer));
     }
 
-    enableDiscovery();
-
     Serial.println("[mqtt] is now connected");
 }
 
@@ -353,6 +353,8 @@ void MQTTTask::loop()
     check_mqtt_connection();
 
     auto mqttCycle = pdMS_TO_TICKS(5);
+
+    sendHomeassistantDiscovery();
 
     bool fullUpdate = (millis() - mLastFullUpdate) >= config::MQTT_FULL_UPDATE_MS;
 
@@ -1406,10 +1408,16 @@ void MQTTTask::publishul(
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), retained, 0);
 }
 
-// FIXME: discovery shall only include supported attributes, given by the protocol NEXT or LEGACY
-void MQTTTask::enableDiscovery()
+void MQTTTask::sendHomeassistantDiscovery()
 {
-    if (!config::ENABLE_HOMEASSISTANT_DISCOVERY_MODE)
+    if (!config::ENABLE_HOMEASSISTANT_DISCOVERY_MODE || mPublishedDiscovery)
+    {
+        return;
+    }
+
+    // cannot send discovery yet, protocol is still unknown
+    ProtocolVersion protocolVersion = DHWState::getInstance().getVersion();
+    if (protocolVersion == PROTOCOL_UNKNOWN)
     {
         return;
     }
@@ -1418,21 +1426,23 @@ void MQTTTask::enableDiscovery()
     FastCRC16          crc;
     uint16_t           identifier = crc.ccitt(reinterpret_cast<uint8_t*>(&mac), sizeof(mac));
 
-    publishDiscovery(identifier, "sensor", discovery::MQTT_ITEM_SENSOR::RESERVED_COUNT);
-    publishDiscovery(identifier, "binary_sensor", discovery::MQTT_ITEM_BINARY_SENSOR::RESERVED_COUNT);
-    publishDiscovery(identifier, "number", discovery::MQTT_ITEM_NUMBER::RESERVED_COUNT);
-    publishDiscovery(identifier, "button", discovery::MQTT_ITEM_BUTTON::RESERVED_COUNT);
-    publishDiscovery(identifier, "switch", discovery::MQTT_ITEM_SWITCH::RESERVED_COUNT);
-    publishDiscovery(identifier, "select", discovery::MQTT_ITEM_SELECT::RESERVED_COUNT);
-    publishDiscovery(identifier, "water_heater", discovery::MQTT_ITEM_WATER_HEATER::RESERVED_COUNT);
+    publishDiscovery(identifier, protocolVersion, "sensor", discovery::MQTT_ITEM_SENSOR::RESERVED_COUNT);
+    publishDiscovery(identifier, protocolVersion, "binary_sensor", discovery::MQTT_ITEM_BINARY_SENSOR::RESERVED_COUNT);
+    publishDiscovery(identifier, protocolVersion, "number", discovery::MQTT_ITEM_NUMBER::RESERVED_COUNT);
+    publishDiscovery(identifier, protocolVersion, "button", discovery::MQTT_ITEM_BUTTON::RESERVED_COUNT);
+    publishDiscovery(identifier, protocolVersion, "switch", discovery::MQTT_ITEM_SWITCH::RESERVED_COUNT);
+    publishDiscovery(identifier, protocolVersion, "select", discovery::MQTT_ITEM_SELECT::RESERVED_COUNT);
+    publishDiscovery(identifier, protocolVersion, "water_heater", discovery::MQTT_ITEM_WATER_HEATER::RESERVED_COUNT);
+
+    mPublishedDiscovery = true;
 }
 
 template <typename T>
-void MQTTTask::publishDiscovery(uint16_t identifier, const char* haCategory, T)
+void MQTTTask::publishDiscovery(uint16_t identifier, ProtocolVersion protocolVersion, const char* haCategory, T)
 {
     for (int item = 0; item < static_cast<int>(T::RESERVED_COUNT); ++item)
     {
-        if (discovery::buildConfiguration(mPayloadBuffer, identifier, static_cast<T>(item)))
+        if (discovery::buildConfiguration(mPayloadBuffer, protocolVersion, identifier, static_cast<T>(item)))
         {
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s/aquamqtt_%u/%u/config",
@@ -1460,23 +1470,23 @@ void MQTTTask::publishFiltered(
 
     if (message->hasAttr(attribute))
     {
-        float hotWaterTempRaw       = message->getAttr(attribute);
+        float rawValue              = message->getAttr(attribute);
         auto  previousFilteredValue = mFilteredValue;
-        mFilteredValue              = filter.updateEstimate(hotWaterTempRaw);
+        mFilteredValue              = std::round(filter.updateEstimate(rawValue) * 10.0f) / 10.0f;
+
 
         if (fullUpdate)
         {
             publishFloat(
                     MAIN_SUBTOPIC,
                     topic,
-                    config::MQTT_FILTER_TEMPERATURE_NOISE ? mFilteredValue : hotWaterTempRaw);
+                    config::MQTT_FILTER_TEMPERATURE_NOISE ? mFilteredValue : rawValue);
         }
         else if (!config::MQTT_FILTER_TEMPERATURE_NOISE && message->hasChanged(attribute))
         {
-            publishFloat(MAIN_SUBTOPIC, topic, hotWaterTempRaw);
+            publishFloat(MAIN_SUBTOPIC, topic, rawValue);
         }
-        // FIXME: this is broken
-        else if (config::MQTT_FILTER_TEMPERATURE_NOISE/* && (std::fabs(previousFilteredValue - mFilteredValue) >= 0.01)*/)
+        else if (config::MQTT_FILTER_TEMPERATURE_NOISE && previousFilteredValue != mFilteredValue)
         {
             publishFloat(MAIN_SUBTOPIC, topic, mFilteredValue);
         }

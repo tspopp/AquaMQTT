@@ -114,6 +114,7 @@ Setting limitations:
 - *TODO: Heating Element ~~Enabled On/Off/PV~~*
 - *TODO: PV Mode allowed ~~On/Off~~*
 
+
 ### Main Message (193)
 
 | Byte Number | Example (dec) | Purpose/Function | Other Information |
@@ -154,7 +155,6 @@ Setting limitations:
 | 33          | 1             | ?                |                   |
 | 34          | 17            | ?                |                   |
 
-
 ##### Byte No 17: Picture Bitmask
 
 Findings...
@@ -185,6 +185,7 @@ Findings...
 | 5          | Defrost On/Off         |                   |
 | 6          | ?                      |                   |
 | 7          | ?                      |                   |
+
 
 ## Help Required:
 

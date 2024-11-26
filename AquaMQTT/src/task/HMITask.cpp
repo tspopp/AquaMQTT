@@ -176,33 +176,30 @@ void HMITask::sendMessage193()
             message::MAIN_MESSAGE_IDENTIFIER,
             mTransferBuffer,
             version);
-    if (length > 0)
+
+    if (length <= 0 || version == message::PROTOCOL_UNKNOWN)
     {
-        // TODO: refactor this
-        if (version == message::PROTOCOL_LEGACY)
-        {
-            uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
-            Serial1.write(message::MAIN_MESSAGE_IDENTIFIER);
-            Serial1.write(mTransferBuffer, length);
-            Serial1.write((uint8_t) (crc >> 8));
-            Serial1.write((uint8_t) (crc & 0xFF));
-            Serial1.flush();
-            mMessagesSent++;
-        }
-        else
-        {
-            uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
-            Serial1.write(message::MAIN_MESSAGE_IDENTIFIER);
-            Serial1.write(mTransferBuffer, length);
-            Serial1.write(checksum);
-            Serial1.flush();
-            mMessagesSent++;
-        }
+        Serial.println("[hmi] no main message yet, cannot forward");
+        return;
+    }
+
+    Serial1.write(message::MAIN_MESSAGE_IDENTIFIER);
+    Serial1.write(mTransferBuffer, length);
+
+    if (version == message::PROTOCOL_LEGACY)
+    {
+        uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
+        Serial1.write((uint8_t) (crc >> 8));
+        Serial1.write((uint8_t) (crc & 0xFF));
     }
     else
     {
-        Serial.println("[hmi] no main message yet, cannot forward");
+        uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
+        Serial1.write(checksum);
     }
+
+    Serial1.flush();
+    mMessagesSent++;
 }
 
 void HMITask::sendMessage67()
@@ -212,33 +209,29 @@ void HMITask::sendMessage67()
             message::ENERGY_MESSAGE_IDENTIFIER,
             mTransferBuffer,
             version);
-    if (length > 0)
+
+    if (length <= 0 || version == message::PROTOCOL_UNKNOWN)
     {
-        // TODO: refactor this
-        if (version == message::PROTOCOL_LEGACY)
-        {
-            uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
-            Serial1.write(message::ENERGY_MESSAGE_IDENTIFIER);
-            Serial1.write(mTransferBuffer, length);
-            Serial1.write((uint8_t) (crc >> 8));
-            Serial1.write((uint8_t) (crc & 0xFF));
-            Serial1.flush();
-            mMessagesSent++;
-        }
-        else
-        {
-            uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
-            Serial1.write(message::ENERGY_MESSAGE_IDENTIFIER);
-            Serial1.write(mTransferBuffer, length);
-            Serial1.write(checksum);
-            Serial1.flush();
-            mMessagesSent++;
-        }
+        Serial.println("[hmi] no energy message yet, cannot forward");
+        return;
+    }
+
+    Serial1.write(message::ENERGY_MESSAGE_IDENTIFIER);
+    Serial1.write(mTransferBuffer, length);
+
+    if (version == message::PROTOCOL_LEGACY)
+    {
+        uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
+        Serial1.write((uint8_t) (crc >> 8));
+        Serial1.write((uint8_t) (crc & 0xFF));
     }
     else
     {
-        Serial.println("[hmi] no energy message yet, cannot forward");
+        uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
+        Serial1.write(checksum);
     }
+    Serial1.flush();
+    mMessagesSent++;
 }
 
 void HMITask::sendMessage74()
@@ -251,9 +244,9 @@ void HMITask::sendMessage74()
                 aquamqtt::message::HMI_MESSAGE_IDENTIFIER,
                 mTransferBuffer,
                 version);
+
         if (length > 0)
         {
-            // TODO: refactor this
             if (version == message::PROTOCOL_LEGACY)
             {
                 aquamqtt::message::legacy::HMIMessage hmiMessage(mTransferBuffer);
@@ -283,7 +276,6 @@ void HMITask::sendMessage74()
             version);
     if (length > 0)
     {
-        // TODO: refactor this
         if (version == message::PROTOCOL_LEGACY)
         {
             aquamqtt::message::legacy::ErrorMessage errorMessage(mTransferBuffer);
@@ -299,28 +291,23 @@ void HMITask::sendMessage74()
     // emit the error message
     if (requestId == availableRequestId)
     {
-        // TODO: refactor this
+        Serial1.write(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER);
+        Serial1.write(mTransferBuffer, length);
+
         if (version == message::PROTOCOL_LEGACY)
         {
             uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
-            Serial1.write(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER);
-            Serial1.write(mTransferBuffer, length);
             Serial1.write((uint8_t) (crc >> 8));
             Serial1.write((uint8_t) (crc & 0xFF));
-            Serial1.flush();
-            mMessagesSent++;
-            mLastEmittedRequestId = requestId;
         }
         else
         {
             uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
-            Serial1.write(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER);
-            Serial1.write(mTransferBuffer, length);
             Serial1.write(checksum);
-            Serial1.flush();
-            mMessagesSent++;
-            mLastEmittedRequestId = requestId;
         }
+        Serial1.flush();
+        mMessagesSent++;
+        mLastEmittedRequestId = requestId;
     }
 }
 

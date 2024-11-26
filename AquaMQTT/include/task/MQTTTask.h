@@ -32,9 +32,13 @@ private:
     static void messageReceived(String& topic, String& payload);
 
     void updateMainStatus(bool triggerFullUpdate, message::ProtocolVersion& version);
+
     void updateHMIStatus(bool triggerFullUpdate, message::ProtocolVersion& version);
+
     void updateEnergyStats(bool triggerFullUpdate, message::ProtocolVersion& version);
+
     void updateErrorStatus(message::ProtocolVersion& version);
+
     void updateStats();
 
 private:
@@ -46,6 +50,7 @@ private:
     WiFiClient    mWiFiClient;
     MQTTClient    mMQTTClient;
     TaskHandle_t  mTaskHandle;
+    bool          mPublishedDiscovery;
 
     uint8_t* mLastProcessedHMIMessage;
     uint8_t* mLastProcessedEnergyMessage;
@@ -64,9 +69,13 @@ private:
 
     // helper to avoid code duplication
     void publishFloat(const char* subtopic, const char* topic, float value, bool retained = false);
+
     void publishString(const char* subtopic, const char* topic, const char* value, bool retained = false);
+
     void publishi(const char* subtopic, const char* topic, int value, bool retained = false);
+
     void publishul(const char* subtopic, const char* topic, unsigned long value, bool retained = false);
+
     void publishul(
             const char*   subtopic_1,
             const char*   subtopic_2,
@@ -74,9 +83,14 @@ private:
             unsigned long value,
             bool          retained = false);
 
-    void enableDiscovery();
+    void sendHomeassistantDiscovery();
+
     template <typename T>
-    void publishDiscovery(uint16_t identifier, const char* haCategory, T enumClass);
+    void publishDiscovery(
+            uint16_t                           identifier,
+            aquamqtt::message::ProtocolVersion protocolVersion,
+            const char*                        haCategory,
+            T                                  enumClass);
 
     void publishFiltered(
             std::unique_ptr<aquamqtt::message::IMainMessage>& message,

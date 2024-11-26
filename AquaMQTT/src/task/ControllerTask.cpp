@@ -136,6 +136,7 @@ void ControllerTask::loop()
         mLastStatisticsUpdate = millis();
     }
 }
+
 void ControllerTask::flushReadBuffer()
 {
     while (Serial2.available())
@@ -143,32 +144,32 @@ void ControllerTask::flushReadBuffer()
         Serial2.read();
     }
 }
+
 void ControllerTask::sendMessage194()
 {
     message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
     size_t length = HMIStateProxy::getInstance().copyFrame(message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version);
-    // TODO: refactor this
+
+    if (length <= 0 || version == message::PROTOCOL_UNKNOWN)
+    {
+        Serial.println("[main] no hmi message yet, cannot forward");
+        return;
+    }
+
+    Serial2.write(mTransferBuffer, length);
     if (version == message::PROTOCOL_LEGACY)
     {
         uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
-        Serial2.write(mTransferBuffer, length);
         Serial2.write((uint8_t) (crc >> 8));
         Serial2.write((uint8_t) (crc & 0xFF));
-        Serial2.flush();
-        mMessagesSent++;
     }
     else if (version == message::PROTOCOL_NEXT)
     {
         uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
-        Serial2.write(mTransferBuffer, length);
         Serial2.write(checksum);
-        Serial2.flush();
-        mMessagesSent++;
     }
-    else
-    {
-        Serial.println("[main] no hmi message yet, cannot forward");
-    }
+    Serial2.flush();
+    mMessagesSent++;
 }
 
 }  // namespace aquamqtt
