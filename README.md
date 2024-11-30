@@ -57,7 +57,11 @@ Unfortunately, I had no success pairing those solutions with my Windhager brande
 
 - [Troubleshooting / F.A.Q](./TROUBLESHOOTING.md)
 
-- [Heat pump serial protocol](./PROTOCOL.md)
+- [Compatible Devices](./DEVICES.md)
+ 
+- [Heat pump serial protocol (LEGACY)](./PROTOCOL.md)
+
+- [Heat pump serial protocol (NEXT)](./PROTOCOL_NEXT.md)
 
 - [Available MQTT Topics and Payloads](./MQTT.md)
 

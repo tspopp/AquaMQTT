@@ -130,6 +130,13 @@ uint16_t MainEnergyMessage::getAttr(ENERGY_ATTR_U16 attr)
     return 0;
 }
 
+int8_t MainEnergyMessage::getAttr(ENERGY_ATTR_I8 attr)
+{
+    return 0;
+}
+
+
+
 bool MainEnergyMessage::hasAttr(ENERGY_ATTR_U64 attr) const
 {
     switch (attr)
@@ -168,6 +175,11 @@ bool MainEnergyMessage::hasAttr(ENERGY_ATTR_U16 attr) const
     }
 }
 
+bool MainEnergyMessage::hasAttr(ENERGY_ATTR_I8 attr) const
+{
+    return false;
+}
+
 bool MainEnergyMessage::hasChanged(ENERGY_ATTR_U64 attr) const
 {
     return mCreatedWithoutPrevious || mHasChangedU64.find(attr) != mHasChangedU64.end();
@@ -182,4 +194,10 @@ bool MainEnergyMessage::hasChanged(ENERGY_ATTR_U16 attr) const
 {
     return mCreatedWithoutPrevious || mHasChangedU16.find(attr) != mHasChangedU16.end();
 }
+
+bool MainEnergyMessage::hasChanged(ENERGY_ATTR_I8 attr) const
+{
+    return false;
+}
+
 }  // namespace aquamqtt::message::legacy

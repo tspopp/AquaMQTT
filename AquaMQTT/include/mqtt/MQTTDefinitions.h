@@ -131,6 +131,17 @@ constexpr char ENERGY_POWER_HEAT_ELEMENT[]       = { "powerHeatingElem" };
 constexpr char ENERGY_POWER_HEATPUMP[]           = { "powerHeatpump" };
 constexpr char ENERGY_TOTAL_WATER_PRODUCTION[]   = { "totalWaterProduction" };
 
+constexpr char ENERGY_DIAG_AIR_TEMP_MAX[]           = { "diagAirTempMax" };
+constexpr char ENERGY_DIAG_AIR_TEMP_MIN[]           = { "diagAirTempMin" };
+constexpr char ENERGY_DIAG_EVA_UPPER_AIR_TEMP_MAX[] = { "diagEvaUpperMax" };
+constexpr char ENERGY_DIAG_EVA_UPPER_AIR_TEMP_MIN[] = { "diagEvaUpperMin" };
+constexpr char ENERGY_DIAG_EVA_LOWER_AIR_TEMP_MAX[] = { "diagEvaLowerMax" };
+constexpr char ENERGY_DIAG_EVA_LOWER_AIR_TEMP_MIN[] = { "diagEvaLowerMin" };
+constexpr char ENERGY_DIAG_COMPRESSOR_TEMP_MAX[]    = { "diagCompressorMax" };
+constexpr char ENERGY_DIAG_COMPRESSOR_TEMP_MIN[]    = { "diagCompressorMin" };
+constexpr char ENERGY_DIAG_WATER_TEMP_MAX[]         = { "diagWaterTempMax" };
+constexpr char ENERGY_DIAG_WATER_TEMP_MIN[]         = { "diagWaterTempMin" };
+
 constexpr char ERROR_ERROR_NUMBER[] = { "errorNumber" };
 
 constexpr char STATS_AQUAMQTT_ADDR[]              = { "ipAddress" };

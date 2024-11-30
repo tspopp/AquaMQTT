@@ -1066,13 +1066,13 @@ void MQTTTask::updateEnergyStats(bool fullUpdate, message::ProtocolVersion& vers
     {
         message = std::make_unique<message::next::MainEnergyMessage>(
                 mTransferBuffer,
-                fullUpdate ? nullptr : mLastProcessedHMIMessage);
+                fullUpdate ? nullptr : mLastProcessedEnergyMessage);
     }
     else
     {
         message = std::make_unique<message::legacy::MainEnergyMessage>(
                 mTransferBuffer,
-                fullUpdate ? nullptr : mLastProcessedHMIMessage);
+                fullUpdate ? nullptr : mLastProcessedEnergyMessage);
     }
 
     if (message->hasAttr(ENERGY_ATTR_U32::TOTAL_HEATPUMP_HOURS))
@@ -1151,6 +1151,101 @@ void MQTTTask::updateEnergyStats(bool fullUpdate, message::ProtocolVersion& vers
         if (fullUpdate || message->hasChanged(ENERGY_ATTR_U16::WATER_TOTAL))
         {
             publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_WATER_PRODUCTION, message->getAttr(ENERGY_ATTR_U16::WATER_TOTAL));
+        }
+    }
+
+    if (message->hasAttr(ENERGY_ATTR_I8::DIAG_AIR_TEMP_MAX))
+    {
+        if (fullUpdate || message->hasChanged(ENERGY_ATTR_I8::DIAG_AIR_TEMP_MAX))
+        {
+            publishi(ENERGY_SUBTOPIC, ENERGY_DIAG_AIR_TEMP_MAX, message->getAttr(ENERGY_ATTR_I8::DIAG_AIR_TEMP_MAX));
+        }
+    }
+    if (message->hasAttr(ENERGY_ATTR_I8::DIAG_AIR_TEMP_MIN))
+    {
+        if (fullUpdate || message->hasChanged(ENERGY_ATTR_I8::DIAG_AIR_TEMP_MIN))
+        {
+            publishi(ENERGY_SUBTOPIC, ENERGY_DIAG_AIR_TEMP_MIN, message->getAttr(ENERGY_ATTR_I8::DIAG_AIR_TEMP_MIN));
+        }
+    }
+    if (message->hasAttr(ENERGY_ATTR_I8::DIAG_EVA_UPPER_AIR_TEMP_MAX))
+    {
+        if (fullUpdate || message->hasChanged(ENERGY_ATTR_I8::DIAG_EVA_UPPER_AIR_TEMP_MAX))
+        {
+            publishi(
+                    ENERGY_SUBTOPIC,
+                    ENERGY_DIAG_EVA_UPPER_AIR_TEMP_MAX,
+                    message->getAttr(ENERGY_ATTR_I8::DIAG_EVA_UPPER_AIR_TEMP_MAX));
+        }
+    }
+    if (message->hasAttr(ENERGY_ATTR_I8::DIAG_EVA_UPPER_AIR_TEMP_MIN))
+    {
+        if (fullUpdate || message->hasChanged(ENERGY_ATTR_I8::DIAG_EVA_UPPER_AIR_TEMP_MIN))
+        {
+            publishi(
+                    ENERGY_SUBTOPIC,
+                    ENERGY_DIAG_EVA_UPPER_AIR_TEMP_MIN,
+                    message->getAttr(ENERGY_ATTR_I8::DIAG_EVA_UPPER_AIR_TEMP_MIN));
+        }
+    }
+    if (message->hasAttr(ENERGY_ATTR_I8::DIAG_EVA_LOWER_AIR_TEMP_MAX))
+    {
+        if (fullUpdate || message->hasChanged(ENERGY_ATTR_I8::DIAG_EVA_LOWER_AIR_TEMP_MAX))
+        {
+            publishi(
+                    ENERGY_SUBTOPIC,
+                    ENERGY_DIAG_EVA_LOWER_AIR_TEMP_MAX,
+                    message->getAttr(ENERGY_ATTR_I8::DIAG_EVA_LOWER_AIR_TEMP_MAX));
+        }
+    }
+    if (message->hasAttr(ENERGY_ATTR_I8::DIAG_EVA_LOWER_AIR_TEMP_MIN))
+    {
+        if (fullUpdate || message->hasChanged(ENERGY_ATTR_I8::DIAG_EVA_LOWER_AIR_TEMP_MIN))
+        {
+            publishi(
+                    ENERGY_SUBTOPIC,
+                    ENERGY_DIAG_EVA_LOWER_AIR_TEMP_MIN,
+                    message->getAttr(ENERGY_ATTR_I8::DIAG_EVA_LOWER_AIR_TEMP_MIN));
+        }
+    }
+    if (message->hasAttr(ENERGY_ATTR_I8::DIAG_COMPRESSOR_TEMP_MAX))
+    {
+        if (fullUpdate || message->hasChanged(ENERGY_ATTR_I8::DIAG_COMPRESSOR_TEMP_MAX))
+        {
+            publishi(
+                    ENERGY_SUBTOPIC,
+                    ENERGY_DIAG_COMPRESSOR_TEMP_MAX,
+                    message->getAttr(ENERGY_ATTR_I8::DIAG_COMPRESSOR_TEMP_MAX));
+        }
+    }
+    if (message->hasAttr(ENERGY_ATTR_I8::DIAG_COMPRESSOR_TEMP_MIN))
+    {
+        if (fullUpdate || message->hasChanged(ENERGY_ATTR_I8::DIAG_COMPRESSOR_TEMP_MIN))
+        {
+            publishi(
+                    ENERGY_SUBTOPIC,
+                    ENERGY_DIAG_COMPRESSOR_TEMP_MIN,
+                    message->getAttr(ENERGY_ATTR_I8::DIAG_COMPRESSOR_TEMP_MIN));
+        }
+    }
+    if (message->hasAttr(ENERGY_ATTR_I8::DIAG_WATER_TEMP_MAX))
+    {
+        if (fullUpdate || message->hasChanged(ENERGY_ATTR_I8::DIAG_WATER_TEMP_MAX))
+        {
+            publishi(
+                    ENERGY_SUBTOPIC,
+                    ENERGY_DIAG_WATER_TEMP_MAX,
+                    message->getAttr(ENERGY_ATTR_I8::DIAG_WATER_TEMP_MAX));
+        }
+    }
+    if (message->hasAttr(ENERGY_ATTR_I8::DIAG_WATER_TEMP_MIN))
+    {
+        if (fullUpdate || message->hasChanged(ENERGY_ATTR_I8::DIAG_WATER_TEMP_MIN))
+        {
+            publishi(
+                    ENERGY_SUBTOPIC,
+                    ENERGY_DIAG_WATER_TEMP_MIN,
+                    message->getAttr(ENERGY_ATTR_I8::DIAG_WATER_TEMP_MIN));
         }
     }
 
@@ -1474,13 +1569,9 @@ void MQTTTask::publishFiltered(
         auto  previousFilteredValue = mFilteredValue;
         mFilteredValue              = std::round(filter.updateEstimate(rawValue) * 10.0f) / 10.0f;
 
-
         if (fullUpdate)
         {
-            publishFloat(
-                    MAIN_SUBTOPIC,
-                    topic,
-                    config::MQTT_FILTER_TEMPERATURE_NOISE ? mFilteredValue : rawValue);
+            publishFloat(MAIN_SUBTOPIC, topic, config::MQTT_FILTER_TEMPERATURE_NOISE ? mFilteredValue : rawValue);
         }
         else if (!config::MQTT_FILTER_TEMPERATURE_NOISE && message->hasChanged(attribute))
         {
