@@ -70,15 +70,15 @@ float MainStatusMessage::getAttr(MAIN_ATTR_FLOAT attr)
     switch (attr)
     {
         case MAIN_ATTR_FLOAT::WATER_TEMPERATURE:
-            return mData[1];
+            return static_cast<int8_t>(mData[1]);
         case MAIN_ATTR_FLOAT::AIR_TEMPERATURE:
-            return mData[9];
+            return static_cast<int8_t>(mData[9]);
         case MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE:
-            return mData[5];
+            return static_cast<int8_t>(mData[5]);
         case MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE:
-            return mData[7];
+            return static_cast<int8_t>(mData[7]);
         case MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE:
-            return mData[3];
+            return static_cast<int8_t>(mData[3]);
         case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
             return mData[18];
     }
