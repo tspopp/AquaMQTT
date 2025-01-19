@@ -1,12 +1,12 @@
 #include <Arduino.h>
 #include <MQTT.h>
 #include <RingBuf.h>
-#include <WiFi.h>
 #include <WiFiClient.h>
 #include <esp_task_wdt.h>
 
 #include "config/Configuration.h"
 #include "handler/OTA.h"
+#include "handler/Wifi.h"
 #include "mqtt/MQTTDefinitions.h"
 
 using namespace aquamqtt;
@@ -19,9 +19,15 @@ WiFiClient                mWiFiClient;
 MQTTClient                mMQTTClient(256);
 RingBuf<int, BUFFER_SIZE> mBuffer;
 OTAHandler                otaHandler;
+WifiHandler               wifiHandler;
 uint8_t                   mTopicBuffer[config::MQTT_MAX_TOPIC_SIZE];
 uint8_t                   mPayloadBuffer[MQTT_MAX_PAYLOAD_SIZE];
 uint8_t                   mTempBuffer[BUFFER_SIZE];
+esp_task_wdt_config_t twdt_config = {
+    .timeout_ms     = WATCHDOG_TIMEOUT_MS,
+    .idle_core_mask = (1 << configNUM_CORES) - 1,
+    .trigger_panic  = true,
+};
 
 void toHexStr(uint8_t* data, uint8_t data_len, char* buffer)
 {
@@ -34,26 +40,15 @@ void toHexStr(uint8_t* data, uint8_t data_len, char* buffer)
     buffer[num_bytes * 2] = '\0';
 }
 
-void wifiCallback(WiFiEvent_t event)
-{
-    switch (event)
-    {
-        case WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED:
-            Serial.println(F("ARDUINO_EVENT_WIFI_STA_CONNECTED"));
-            break;
-        case WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-            Serial.println(F("ARDUINO_EVENT_WIFI_STA_DISCONNECTED"));
-            WiFi.setAutoReconnect(true);
-            break;
-        default:
-            break;
-    }
-}
 
 void loop()
 {
     // watchdog
     esp_task_wdt_reset();
+    delay(1);
+
+    // handle wifi events
+    wifiHandler.loop();
 
     // handle over-the-air module in main thread
     otaHandler.loop();
@@ -100,13 +95,13 @@ void setup()
     Serial.println("REBOOT");
 
     // initialize watchdog
-    esp_task_wdt_init(WATCHDOG_TIMEOUT_S, true);
+    esp_task_wdt_deinit();
+    esp_task_wdt_init(&twdt_config);
     esp_task_wdt_add(nullptr);
 
-    // connect to Wi-Fi
-    WiFiClass::mode(WIFI_STA);
-    WiFi.onEvent(wifiCallback);
-    WiFi.begin(aquamqtt::config::ssid, aquamqtt::config::psk);
+
+    // setup wifi
+    wifiHandler.setup();
 
     // setup ota module
     otaHandler.setup();
