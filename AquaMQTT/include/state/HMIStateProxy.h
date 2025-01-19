@@ -69,7 +69,11 @@ public:
 
     void applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion& version);
 
-    size_t copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVersion& version);
+    size_t copyFrame(
+            uint8_t                    frameId,
+            uint8_t*                   buffer,
+            message::ProtocolVersion&  version,
+            message::ProtocolChecksum& type);
 
     void onOperationModeChanged(std::unique_ptr<message::HMIOperationMode> value) override;
 

@@ -24,7 +24,8 @@ public:
     uint64_t getHandledCount() const;
 
 private:
-    aquamqtt::message::ProtocolVersion mLockedProtocol;
+    aquamqtt::message::ProtocolVersion  mLockedProtocol;
+    aquamqtt::message::ProtocolChecksum mLockedChecksum;
 
     int handleFrame();
 

@@ -43,9 +43,12 @@ void MainStateProxy::applyMainOverrides(uint8_t* buffer, message::ProtocolVersio
     }
 
     std::unique_ptr<message::IMainMessage> message;
-    if(version == message::PROTOCOL_LEGACY){
+    if (version == message::PROTOCOL_LEGACY)
+    {
         message = std::make_unique<message::legacy::MainStatusMessage>(buffer);
-    } else{
+    }
+    else
+    {
         message = std::make_unique<message::next::MainStatusMessage>(buffer);
     }
 
@@ -65,14 +68,18 @@ void MainStateProxy::applyMainOverrides(uint8_t* buffer, message::ProtocolVersio
     xSemaphoreGive(mMutex);
 }
 
-size_t MainStateProxy::copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVersion& version)
+size_t MainStateProxy::copyFrame(
+        uint8_t                    frameId,
+        uint8_t*                   buffer,
+        message::ProtocolVersion&  version,
+        message::ProtocolChecksum& type)
 {
     if (frameId != aquamqtt::message::MAIN_MESSAGE_IDENTIFIER)
     {
-        return aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version);
+        return aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version, type);
     }
 
-    size_t mainMessageLength = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version);
+    size_t mainMessageLength = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version, type);
     if (mainMessageLength > 0 && aquamqtt::config::OPERATION_MODE == config::EOperationMode::MITM)
     {
         applyMainOverrides(buffer, version);
@@ -136,10 +143,12 @@ void MainStateProxy::onPVModeHeatElementEnabled(bool enabled)
 
     xSemaphoreGive(mMutex);
 }
+
 void MainStateProxy::onFanExhaustModeChanged(std::unique_ptr<message::HMIFanExhaust> mode)
 {
     // noop
 }
+
 void MainStateProxy::onAirductConfigChanged(std::unique_ptr<message::HMIAirDuctConfig> config)
 {
     // noop
@@ -159,6 +168,7 @@ void MainStateProxy::onResetOverrides()
 {
     // noop
 }
+
 AquaMqttMainOverrides MainStateProxy::getOverrides()
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))

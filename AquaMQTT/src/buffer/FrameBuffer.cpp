@@ -18,6 +18,7 @@ FrameBuffer::FrameBuffer(bool handle194, bool handle193, bool handle67, bool han
     , mHandledCount(0)
     , mTransferBuffer{ 0 }
     , mLockedProtocol(PROTOCOL_UNKNOWN)
+    , mLockedChecksum(CHECKSUM_TYPE_UNKNOWN)
 {
 }
 
@@ -54,8 +55,20 @@ int FrameBuffer::handleFrame()
         // access expected payload length
         int payloadLength = mBuffer[1];
 
+        // determine the checksum size, if we do not ḱnow yet, await two bytes
+        uint8_t crcLen;
+        switch (mLockedChecksum)
+        {
+            case CHECKSUM_TYPE_XOR:
+                crcLen = 1;
+                break;
+            case CHECKSUM_TYPE_CRC16:
+            case CHECKSUM_TYPE_UNKNOWN:
+                crcLen = 2;
+                break;
+        }
+
         // wait until buffer holds a complete frame.
-        uint8_t crcLen = mLockedProtocol == PROTOCOL_NEXT ? 1 : 2;
         if (mBuffer.size() < FRAME_ID_LEN_BYTES + payloadLength + crcLen)
         {
             return 0;
@@ -86,23 +99,70 @@ int FrameBuffer::handleFrame()
             int actualChecksum;
             mBuffer.pop(actualChecksum);
 
-            int desiredChecksum = generateNextChecksum(mTransferBuffer, payloadLength);
+            int desiredChecksum = generateXorChecksum(mTransferBuffer, payloadLength);
 
             crcResult = actualChecksum == desiredChecksum;
+
+            if (crcResult)
+            {
+                mLockedChecksum = CHECKSUM_TYPE_XOR;
+            }
         }
         else
         {
-            // move crc out of ringbuffer
-            int crcVal1;
-            mBuffer.pop(crcVal1);
+            // legacy protocol either uses XOR or CRC16 checksum
+            if (mLockedChecksum == CHECKSUM_TYPE_UNKNOWN)
+            {
+                // try xor
+                int crcVal1;
+                mBuffer.pop(crcVal1);
+                int xorChecksum = generateXorChecksum(mTransferBuffer, payloadLength);
 
-            // move crc out of ringbuffer
-            int crcVal2;
-            mBuffer.pop(crcVal2);
+                if (crcVal1 == xorChecksum)
+                {
+                    mLockedChecksum = CHECKSUM_TYPE_XOR;
+                    crcResult     = true;
+                }
+                else
+                {
+                    // try crc16
+                    int crcVal2;
+                    mBuffer.pop(crcVal2);
 
-            uint16_t desiredCRC = crcVal1 << 8 | crcVal2;
-            uint16_t actualCRC  = mCRC.ccitt(mTransferBuffer, payloadLength);
-            crcResult           = desiredCRC == actualCRC;
+                    uint16_t desiredCRC = crcVal1 << 8 | crcVal2;
+                    uint16_t actualCRC  = mCRC.ccitt(mTransferBuffer, payloadLength);
+
+                    if(desiredCRC == actualCRC){
+                        mLockedChecksum = CHECKSUM_TYPE_CRC16;
+                        crcResult = true;
+                    } else{
+                        crcResult = false;
+                    }
+                }
+            }
+            else if (mLockedChecksum == CHECKSUM_TYPE_XOR)
+            {
+                int actualChecksum;
+                mBuffer.pop(actualChecksum);
+
+                int desiredChecksum = generateXorChecksum(mTransferBuffer, payloadLength);
+
+                crcResult = actualChecksum == desiredChecksum;
+            }
+            else if (mLockedChecksum == CHECKSUM_TYPE_CRC16)
+            {
+                // move crc out of ringbuffer
+                int crcVal1;
+                mBuffer.pop(crcVal1);
+
+                // move crc out of ringbuffer
+                int crcVal2;
+                mBuffer.pop(crcVal2);
+
+                uint16_t desiredCRC = crcVal1 << 8 | crcVal2;
+                uint16_t actualCRC  = mCRC.ccitt(mTransferBuffer, payloadLength);
+                crcResult           = desiredCRC == actualCRC;
+            }
         }
 
         // completed and valid frame, move complete frame and ownership to frame handler
@@ -113,6 +173,7 @@ int FrameBuffer::handleFrame()
             {
                 mLockedProtocol = protocolVersion;
                 aquamqtt::DHWState::getInstance().setVersion(protocolVersion);
+                aquamqtt::DHWState::getInstance().setChecksumType(mLockedChecksum);
             }
 
             if ((frameId == HMI_MESSAGE_IDENTIFIER && mHandle194) || (frameId == MAIN_MESSAGE_IDENTIFIER && mHandle193)

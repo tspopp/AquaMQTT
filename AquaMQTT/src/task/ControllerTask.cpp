@@ -147,8 +147,10 @@ void ControllerTask::flushReadBuffer()
 
 void ControllerTask::sendMessage194()
 {
-    message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
-    size_t length = HMIStateProxy::getInstance().copyFrame(message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+    message::ProtocolVersion  version      = message::PROTOCOL_UNKNOWN;
+    message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+    size_t                    length       = HMIStateProxy::getInstance()
+                            .copyFrame(message::HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
 
     if (length <= 0 || version == message::PROTOCOL_UNKNOWN)
     {
@@ -157,15 +159,15 @@ void ControllerTask::sendMessage194()
     }
 
     Serial2.write(mTransferBuffer, length);
-    if (version == message::PROTOCOL_LEGACY)
+    if (checksumType == message::CHECKSUM_TYPE_CRC16)
     {
         uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
         Serial2.write((uint8_t) (crc >> 8));
         Serial2.write((uint8_t) (crc & 0xFF));
     }
-    else if (version == message::PROTOCOL_NEXT)
+    else if (checksumType == message::CHECKSUM_TYPE_XOR)
     {
-        uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
+        uint8_t checksum = message::generateXorChecksum(mTransferBuffer, length);
         Serial2.write(checksum);
     }
     Serial2.flush();
