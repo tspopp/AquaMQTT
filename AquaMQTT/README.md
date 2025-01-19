@@ -76,11 +76,14 @@ Listener" and "Man-in-the-Middle."
    ```bash
    pio run -e arduino_nano_esp32
    ```
+
 3. Connect the Arduino and upload the project to your microcontroller via USB
 
    ```bash
    pio run -t upload -e arduino_nano_esp32
    ```
+
+**Note:** If you are using the cheaper esp32 [esp32-s3-devkit-c1](https://github.com/tspopp/AquaMQTT/issues/56) instead of the Arduino Nano ESP32, use the environment `esp32-s3-devkitc-1` instead of `arduino_nano_esp32`
 
 ### Over-The-Air Update
 
