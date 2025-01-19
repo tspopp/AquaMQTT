@@ -24,7 +24,8 @@ constexpr char networkName[] = "aquamqtt";
 /**
  * Self explanatory internal settings: most probably you don't want to change them.
  */
-constexpr uint8_t  WATCHDOG_TIMEOUT_S    = 60;
+constexpr uint32_t  WATCHDOG_TIMEOUT_MS   = 60000;
+constexpr uint16_t WIFI_RECONNECT_CYCLE_S = 10;
 constexpr uint8_t  MQTT_MAX_TOPIC_SIZE   = 80;
 constexpr uint8_t  MQTT_MAX_PAYLOAD_SIZE = 255;
 
