@@ -19,9 +19,12 @@ jobs:
           python-version: '3.9'
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
-      - name: Build PlatformIO Project
+      - name: Build AquaMQTT PlatformIO Project
         working-directory: ./AquaMQTT
         run: pio run -e arduino_nano_esp32
       - name: Run Unittest
         working-directory: ./AquaMQTT
         run: pio test -e native 
+      - name: Build AquaDebug PlatformIO Project
+        working-directory: ./tools/AquaDebug
+        run: pio run -e arduino_nano_esp32
