@@ -18,6 +18,12 @@ enum ProtocolVersion
     PROTOCOL_NEXT    = 1
 };
 
+enum ProtocolChecksum{
+    CHECKSUM_TYPE_UNKNOWN = -1,
+    CHECKSUM_TYPE_CRC16 = 0,
+    CHECKSUM_TYPE_XOR = 1,
+};
+
 constexpr uint8_t HMI_MESSAGE_IDENTIFIER    = 194;
 constexpr uint8_t HMI_MESSAGE_LENGTH_NEXT   = 34;
 constexpr uint8_t HMI_MESSAGE_LENGTH_LEGACY = 35;
@@ -70,7 +76,7 @@ static const char* protocolVersionStr(ProtocolVersion version)
     }
 }
 
-static uint8_t generateNextChecksum(const uint8_t* buffer, uint8_t length)
+static uint8_t generateXorChecksum(const uint8_t* buffer, uint8_t length)
 {
     int desiredChecksum = 0;
     // checksum is calculated on length field and payload

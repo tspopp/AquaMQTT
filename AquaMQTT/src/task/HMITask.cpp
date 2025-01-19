@@ -171,11 +171,10 @@ void HMITask::flushReadBuffer()
 
 void HMITask::sendMessage193()
 {
-    message::ProtocolVersion version;
-    size_t                   length = MainStateProxy::getInstance().copyFrame(
-            message::MAIN_MESSAGE_IDENTIFIER,
-            mTransferBuffer,
-            version);
+    message::ProtocolVersion  version;
+    message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+    size_t                    length       = MainStateProxy::getInstance()
+                            .copyFrame(message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
 
     if (length <= 0 || version == message::PROTOCOL_UNKNOWN)
     {
@@ -186,7 +185,7 @@ void HMITask::sendMessage193()
     Serial1.write(message::MAIN_MESSAGE_IDENTIFIER);
     Serial1.write(mTransferBuffer, length);
 
-    if (version == message::PROTOCOL_LEGACY)
+    if (checksumType == message::CHECKSUM_TYPE_CRC16)
     {
         uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
         Serial1.write((uint8_t) (crc >> 8));
@@ -194,7 +193,7 @@ void HMITask::sendMessage193()
     }
     else
     {
-        uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
+        uint8_t checksum = message::generateXorChecksum(mTransferBuffer, length);
         Serial1.write(checksum);
     }
 
@@ -204,11 +203,11 @@ void HMITask::sendMessage193()
 
 void HMITask::sendMessage67()
 {
-    message::ProtocolVersion version;
-    size_t                   length = MainStateProxy::getInstance().copyFrame(
-            message::ENERGY_MESSAGE_IDENTIFIER,
-            mTransferBuffer,
-            version);
+    message::ProtocolVersion  version;
+    message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+
+    size_t length = MainStateProxy::getInstance()
+                            .copyFrame(message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
 
     if (length <= 0 || version == message::PROTOCOL_UNKNOWN)
     {
@@ -219,7 +218,7 @@ void HMITask::sendMessage67()
     Serial1.write(message::ENERGY_MESSAGE_IDENTIFIER);
     Serial1.write(mTransferBuffer, length);
 
-    if (version == message::PROTOCOL_LEGACY)
+    if (checksumType == message::CHECKSUM_TYPE_CRC16)
     {
         uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
         Serial1.write((uint8_t) (crc >> 8));
@@ -227,7 +226,7 @@ void HMITask::sendMessage67()
     }
     else
     {
-        uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
+        uint8_t checksum = message::generateXorChecksum(mTransferBuffer, length);
         Serial1.write(checksum);
     }
     Serial1.flush();
@@ -239,11 +238,14 @@ void HMITask::sendMessage74()
     // check if the HMI is requesting an error message
     uint8_t requestId = UINT8_MAX;
     {
-        message::ProtocolVersion version;
-        size_t                   length = MainStateProxy::getInstance().copyFrame(
+        message::ProtocolVersion  version;
+        message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+
+        size_t length = MainStateProxy::getInstance().copyFrame(
                 aquamqtt::message::HMI_MESSAGE_IDENTIFIER,
                 mTransferBuffer,
-                version);
+                version,
+                checksumType);
 
         if (length > 0)
         {
@@ -268,12 +270,14 @@ void HMITask::sendMessage74()
     }
 
     // check if we have the requested error message in cache
-    uint8_t                  availableRequestId = 0;
-    message::ProtocolVersion version;
-    size_t                   length = MainStateProxy::getInstance().copyFrame(
+    uint8_t                   availableRequestId = 0;
+    message::ProtocolVersion  version;
+    message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+    size_t                    length       = MainStateProxy::getInstance().copyFrame(
             aquamqtt::message::ERROR_MESSAGE_IDENTIFIER,
             mTransferBuffer,
-            version);
+            version,
+            checksumType);
     if (length > 0)
     {
         if (version == message::PROTOCOL_LEGACY)
@@ -294,7 +298,7 @@ void HMITask::sendMessage74()
         Serial1.write(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER);
         Serial1.write(mTransferBuffer, length);
 
-        if (version == message::PROTOCOL_LEGACY)
+        if (checksumType == message::CHECKSUM_TYPE_CRC16)
         {
             uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
             Serial1.write((uint8_t) (crc >> 8));
@@ -302,7 +306,7 @@ void HMITask::sendMessage74()
         }
         else
         {
-            uint8_t checksum = message::generateNextChecksum(mTransferBuffer, length);
+            uint8_t checksum = message::generateXorChecksum(mTransferBuffer, length);
             Serial1.write(checksum);
         }
         Serial1.flush();

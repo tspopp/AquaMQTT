@@ -12,6 +12,7 @@ DHWState& DHWState::getInstance()
     static DHWState instance;
     return instance;
 }
+
 DHWState::DHWState()
     : mMutex(xSemaphoreCreateMutex())
     , mNotify(nullptr)
@@ -27,8 +28,10 @@ DHWState::DHWState()
     , mMainStats{ 0, 0, 0, 0, 0 }
     , mListenerStats{ 0, 0, 0, 0, 0 }
     , mProtocolVersion(PROTOCOL_UNKNOWN)
+    , mChecksumType(CHECKSUM_TYPE_UNKNOWN)
 {
 }
+
 void DHWState::setListener(TaskHandle_t handle)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
@@ -40,6 +43,7 @@ void DHWState::setListener(TaskHandle_t handle)
 
     xSemaphoreGive(mMutex);
 }
+
 void DHWState::storeFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* payload)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
@@ -89,6 +93,7 @@ void DHWState::storeFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* paylo
 
     xSemaphoreGive(mMutex);
 }
+
 void DHWState::updateFrameBufferStatistics(uint8_t source, BufferStatistics statistics)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
@@ -111,6 +116,7 @@ void DHWState::updateFrameBufferStatistics(uint8_t source, BufferStatistics stat
 
     xSemaphoreGive(mMutex);
 }
+
 BufferStatistics DHWState::getFrameBufferStatistics(uint8_t source)
 {
     BufferStatistics statistics{};
@@ -136,7 +142,12 @@ BufferStatistics DHWState::getFrameBufferStatistics(uint8_t source)
 
     return statistics;
 }
-size_t DHWState::copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVersion& version)
+
+size_t DHWState::copyFrame(
+        uint8_t                    frameId,
+        uint8_t*                   buffer,
+        message::ProtocolVersion&  version,
+        message::ProtocolChecksum& type)
 {
     size_t length = 0;
 
@@ -145,7 +156,7 @@ size_t DHWState::copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVe
         return length;
     }
 
-    if(mProtocolVersion != PROTOCOL_UNKNOWN)
+    if (mProtocolVersion != PROTOCOL_UNKNOWN)
     {
         if (frameId == HMI_MESSAGE_IDENTIFIER && mHasHmiMessage)
         {
@@ -170,11 +181,13 @@ size_t DHWState::copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVe
     }
 
     version = mProtocolVersion;
+    type    = mChecksumType;
 
     xSemaphoreGive(mMutex);
 
     return length;
 }
+
 message::ProtocolVersion DHWState::getVersion()
 {
     message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
@@ -201,4 +214,17 @@ void DHWState::setVersion(message::ProtocolVersion version)
 
     xSemaphoreGive(mMutex);
 }
+
+void DHWState::setChecksumType(message::ProtocolChecksum checksum)
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mChecksumType = checksum;
+
+    xSemaphoreGive(mMutex);
+}
+
 }  // namespace aquamqtt

@@ -41,6 +41,8 @@ public:
 
     void setVersion(message::ProtocolVersion version);
 
+    void setChecksumType(message::ProtocolChecksum checksum);
+
     void setListener(TaskHandle_t handle);
 
     void storeFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* payload);
@@ -49,14 +51,19 @@ public:
 
     BufferStatistics getFrameBufferStatistics(uint8_t source);
 
-    size_t copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVersion& version);
+    size_t copyFrame(
+            uint8_t                    frameId,
+            uint8_t*                   buffer,
+            message::ProtocolVersion&  version,
+            message::ProtocolChecksum& type);
 
 private:
     TaskHandle_t mNotify;
 
     SemaphoreHandle_t mMutex;
 
-    message::ProtocolVersion mProtocolVersion;
+    message::ProtocolVersion  mProtocolVersion;
+    message::ProtocolChecksum mChecksumType;
 
     bool mHasHmiMessage;
     bool mHasMainMessage;

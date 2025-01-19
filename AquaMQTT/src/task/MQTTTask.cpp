@@ -364,8 +364,11 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 8) != 0 || fullUpdate)
     {
-        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
-        size_t length = HMIStateProxy::getInstance().copyFrame(HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+        message::ProtocolVersion  version      = message::PROTOCOL_UNKNOWN;
+        message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+
+        size_t length = HMIStateProxy::getInstance()
+                                .copyFrame(HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
         if (length > 0)
         {
             updateHMIStatus(fullUpdate, version);
@@ -380,8 +383,10 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 7) != 0 || fullUpdate)
     {
-        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
-        size_t length = MainStateProxy::getInstance().copyFrame(MAIN_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+        message::ProtocolVersion  version      = message::PROTOCOL_UNKNOWN;
+        message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+        size_t                    length       = MainStateProxy::getInstance()
+                                .copyFrame(MAIN_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
         if (length > 0)
         {
             updateMainStatus(fullUpdate, version);
@@ -396,8 +401,10 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 6) != 0 || fullUpdate)
     {
-        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
-        size_t length = MainStateProxy::getInstance().copyFrame(ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer, version);
+        message::ProtocolVersion  version      = message::PROTOCOL_UNKNOWN;
+        message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+        size_t                    length       = MainStateProxy::getInstance()
+                                .copyFrame(ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
         if (length > 0)
         {
             updateEnergyStats(fullUpdate, version);
@@ -412,8 +419,9 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 5) != 0)
     {
-        message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
-        if (MainStateProxy::getInstance().copyFrame(ERROR_MESSAGE_IDENTIFIER, mTransferBuffer, version))
+        message::ProtocolVersion  version      = message::PROTOCOL_UNKNOWN;
+        message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+        if (MainStateProxy::getInstance().copyFrame(ERROR_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType))
         {
             updateErrorStatus(version);
         }

@@ -161,14 +161,18 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion&
     xSemaphoreGive(mMutex);
 }
 
-size_t HMIStateProxy::copyFrame(uint8_t frameId, uint8_t* buffer, message::ProtocolVersion& version)
+size_t HMIStateProxy::copyFrame(
+        uint8_t                    frameId,
+        uint8_t*                   buffer,
+        message::ProtocolVersion&  version,
+        message::ProtocolChecksum& type)
 {
     if (frameId != aquamqtt::message::HMI_MESSAGE_IDENTIFIER)
     {
-        return aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version);
+        return aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version, type);
     }
 
-    size_t hmiMessageLength = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version);
+    size_t hmiMessageLength = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version, type);
     if (hmiMessageLength > 0 && aquamqtt::config::OPERATION_MODE == config::EOperationMode::MITM)
     {
         applyHMIOverrides(buffer, version);
