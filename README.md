@@ -21,6 +21,7 @@ AquaMQTT is a project designed to monitor and control your DHW heat pump locally
 AquaMQTT has been designed and tested with the [Windhager AquaWin Air3](https://www.windhager.com/en/products/hot-water-tanks/aquawin-air3/) DHW heat pump. While specifically tailored to this model, it has been proofen that AquaMQTT is compatible to similar heat pumps manufactured by the [Groupe Atlantic](https://www.groupe-atlantic.fr/) and branded for various companies such as:
 
 - [Atlantic Explorer](https://www.atlantic-comfort.com/Water-Heaters/Heat-pump-water-heaters/Explorer)
+- [Atlantic Calypso](https://atlantic-comfort.com/products/domestic-hot-water/heat-pump-water-heaters/calypso-vm)
 - [Austria Email Explorer](https://www.austria-email.de/produkte/waermepumpensysteme/waermepumpen-trinkwasser/explorer-evo-2/)
 - [Panasonic DHW270](https://www.aircon.panasonic.eu/CH_de/model/paw-dhw270f/)
 - [Sauter Confort Pagosa Green](https://www.confort-sauter.com/chauffe-eau/pagosa-green)

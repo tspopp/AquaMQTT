@@ -65,6 +65,8 @@ In this message we expect an CRC of `0x1952` (last two bytes). Using the CRC-16/
 successfully recreate the CRC
 values: [See online crc result using crccalc.com](https://crccalc.com/?crc=1F00000000000000000000B509000017000000B5090000A8C3120000000000&method=crc16&datatype=hex&outtype=0)
 
+**Note:** [Later heatpumps](./DEVICES.md) use the LEGACY protocol in combination with a one-byte XOR checksum, same as observed within the [NEXT protocol](./PROTOCOL_NEXT.md).
+
 ### Messages
 
 Messages are either send from the main or the hmi controller. The main controller is the master of the communication and
