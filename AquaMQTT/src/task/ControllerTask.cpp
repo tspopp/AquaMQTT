@@ -87,7 +87,9 @@ void ControllerTask::loop()
 
                 if (valRead == aquamqtt::message::HMI_MESSAGE_IDENTIFIER)
                 {
+                    digitalWrite(config::GPIO_ENABLE_TX_MAIN, HIGH);
                     sendMessage194();
+                    digitalWrite(config::GPIO_ENABLE_TX_MAIN, LOW);
                     flushReadBuffer();
                 }
 

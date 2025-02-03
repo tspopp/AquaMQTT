@@ -66,8 +66,10 @@ void HMITask::loop()
     switch (mState)
     {
         case HMITaskState::REQUESTING_194:
+            digitalWrite(config::GPIO_ENABLE_TX_HMI, HIGH);
             Serial1.write(aquamqtt::message::HMI_MESSAGE_IDENTIFIER);
             Serial1.flush();
+            digitalWrite(config::GPIO_ENABLE_TX_HMI, LOW);
             mState           = HMITaskState::SLEEP_194;
             mLastMessageSent = millis();
             break;
@@ -82,7 +84,9 @@ void HMITask::loop()
             }
             break;
         case HMITaskState::SENDING_67:
+            digitalWrite(config::GPIO_ENABLE_TX_HMI, HIGH);
             sendMessage67();
+            digitalWrite(config::GPIO_ENABLE_TX_HMI, LOW);
             flushReadBuffer();
             mState           = HMITaskState::SLEEP_67;
             mLastMessageSent = millis();
@@ -98,7 +102,9 @@ void HMITask::loop()
             }
             break;
         case HMITaskState::SENDING_193:
+            digitalWrite(config::GPIO_ENABLE_TX_HMI, HIGH);
             sendMessage193();
+            digitalWrite(config::GPIO_ENABLE_TX_HMI, LOW);
             flushReadBuffer();
             mState           = HMITaskState::SLEEP_193;
             mLastMessageSent = millis();
@@ -114,7 +120,9 @@ void HMITask::loop()
             }
             break;
         case HMITaskState::SENDING_74:
+            digitalWrite(config::GPIO_ENABLE_TX_HMI, HIGH);
             sendMessage74();
+            digitalWrite(config::GPIO_ENABLE_TX_HMI, LOW);
             flushReadBuffer();
             mState           = HMITaskState::SLEEP_74;
             mLastMessageSent = millis();

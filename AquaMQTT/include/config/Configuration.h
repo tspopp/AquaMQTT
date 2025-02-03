@@ -155,6 +155,14 @@ constexpr uint8_t GPIO_HMI_TX  = 5;
 constexpr uint8_t GPIO_SDA_RTC = A4;
 constexpr uint8_t GPIO_SCL_RTC = A5;
 
+/**
+ * Preparation to new hw rev https://github.com/tspopp/AquaMQTT/issues/67
+ */
+
+// TODO: assign pins accordingly
+constexpr uint8_t GPIO_ENABLE_TX_HMI = 25;
+constexpr uint8_t GPIO_ENABLE_TX_MAIN = 5;
+
 }  // namespace config
 }  // namespace aquamqtt
 
