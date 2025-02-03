@@ -47,6 +47,7 @@ void HMITask::spawn()
 void HMITask::setup()  // NOLINT(*-convert-member-functions-to-static)
 {
     Serial1.begin(9550, SERIAL_8N2, config::GPIO_HMI_RX, config::GPIO_HMI_TX);
+    pinMode(config::GPIO_ENABLE_TX_HMI, OUTPUT);
 }
 
 void HMITask::loop()
@@ -69,8 +70,10 @@ void HMITask::loop()
         case HMITaskState::REQUEST_194:
             mState           = HMITaskState::SLEEP_194;
             mLastMessageSent = millis();
+            digitalWrite(config::GPIO_ENABLE_TX_HMI, HIGH);
             Serial1.write(message::HMI_MESSAGE_IDENTIFIER);
             Serial1.flush();
+            digitalWrite(config::GPIO_ENABLE_TX_HMI, LOW);
             break;
         case HMITaskState::SLEEP_194:
             if (mVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
@@ -207,6 +210,7 @@ void HMITask::sendMessage193()
         return;
     }
 
+    digitalWrite(config::GPIO_ENABLE_TX_HMI, HIGH);
     Serial1.write(message::MAIN_MESSAGE_IDENTIFIER);
     Serial1.write(mTransferBuffer, length);
 
@@ -223,6 +227,7 @@ void HMITask::sendMessage193()
     }
 
     Serial1.flush();
+    digitalWrite(config::GPIO_ENABLE_TX_HMI, LOW);
     mMessagesSent++;
 }
 
@@ -243,6 +248,7 @@ void HMITask::sendMessage67()
         return;
     }
 
+    digitalWrite(config::GPIO_ENABLE_TX_HMI, HIGH);
     Serial1.write(message::ENERGY_MESSAGE_IDENTIFIER);
     Serial1.write(mTransferBuffer, length);
 
@@ -258,6 +264,7 @@ void HMITask::sendMessage67()
         Serial1.write(checksum);
     }
     Serial1.flush();
+    digitalWrite(config::GPIO_ENABLE_TX_HMI, LOW);
     mMessagesSent++;
 }
 
@@ -307,6 +314,7 @@ void HMITask::sendMessage74()
     // emit the error message
     if (requestId == availableRequestId)
     {
+        digitalWrite(config::GPIO_ENABLE_TX_HMI, HIGH);
         Serial1.write(message::ERROR_MESSAGE_IDENTIFIER);
         Serial1.write(mTransferBuffer, length);
 
@@ -322,6 +330,7 @@ void HMITask::sendMessage74()
             Serial1.write(checksum);
         }
         Serial1.flush();
+        digitalWrite(config::GPIO_ENABLE_TX_HMI, LOW);
         mMessagesSent++;
         mLastEmittedRequestId = requestId;
     }
@@ -344,6 +353,7 @@ void HMITask::sendMessage217()
         return;
     }
 
+    digitalWrite(config::GPIO_ENABLE_TX_HMI, HIGH);
     Serial1.write(message::EXTRA_MESSAGE_IDENTIFIER);
     Serial1.write(mTransferBuffer, length);
 
@@ -359,6 +369,7 @@ void HMITask::sendMessage217()
         Serial1.write(checksum);
     }
     Serial1.flush();
+    digitalWrite(config::GPIO_ENABLE_TX_HMI, LOW);
     mMessagesSent++;
 }
 
