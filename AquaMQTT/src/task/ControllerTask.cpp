@@ -42,6 +42,7 @@ void ControllerTask::spawn()
 void ControllerTask::setup()  // NOLINT(*-convert-member-functions-to-static)
 {
     Serial2.begin(9550, SERIAL_8N2, config::GPIO_MAIN_RX, config::GPIO_MAIN_TX);
+    pinMode(config::GPIO_ENABLE_TX_MAIN, OUTPUT);
 }
 
 void ControllerTask::loop()
@@ -128,6 +129,7 @@ void ControllerTask::sendMessage194()
         return;
     }
 
+    digitalWrite(config::GPIO_ENABLE_TX_MAIN, HIGH);
     Serial2.write(mTransferBuffer, length);
     if (checksumType == message::CHECKSUM_TYPE_CRC16)
     {
@@ -141,6 +143,7 @@ void ControllerTask::sendMessage194()
         Serial2.write(checksum);
     }
     Serial2.flush();
+    digitalWrite(config::GPIO_ENABLE_TX_MAIN, LOW);
     mMessagesSent++;
 }
 }  // namespace aquamqtt

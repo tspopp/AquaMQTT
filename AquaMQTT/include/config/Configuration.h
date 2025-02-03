@@ -168,6 +168,18 @@ constexpr uint8_t GPIO_HMI_TX  = 5;
 constexpr uint8_t GPIO_SDA_RTC = A4;
 constexpr uint8_t GPIO_SCL_RTC = A5;
 
+ /**
+ * Additional pin assignments for AquaMQTT Board Rev 2.0
+ * Shall do no harm if used with an older revision board
+ */
+#ifdef ENV_DEVKIT_ESP32
+ constexpr uint8_t GPIO_ENABLE_TX_HMI = 10;
+ constexpr uint8_t GPIO_ENABLE_TX_MAIN = 9;
+#else
+ constexpr uint8_t GPIO_ENABLE_TX_HMI = 7;
+ constexpr uint8_t GPIO_ENABLE_TX_MAIN = 6;
+#endif
+
 }  // namespace aquamqtt::config
 
 #endif  // AQUAMQTT_CONFIGURATION_H
