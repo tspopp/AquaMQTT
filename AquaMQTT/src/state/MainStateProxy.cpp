@@ -1,5 +1,7 @@
 #include "state/MainStateProxy.h"
 
+#include <message/Factory.h>
+
 #include "config/Configuration.h"
 #include "message/IMainMessage.h"
 #include "message/legacy/MainStatusMessage.h"
@@ -42,15 +44,7 @@ void MainStateProxy::applyMainOverrides(uint8_t* buffer, message::ProtocolVersio
         return;
     }
 
-    std::unique_ptr<message::IMainMessage> message;
-    if (version == message::PROTOCOL_LEGACY)
-    {
-        message = std::make_unique<message::legacy::MainStatusMessage>(buffer);
-    }
-    else
-    {
-        message = std::make_unique<message::next::MainStatusMessage>(buffer);
-    }
+    std::unique_ptr<message::IMainMessage> message = message::createMainMessageFromBuffer(version, buffer);
 
     // we only want to modify the message if a custom pv mode is active -> else leave state as it is
     if (mPVModeHeatElement)

@@ -10,7 +10,8 @@ namespace aquamqtt
 {
 
 ControllerTask::ControllerTask()
-    : mBuffer(false, true, true, true)
+    // TODO: ODYSSEE clarify origin of extra message
+    : mBuffer(false, true, true, true, true)
     , mLastStatisticsUpdate(0)
     , mTransferBuffer{ 0 }
     , mCRC()
@@ -44,7 +45,7 @@ void ControllerTask::spawn()
 
 void ControllerTask::setup()  // NOLINT(*-convert-member-functions-to-static)
 {
-    Serial2.begin(9550, SERIAL_8N2, aquamqtt::config::GPIO_MAIN_RX, aquamqtt::config::GPIO_MAIN_TX);
+    Serial2.begin(9550, SERIAL_8N2, config::GPIO_MAIN_RX, config::GPIO_MAIN_TX);
 }
 
 void ControllerTask::loop()
@@ -59,7 +60,7 @@ void ControllerTask::loop()
         switch (mState)
         {
             case ControllerTaskState::AWAITING_67:
-                if (mBuffer.pushByte(valRead) == aquamqtt::message::ENERGY_MESSAGE_IDENTIFIER)
+                if (mBuffer.pushByte(valRead) == message::ENERGY_MESSAGE_IDENTIFIER)
                 {
                     mState = ControllerTaskState::AWAITING_193;
                 }
@@ -67,7 +68,7 @@ void ControllerTask::loop()
             case ControllerTaskState::AWAITING_193:
             {
                 int processedMessageId = mBuffer.pushByte(valRead);
-                if (processedMessageId == aquamqtt::message::MAIN_MESSAGE_IDENTIFIER)
+                if (processedMessageId == message::MAIN_MESSAGE_IDENTIFIER)
                 {
                     mState = ControllerTaskState::CHECK_FOR_HMI_TRIGGER;
                 }
@@ -78,14 +79,14 @@ void ControllerTask::loop()
                 break;
             }
             case ControllerTaskState::CHECK_FOR_HMI_TRIGGER:
-                if (valRead == aquamqtt::message::ERROR_MESSAGE_IDENTIFIER)
+                if (valRead == message::ERROR_MESSAGE_IDENTIFIER)
                 {
                     mBuffer.pushByte(valRead);
                     mState = ControllerTaskState::AWAITING_74;
                     continue;
                 }
 
-                if (valRead == aquamqtt::message::HMI_MESSAGE_IDENTIFIER)
+                if (valRead == message::HMI_MESSAGE_IDENTIFIER)
                 {
                     sendMessage194();
                     flushReadBuffer();
@@ -96,7 +97,7 @@ void ControllerTask::loop()
             case ControllerTaskState::AWAITING_74:
             {
                 int processedMessageId = mBuffer.pushByte(valRead);
-                if (processedMessageId == aquamqtt::message::ERROR_MESSAGE_IDENTIFIER)
+                if (processedMessageId == message::ERROR_MESSAGE_IDENTIFIER)
                 {
                     mState = ControllerTaskState::CHECK_FOR_HMI_TRIGGER;
                 }
