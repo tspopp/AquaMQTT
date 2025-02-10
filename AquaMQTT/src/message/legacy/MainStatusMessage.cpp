@@ -3,7 +3,7 @@
 namespace aquamqtt::message::legacy
 {
 
-void MainStatusMessage::compareWith(uint8_t* data)
+void MainStatusMessage::compareWith(const uint8_t* data)
 {
     if (data == nullptr)
     {
@@ -16,9 +16,7 @@ void MainStatusMessage::compareWith(uint8_t* data)
 
     for (int i = 0; i < numDiffs; ++i)
     {
-        auto indiceChanged = diffIndices[i];
-
-        switch (indiceChanged)
+        switch (diffIndices[i])
         {
             case 1:
             case 2:
@@ -92,12 +90,12 @@ void MainStatusMessage::compareWith(uint8_t* data)
     }
 }
 
-MainStatusMessage::MainStatusMessage(uint8_t* data, uint8_t* previous)
+MainStatusMessage::MainStatusMessage(uint8_t* data, const uint8_t* previous)
     : mData(data)
-    , mHasChangedU16()
-    , mHasChangedBool()
     , mHasChangedFloat()
+    , mHasChangedBool()
     , mHasChangedU8()
+    , mHasChangedU16()
 {
     mCreatedWithoutPrevious = previous == nullptr;
     compareWith(previous);
@@ -108,7 +106,7 @@ uint8_t MainStatusMessage::getLength()
     return MAIN_MESSAGE_LENGTH_LEGACY;
 }
 
-float MainStatusMessage::getAttr(MAIN_ATTR_FLOAT attr)
+float MainStatusMessage::getAttr(const MAIN_ATTR_FLOAT attr)
 {
     switch (attr)
     {
@@ -122,13 +120,12 @@ float MainStatusMessage::getAttr(MAIN_ATTR_FLOAT attr)
             return (float) (((short int) (mData[6] << 8) | mData[5]) / 10.0);
         case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
             return (float) (((short int) (mData[19] << 8) | mData[18]) / 10.0);
-        case MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE:
-            break;
+        default:
+            return 0;
     }
-    return 0;
 }
 
-bool MainStatusMessage::getAttr(MAIN_ATTR_BOOL attr)
+bool MainStatusMessage::getAttr(const MAIN_ATTR_BOOL attr)
 {
     switch (attr)
     {
@@ -160,7 +157,7 @@ bool MainStatusMessage::getAttr(MAIN_ATTR_BOOL attr)
     return false;
 }
 
-uint8_t MainStatusMessage::getAttr(MAIN_ATTR_U8 attr)
+uint8_t MainStatusMessage::getAttr(const MAIN_ATTR_U8 attr)
 {
     switch (attr)
     {
@@ -184,21 +181,21 @@ uint8_t MainStatusMessage::getAttr(MAIN_ATTR_U8 attr)
             switch (mData[35])
             {
                 case 65:
-                    return MAINBrands::BR_ATLANTIC;
+                    return BR_ATLANTIC;
                 case 78:
-                    return MAINBrands::BR_NONAME;
+                    return BR_NONAME;
                 case 83:
-                    return MAINBrands::BR_SAUTER;
+                    return BR_SAUTER;
                 case 84:
-                    return MAINBrands::BR_THERMOR;
+                    return BR_THERMOR;
                 default:
-                    return MAINBrands::BR_UNKNOWN;
+                    return BR_UNKNOWN;
             }
     }
     return 0;
 }
 
-uint16_t MainStatusMessage::getAttr(MAIN_ATTR_U16 attr)
+uint16_t MainStatusMessage::getAttr(const MAIN_ATTR_U16 attr)
 {
     switch (attr)
     {
@@ -210,7 +207,7 @@ uint16_t MainStatusMessage::getAttr(MAIN_ATTR_U16 attr)
     return 0;
 }
 
-void MainStatusMessage::setAttr(MAIN_ATTR_FLOAT attr, float value)
+void MainStatusMessage::setAttr(const MAIN_ATTR_FLOAT attr, float value)
 {
     switch (attr)
     {
@@ -242,8 +239,7 @@ void MainStatusMessage::setAttr(MAIN_ATTR_FLOAT attr, float value)
             mData[6]           = (rawValue >> 8) & 0xFF;
         }
         break;
-        case MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE:
-        case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
+        default:
             break;
     }
 }
@@ -294,7 +290,7 @@ void MainStatusMessage::setAttr(MAIN_ATTR_U16 attr, uint16_t value)
 {
 }
 
-bool MainStatusMessage::hasAttr(MAIN_ATTR_FLOAT attr) const
+bool MainStatusMessage::hasAttr(const MAIN_ATTR_FLOAT attr) const
 {
     switch (attr)
     {
@@ -304,13 +300,12 @@ bool MainStatusMessage::hasAttr(MAIN_ATTR_FLOAT attr) const
         case MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE:
         case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
             return true;
-        case MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE:
+        default:
             return false;
     }
-    return false;
 }
 
-bool MainStatusMessage::hasAttr(MAIN_ATTR_BOOL attr) const
+bool MainStatusMessage::hasAttr(const MAIN_ATTR_BOOL attr) const
 {
     switch (attr)
     {
@@ -331,7 +326,7 @@ bool MainStatusMessage::hasAttr(MAIN_ATTR_BOOL attr) const
     return false;
 }
 
-bool MainStatusMessage::hasAttr(MAIN_ATTR_U8 attr) const
+bool MainStatusMessage::hasAttr(const MAIN_ATTR_U8 attr) const
 {
     switch (attr)
     {
@@ -347,7 +342,7 @@ bool MainStatusMessage::hasAttr(MAIN_ATTR_U8 attr) const
     return false;
 }
 
-bool MainStatusMessage::hasAttr(MAIN_ATTR_U16 attr) const
+bool MainStatusMessage::hasAttr(const MAIN_ATTR_U16 attr) const
 {
     switch (attr)
     {
@@ -358,23 +353,23 @@ bool MainStatusMessage::hasAttr(MAIN_ATTR_U16 attr) const
     return false;
 }
 
-bool MainStatusMessage::hasChanged(MAIN_ATTR_FLOAT attr) const
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_FLOAT attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedFloat.find(attr) != mHasChangedFloat.end();
+    return mCreatedWithoutPrevious || mHasChangedFloat.contains(attr);
 }
 
-bool MainStatusMessage::hasChanged(MAIN_ATTR_BOOL attr) const
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_BOOL attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedBool.find(attr) != mHasChangedBool.end();
+    return mCreatedWithoutPrevious || mHasChangedBool.contains(attr);
 }
 
-bool MainStatusMessage::hasChanged(MAIN_ATTR_U8 attr) const
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_U8 attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedU8.find(attr) != mHasChangedU8.end();
+    return mCreatedWithoutPrevious || mHasChangedU8.contains(attr);
 }
 
-bool MainStatusMessage::hasChanged(MAIN_ATTR_U16 attr) const
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_U16 attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedU16.find(attr) != mHasChangedU16.end();
+    return mCreatedWithoutPrevious || mHasChangedU16.contains(attr);
 }
 }  // namespace aquamqtt::message::legacy

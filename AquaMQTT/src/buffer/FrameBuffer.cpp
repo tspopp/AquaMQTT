@@ -7,11 +7,12 @@
 using namespace aquamqtt;
 using namespace aquamqtt::message;
 
-FrameBuffer::FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74)
+FrameBuffer::FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74, bool handle217)
     : mHandle194(handle194)
     , mHandle193(handle193)
     , mHandle67(handle67)
     , mHandle74(handle74)
+    , mHandle217(handle217)
     , mDroppedCount(0)
     , mCRCFailCount(0)
     , mUnhandledCount(0)
@@ -93,7 +94,7 @@ int FrameBuffer::handleFrame()
         }
 
         bool crcResult = false;
-        if (protocolVersion == ProtocolVersion::PROTOCOL_NEXT)
+        if (protocolVersion == PROTOCOL_NEXT || protocolVersion == PROTOCOL_ODYSSEE)
         {
             // move checksum out of ringbuffer
             int actualChecksum;
@@ -121,7 +122,7 @@ int FrameBuffer::handleFrame()
                 if (crcVal1 == xorChecksum)
                 {
                     mLockedChecksum = CHECKSUM_TYPE_XOR;
-                    crcResult     = true;
+                    crcResult       = true;
                 }
                 else
                 {
@@ -132,10 +133,13 @@ int FrameBuffer::handleFrame()
                     uint16_t desiredCRC = crcVal1 << 8 | crcVal2;
                     uint16_t actualCRC  = mCRC.ccitt(mTransferBuffer, payloadLength);
 
-                    if(desiredCRC == actualCRC){
+                    if (desiredCRC == actualCRC)
+                    {
                         mLockedChecksum = CHECKSUM_TYPE_CRC16;
-                        crcResult = true;
-                    } else{
+                        crcResult       = true;
+                    }
+                    else
+                    {
                         crcResult = false;
                     }
                 }
@@ -172,15 +176,16 @@ int FrameBuffer::handleFrame()
             if (mLockedProtocol != protocolVersion)
             {
                 mLockedProtocol = protocolVersion;
-                aquamqtt::DHWState::getInstance().setVersion(protocolVersion);
-                aquamqtt::DHWState::getInstance().setChecksumType(mLockedChecksum);
+                DHWState::getInstance().setVersion(protocolVersion);
+                DHWState::getInstance().setChecksumType(mLockedChecksum);
             }
 
             if ((frameId == HMI_MESSAGE_IDENTIFIER && mHandle194) || (frameId == MAIN_MESSAGE_IDENTIFIER && mHandle193)
                 || (frameId == ENERGY_MESSAGE_IDENTIFIER && mHandle67)
-                || (frameId == ERROR_MESSAGE_IDENTIFIER && mHandle74))
+                || (frameId == ERROR_MESSAGE_IDENTIFIER && mHandle74)
+                || (frameId == EXTRA_MESSAGE_IDENTIFIER && mHandle217))
             {
-                aquamqtt::DHWState::getInstance().storeFrame(frameId, payloadLength, mTransferBuffer);
+                DHWState::getInstance().storeFrame(frameId, payloadLength, mTransferBuffer);
                 mHandledCount++;
             }
             else
@@ -210,6 +215,13 @@ bool FrameBuffer::isSync()
                     || (mBuffer[0] == MAIN_MESSAGE_IDENTIFIER && mBuffer[1] == MAIN_MESSAGE_LENGTH_NEXT)
                     || (mBuffer[0] == ENERGY_MESSAGE_IDENTIFIER && mBuffer[1] == ENERGY_MESSAGE_LENGTH_NEXT)
                     || (mBuffer[0] == ERROR_MESSAGE_IDENTIFIER && mBuffer[1] == ERROR_MESSAGE_LENGTH_NEXT));
+        case PROTOCOL_ODYSSEE:
+            return ((mBuffer[0] == HMI_MESSAGE_IDENTIFIER && mBuffer[1] == HMI_MESSAGE_LENGTH_ODYSSEE)
+                    || (mBuffer[0] == MAIN_MESSAGE_IDENTIFIER && mBuffer[1] == MAIN_MESSAGE_LENGTH_ODYSSEE)
+                    || (mBuffer[0] == ENERGY_MESSAGE_IDENTIFIER && mBuffer[1] == ENERGY_MESSAGE_LENGTH_ODYSSEE)
+                    || (mBuffer[0] == ERROR_MESSAGE_IDENTIFIER && mBuffer[1] == ERROR_MESSAGE_LENGTH_ODYSSEE)
+                    || (mBuffer[0] == EXTRA_MESSAGE_IDENTIFIER && mBuffer[1] == EXTRA_MESSAGE_LENGTH_ODYSSEE));
+
         default:
         case PROTOCOL_UNKNOWN:
             return ((mBuffer[0] == HMI_MESSAGE_IDENTIFIER && mBuffer[1] == HMI_MESSAGE_LENGTH_NEXT)
@@ -219,7 +231,12 @@ bool FrameBuffer::isSync()
                     || (mBuffer[0] == HMI_MESSAGE_IDENTIFIER && mBuffer[1] == HMI_MESSAGE_LENGTH_LEGACY)
                     || (mBuffer[0] == MAIN_MESSAGE_IDENTIFIER && mBuffer[1] == MAIN_MESSAGE_LENGTH_LEGACY)
                     || (mBuffer[0] == ENERGY_MESSAGE_IDENTIFIER && mBuffer[1] == ENERGY_MESSAGE_LENGTH_LEGACY)
-                    || (mBuffer[0] == ERROR_MESSAGE_IDENTIFIER && mBuffer[1] == ERROR_MESSAGE_LENGTH_LEGACY));
+                    || (mBuffer[0] == ERROR_MESSAGE_IDENTIFIER && mBuffer[1] == ERROR_MESSAGE_LENGTH_LEGACY)
+                    || mBuffer[0] == HMI_MESSAGE_IDENTIFIER && mBuffer[1] == HMI_MESSAGE_LENGTH_ODYSSEE)
+                   || (mBuffer[0] == MAIN_MESSAGE_IDENTIFIER && mBuffer[1] == MAIN_MESSAGE_LENGTH_ODYSSEE)
+                   || (mBuffer[0] == ENERGY_MESSAGE_IDENTIFIER && mBuffer[1] == ENERGY_MESSAGE_LENGTH_ODYSSEE)
+                   || (mBuffer[0] == ERROR_MESSAGE_IDENTIFIER && mBuffer[1] == ERROR_MESSAGE_LENGTH_ODYSSEE)
+                   || (mBuffer[0] == EXTRA_MESSAGE_IDENTIFIER && mBuffer[1] == EXTRA_MESSAGE_LENGTH_ODYSSEE);
     }
 }
 

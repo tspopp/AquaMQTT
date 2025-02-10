@@ -66,6 +66,8 @@ Unfortunately, I had no success pairing those solutions with my Windhager brande
 
 - [Heat pump serial protocol (NEXT)](./PROTOCOL_NEXT.md)
 
+- [Heat pump serial protocol (ODYSSEE)](./PROTOCOL_ODYSSEE.md)
+
 - [Available MQTT Topics and Payloads](./MQTT.md)
 
 - [Utilize excess local energy using PV modes](./README-PV.md)

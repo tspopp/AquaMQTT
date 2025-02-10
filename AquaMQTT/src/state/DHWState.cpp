@@ -20,10 +20,12 @@ DHWState::DHWState()
     , mHasMainMessage(false)
     , mHasHmiMessage(false)
     , mHasErrorMessage(false)
-    , mMessageHmi{ 0 }
-    , mMessageMain{ 0 }
-    , mMessageEnergy{ 0 }
-    , mMessageError{ 0 }
+    , mHasExtraMessage(false)
+    , mMessageHmi{}
+    , mMessageMain{}
+    , mMessageEnergy{}
+    , mMessageError{}
+    , mMessageExtra{}
     , mHmiStats{ 0, 0, 0, 0, 0 }
     , mMainStats{ 0, 0, 0, 0, 0 }
     , mListenerStats{ 0, 0, 0, 0, 0 }
@@ -90,6 +92,16 @@ void DHWState::storeFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* paylo
             xTaskNotifyIndexed(mNotify, 0, (1UL << 5UL), eSetBits);
         }
     }
+    else if (frameId == EXTRA_MESSAGE_IDENTIFIER && memcmp(mMessageExtra, payload, payloadLength) != 0)
+    {
+        memcpy(mMessageExtra, payload, payloadLength);
+        mHasExtraMessage = true;
+
+        if (mNotify != nullptr)
+        {
+            xTaskNotifyIndexed(mNotify, 0, (1UL << 4UL), eSetBits);
+        }
+    }
 
     xSemaphoreGive(mMutex);
 }
@@ -146,8 +158,8 @@ BufferStatistics DHWState::getFrameBufferStatistics(uint8_t source)
 size_t DHWState::copyFrame(
         uint8_t                    frameId,
         uint8_t*                   buffer,
-        message::ProtocolVersion&  version,
-        message::ProtocolChecksum& type)
+        ProtocolVersion&  version,
+        ProtocolChecksum& type)
 {
     size_t length = 0;
 
@@ -160,23 +172,28 @@ size_t DHWState::copyFrame(
     {
         if (frameId == HMI_MESSAGE_IDENTIFIER && mHasHmiMessage)
         {
-            length = mProtocolVersion == PROTOCOL_LEGACY ? HMI_MESSAGE_LENGTH_LEGACY : HMI_MESSAGE_LENGTH_NEXT;
+            length = lengthByFrameIdAndProtocol(frameId, mProtocolVersion);
             memcpy(buffer, mMessageHmi, length);
         }
         else if (frameId == MAIN_MESSAGE_IDENTIFIER && mHasMainMessage)
         {
-            length = mProtocolVersion == PROTOCOL_LEGACY ? MAIN_MESSAGE_LENGTH_LEGACY : MAIN_MESSAGE_LENGTH_NEXT;
+            length = lengthByFrameIdAndProtocol(frameId, mProtocolVersion);
             memcpy(buffer, mMessageMain, length);
         }
         else if (frameId == ENERGY_MESSAGE_IDENTIFIER && mHasEnergyMessage)
         {
-            length = mProtocolVersion == PROTOCOL_LEGACY ? ENERGY_MESSAGE_LENGTH_LEGACY : ENERGY_MESSAGE_LENGTH_NEXT;
+            length = lengthByFrameIdAndProtocol(frameId, mProtocolVersion);
             memcpy(buffer, mMessageEnergy, length);
         }
         else if (frameId == ERROR_MESSAGE_IDENTIFIER && mHasErrorMessage)
         {
-            length = mProtocolVersion == PROTOCOL_LEGACY ? ERROR_MESSAGE_LENGTH_LEGACY : ERROR_MESSAGE_LENGTH_NEXT;
+            length = lengthByFrameIdAndProtocol(frameId, mProtocolVersion);
             memcpy(buffer, mMessageError, length);
+        }
+        else if (frameId == EXTRA_MESSAGE_IDENTIFIER && mHasExtraMessage)
+        {
+            length = lengthByFrameIdAndProtocol(frameId, mProtocolVersion);
+            memcpy(buffer, mMessageExtra, length);
         }
     }
 
@@ -188,9 +205,9 @@ size_t DHWState::copyFrame(
     return length;
 }
 
-message::ProtocolVersion DHWState::getVersion()
+ProtocolVersion DHWState::getVersion()
 {
-    message::ProtocolVersion version = message::PROTOCOL_UNKNOWN;
+    message::ProtocolVersion version = PROTOCOL_UNKNOWN;
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
         return version;
@@ -203,7 +220,7 @@ message::ProtocolVersion DHWState::getVersion()
     return version;
 }
 
-void DHWState::setVersion(message::ProtocolVersion version)
+void DHWState::setVersion(ProtocolVersion version)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
@@ -215,7 +232,7 @@ void DHWState::setVersion(message::ProtocolVersion version)
     xSemaphoreGive(mMutex);
 }
 
-void DHWState::setChecksumType(message::ProtocolChecksum checksum)
+void DHWState::setChecksumType(ProtocolChecksum checksum)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {

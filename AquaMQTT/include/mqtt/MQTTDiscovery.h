@@ -74,6 +74,9 @@ enum class MQTT_ITEM_SENSOR
     ENERGY_DIAG_COMPRESSOR_TEMP_MIN,
     ENERGY_DIAG_WATER_TEMP_MAX,
     ENERGY_DIAG_WATER_TEMP_MIN,
+    MAIN_UPPER_HOT_WATER_TEMP,
+    MAIN_LOWER_HOT_WATER_TEMP,
+    ENERGY_VOLTAGE_GRID,
     RESERVED_COUNT
 };
 
@@ -157,7 +160,7 @@ static JsonDocument createFromDefault(uint16_t identifier)
         defaultJson["dev"]["name"] = "AquaMQTT DHW Heat Pump";
         defaultJson["dev"]["mdl"]  = config::heatpumpModelName;
         defaultJson["o"]["name"]   = "AquaMQTT";
-        defaultJson["o"]["sw"]     = aquamqtt::VERSION;
+        defaultJson["o"]["sw"]     = VERSION;
         defaultJson["o"]["url"]    = "https://github.com/tspopp/AquaMQTT";
     }
 
@@ -213,7 +216,7 @@ static bool buildConfiguration(
             doc["uniq_id"]      = make_unique(temp, identifier, "main_evoAirTempLower");
             break;
         case MQTT_ITEM_SENSOR::MAIN_COMPRESSOR_OUTLET_TEMP:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion == message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -224,7 +227,30 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:thermometer";
             doc["uniq_id"]      = make_unique(temp, identifier, "main_compressorOutletTemp");
             break;
-
+        case MQTT_ITEM_SENSOR::MAIN_UPPER_HOT_WATER_TEMP:
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
+            doc["name"]         = "Water Temperature (Upper)";
+            doc["stat_t"]       = "~/main/waterTempUpper";
+            doc["stat_cla"]     = "measurement";
+            doc["unit_of_meas"] = "°C";
+            doc["ic"]           = "mdi:thermometer-water";
+            doc["uniq_id"]      = make_unique(temp, identifier, "main_waterTempUpper");
+            break;
+        case MQTT_ITEM_SENSOR::MAIN_LOWER_HOT_WATER_TEMP:
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
+            doc["name"]         = "Water Temperature (Lower)";
+            doc["stat_t"]       = "~/main/waterTempLower";
+            doc["stat_cla"]     = "measurement";
+            doc["unit_of_meas"] = "°C";
+            doc["ic"]           = "mdi:thermometer-water";
+            doc["uniq_id"]      = make_unique(temp, identifier, "main_waterTempLower");
+            break;
         case MQTT_ITEM_SENSOR::MAIN_FAN_PWM:
             doc["name"]         = "Fan PWM";
             doc["stat_t"]       = "~/main/fanPWM";
@@ -256,7 +282,7 @@ static bool buildConfiguration(
             doc["ent_cat"]      = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::MAIN_ERROR_CODE:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -282,7 +308,7 @@ static bool buildConfiguration(
             doc["uniq_id"]      = make_unique(temp, identifier, "energy_total_hp_h");
             break;
         case MQTT_ITEM_SENSOR::ENERGY_TOTAL_HOURS:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -311,8 +337,20 @@ static bool buildConfiguration(
             doc["uniq_id"]      = make_unique(temp, identifier, "energy_power_total");
             doc["dev_cla"]      = "power";
             break;
+        case MQTT_ITEM_SENSOR::ENERGY_VOLTAGE_GRID:
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
+            doc["name"]         = "Voltage Grid";
+            doc["stat_t"]       = "~/energy/voltageGrid";
+            doc["unit_of_meas"] = "V";
+            doc["stat_cla"]     = "measurement";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_voltage_grid");
+            doc["dev_cla"]      = "voltage";
+            break;
         case MQTT_ITEM_SENSOR::ENERGY_POWER_HEAT_ELEMENT:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -325,7 +363,7 @@ static bool buildConfiguration(
             doc["dev_cla"]      = "power";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_POWER_HEATPUMP:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -338,7 +376,7 @@ static bool buildConfiguration(
             doc["dev_cla"]      = "power";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_TOTAL_WATER_PRODUCTION:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -544,7 +582,7 @@ static bool buildConfiguration(
             doc["ic"]      = "mdi:calendar-clock";
             break;
         case MQTT_ITEM_SENSOR::HMI_SETUP_STATE:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -570,7 +608,7 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_PWM_01:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -581,7 +619,7 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:fan-speed-1";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_PWM_02:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -592,7 +630,7 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:fan-speed-2";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_PWM_03:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -603,7 +641,7 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:fan-speed-3";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_MIN_TEMP_TARGET:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -614,7 +652,7 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:thermometer-chevron-down";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_MIN_TEMP_LEGIONELLA:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -625,7 +663,7 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:thermometer-plus";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_PWR_HEATELEM:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -636,7 +674,7 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:heating-coil";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_BOILER_CAP:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -647,7 +685,7 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:barrel";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_BOILER_BRAND:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -657,7 +695,7 @@ static bool buildConfiguration(
             doc["ic"]      = "mdi:factory";
             break;
         case MQTT_ITEM_SENSOR::HMI_TEST_MODE:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -673,113 +711,113 @@ static bool buildConfiguration(
             doc["ic"]      = "mdi:solar-power-variant";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_AIR_TEMP_MAX:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_NEXT)
             {
                 return false;
             }
-            doc["name"]    = "Air Temperature Observed Max";
-            doc["stat_t"]  = "~/energy/diagAirTempMax";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_at_max");
+            doc["name"]         = "Air Temperature Observed Max";
+            doc["stat_t"]       = "~/energy/diagAirTempMax";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_at_max");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_AIR_TEMP_MIN:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_NEXT)
             {
                 return false;
             }
-            doc["name"]    = "Air Temperature Observed Min";
-            doc["stat_t"]  = "~/energy/diagAirTempMin";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_at_min");
+            doc["name"]         = "Air Temperature Observed Min";
+            doc["stat_t"]       = "~/energy/diagAirTempMin";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_at_min");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_EVA_UPPER_AIR_TEMP_MAX:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_NEXT)
             {
                 return false;
             }
-            doc["name"]    = "Upper Evaporator Temperature Observed Max";
-            doc["stat_t"]  = "~/energy/diagEvaUpperMax";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_ue_max");
+            doc["name"]         = "Upper Evaporator Temperature Observed Max";
+            doc["stat_t"]       = "~/energy/diagEvaUpperMax";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_ue_max");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_EVA_UPPER_AIR_TEMP_MIN:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_NEXT)
             {
                 return false;
             }
-            doc["name"]    = "Upper Evaporator Temperature Observed Min";
-            doc["stat_t"]  = "~/energy/diagEvaUpperMin";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_ue_min");
+            doc["name"]         = "Upper Evaporator Temperature Observed Min";
+            doc["stat_t"]       = "~/energy/diagEvaUpperMin";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_ue_min");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_EVA_LOWER_AIR_TEMP_MAX:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_NEXT)
             {
                 return false;
             }
-            doc["name"]    = "Lower Evaporator Temperature Observed Max";
-            doc["stat_t"]  = "~/energy/diagEvaLowerMax";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_le_max");
+            doc["name"]         = "Lower Evaporator Temperature Observed Max";
+            doc["stat_t"]       = "~/energy/diagEvaLowerMax";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_le_max");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_EVA_LOWER_AIR_TEMP_MIN:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_NEXT)
             {
                 return false;
             }
-            doc["name"]    = "Lower Evaporator Temperature Observed Min";
-            doc["stat_t"]  = "~/energy/diagEvaLowerMin";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_le_min");
+            doc["name"]         = "Lower Evaporator Temperature Observed Min";
+            doc["stat_t"]       = "~/energy/diagEvaLowerMin";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_le_min");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_COMPRESSOR_TEMP_MAX:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_NEXT)
             {
                 return false;
             }
-            doc["name"]    = "Compressor Temperature Observed Max";
-            doc["stat_t"]  = "~/energy/diagCompressorMax";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_c_max");
+            doc["name"]         = "Compressor Temperature Observed Max";
+            doc["stat_t"]       = "~/energy/diagCompressorMax";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_c_max");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_COMPRESSOR_TEMP_MIN:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_NEXT)
             {
                 return false;
             }
-            doc["name"]    = "Compressor Temperature Observed Min";
-            doc["stat_t"]  = "~/energy/diagCompressorMin";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_c_min");
+            doc["name"]         = "Compressor Temperature Observed Min";
+            doc["stat_t"]       = "~/energy/diagCompressorMin";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_c_min");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_WATER_TEMP_MAX:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_NEXT)
             {
                 return false;
             }
-            doc["name"]    = "Water Temperature Observed Max";
-            doc["stat_t"]  = "~/energy/diagWaterTempMax";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_w_max");
+            doc["name"]         = "Water Temperature Observed Max";
+            doc["stat_t"]       = "~/energy/diagWaterTempMax";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_w_max");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_WATER_TEMP_MIN:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_NEXT)
             {
                 return false;
             }
-            doc["name"]    = "Water Temperature Observed Min";
-            doc["stat_t"]  = "~/energy/diagWaterTempMin";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_w_min");
+            doc["name"]         = "Water Temperature Observed Min";
+            doc["stat_t"]       = "~/energy/diagWaterTempMin";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_w_min");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::RESERVED_COUNT:
@@ -792,10 +830,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                           buffer,
-        aquamqtt::message::ProtocolVersion protocolVersion,
-        uint16_t                           identifier,
-        MQTT_ITEM_BINARY_SENSOR            item)
+        uint8_t*                 buffer,
+        message::ProtocolVersion protocolVersion,
+        uint16_t                 identifier,
+        MQTT_ITEM_BINARY_SENSOR  item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -968,7 +1006,7 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_CAPABILITY_HEAT_EXC:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -981,7 +1019,7 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_CAPABILITY_CIRCULATION:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -994,7 +1032,7 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_CAPABILITY_PV_INPUT:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -1007,7 +1045,7 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_CAPABILITY_EXT_COMM:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -1020,7 +1058,7 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_CAPABILITY_DRY_HEATING:
-            if (protocolVersion == aquamqtt::message::ProtocolVersion::PROTOCOL_NEXT)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
             {
                 return false;
             }
@@ -1042,10 +1080,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                           buffer,
-        aquamqtt::message::ProtocolVersion protocolVersion,
-        uint16_t                           identifier,
-        MQTT_ITEM_NUMBER                   item)
+        uint8_t*                 buffer,
+        message::ProtocolVersion protocolVersion,
+        uint16_t                 identifier,
+        MQTT_ITEM_NUMBER         item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -1073,10 +1111,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                           buffer,
-        aquamqtt::message::ProtocolVersion protocolVersion,
-        uint16_t                           identifier,
-        MQTT_ITEM_BUTTON                   item)
+        uint8_t*                 buffer,
+        message::ProtocolVersion protocolVersion,
+        uint16_t                 identifier,
+        MQTT_ITEM_BUTTON         item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -1100,10 +1138,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                           buffer,
-        aquamqtt::message::ProtocolVersion protocolVersion,
-        uint16_t                           identifier,
-        MQTT_ITEM_SELECT                   item)
+        uint8_t*                 buffer,
+        message::ProtocolVersion protocolVersion,
+        uint16_t                 identifier,
+        MQTT_ITEM_SELECT         item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -1131,6 +1169,10 @@ static bool buildConfiguration(
             doc["ic"]      = "mdi:timetable";
             doc["ops"][0]  = mqtt::ENUM_OPERATION_TYPE_ALWAYS_ON;
             doc["ops"][1]  = mqtt::ENUM_OPERATION_TYPE_TIMER;
+            if (protocolVersion == message::PROTOCOL_ODYSSEE)
+            {
+                doc["ops"][2] = mqtt::ENUM_OPERATION_TYPE_OFF_PEAK_HOURS;
+            }
             break;
         case MQTT_ITEM_SELECT::HMI_INSTALLATION_CONFIG:
             doc["name"]    = "Installation Configuration";
@@ -1178,10 +1220,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                           buffer,
-        aquamqtt::message::ProtocolVersion protocolVersion,
-        uint16_t                           identifier,
-        MQTT_ITEM_SWITCH                   item)
+        uint8_t*                 buffer,
+        message::ProtocolVersion protocolVersion,
+        uint16_t                 identifier,
+        MQTT_ITEM_SWITCH         item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -1236,10 +1278,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                           buffer,
-        aquamqtt::message::ProtocolVersion protocolVersion,
-        uint16_t                           identifier,
-        MQTT_ITEM_WATER_HEATER             item)
+        uint8_t*                 buffer,
+        message::ProtocolVersion protocolVersion,
+        uint16_t                 identifier,
+        MQTT_ITEM_WATER_HEATER   item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];

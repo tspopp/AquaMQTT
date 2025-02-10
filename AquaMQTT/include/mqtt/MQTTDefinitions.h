@@ -13,6 +13,7 @@ constexpr char HMI_SUBTOPIC[]    = { "hmi/" };
 constexpr char MAIN_SUBTOPIC[]   = { "main/" };
 constexpr char ENERGY_SUBTOPIC[] = { "energy/" };
 constexpr char ERROR_SUBTOPIC[]  = { "error/" };
+constexpr char EXTRA_SUBTOPIC[]  = { "extra/" };
 constexpr char STATS_SUBTOPIC[]  = { "stats/" };
 
 // Enum Types
@@ -21,8 +22,9 @@ constexpr char ENUM_UNKNOWN[] = { "UNKNOWN" };
 constexpr char ENUM_AQUAMQTT_MODE_LISTENER[] = { "LISTENER" };
 constexpr char ENUM_AQUAMQTT_MODE_MITM[]     = { "MITM" };
 
-constexpr char ENUM_AQUAMQTT_PROTOCOL_LEGACY[] = { "LEGACY" };
-constexpr char ENUM_AQUAMQTT_PROTOCL_NEXT[]    = { "NEXT" };
+constexpr char ENUM_AQUAMQTT_PROTOCOL_LEGACY[]  = { "LEGACY" };
+constexpr char ENUM_AQUAMQTT_PROTOCOL_NEXT[]    = { "NEXT" };
+constexpr char ENUM_AQUAMQTT_PROTOCOL_ODYSSEE[] = { "ODYSSEE" };
 
 constexpr char ENUM_BRAND_ATLANTIC[] = { "Atlantic" };
 constexpr char ENUM_BRAND_THERMOR[]  = { "Thermor" };
@@ -59,8 +61,9 @@ constexpr char ENUM_TEST_MODE_ACTIVE_FAN_LOW[]                 = { "TESTING FAN 
 constexpr char ENUM_TEST_MODE_ACTIVE_DEFROSTING[]              = { "TESTING DEFROSTING" };
 constexpr char ENUM_TEST_MODE_ACTIVE_HEAT_PUMP_BOILER_BACKUP[] = { "TESTING HEAT PUMP AND BOILER BACKUP" };
 
-constexpr char ENUM_OPERATION_TYPE_ALWAYS_ON[] = { "ALWAYS ON" };
-constexpr char ENUM_OPERATION_TYPE_TIMER[]     = { "TIME WINDOW" };
+constexpr char ENUM_OPERATION_TYPE_ALWAYS_ON[]      = { "ALWAYS ON" };
+constexpr char ENUM_OPERATION_TYPE_TIMER[]          = { "TIME WINDOW" };
+constexpr char ENUM_OPERATION_TYPE_OFF_PEAK_HOURS[] = { "OFF-PEAK HOURS" };
 
 constexpr char ENUM_LAST_WILL_ONLINE[]  = { "ONLINE" };
 constexpr char ENUM_LAST_WILL_OFFLINE[] = { "OFFLINE" };
@@ -77,6 +80,8 @@ constexpr char ENUM_AQUAMQTT_OVERRIDE_MODE_PV_FULL[] = { "PV BOOST" };
 // Subtopics
 constexpr char MAIN_ERROR_CODE[]                = { "errorCode" };
 constexpr char MAIN_HOT_WATER_TEMP[]            = { "waterTemp" };
+constexpr char MAIN_HOT_WATER_TEMP_LOWER[]      = { "waterTempLower" };
+constexpr char MAIN_HOT_WATER_TEMP_UPPER[]      = { "waterTempUpper" };
 constexpr char MAIN_SUPPLY_AIR_TEMP[]           = { "supplyAirTemp" };
 constexpr char MAIN_EVAPORATOR_AIR_TEMP_UPPER[] = { "evaporatorAirTemp" };
 constexpr char MAIN_EVAPORATOR_AIR_TEMP_LOWER[] = { "evaporatorAirTempLower" };
@@ -130,6 +135,7 @@ constexpr char ENERGY_POWER_TOTAL[]              = { "powerTotal" };
 constexpr char ENERGY_POWER_HEAT_ELEMENT[]       = { "powerHeatingElem" };
 constexpr char ENERGY_POWER_HEATPUMP[]           = { "powerHeatpump" };
 constexpr char ENERGY_TOTAL_WATER_PRODUCTION[]   = { "totalWaterProduction" };
+constexpr char ENERGY_VOLTAGE_GRID[]             = { "voltageGrid" };
 
 constexpr char ENERGY_DIAG_AIR_TEMP_MAX[]           = { "diagAirTempMax" };
 constexpr char ENERGY_DIAG_AIR_TEMP_MIN[]           = { "diagAirTempMin" };

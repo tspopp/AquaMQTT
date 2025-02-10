@@ -1,12 +1,12 @@
-#ifndef AQUAMQTT_HMIMESSAGE_H
-#define AQUAMQTT_HMIMESSAGE_H
+#ifndef AQUAMQTT_HMIMESSAGE_ODYSSEE_H
+#define AQUAMQTT_HMIMESSAGE_ODYSSEE_H
 
 #include <cstring>
 #include <set>
 
 #include "message/IHMIMessage.h"
 
-namespace aquamqtt::message::next
+namespace aquamqtt::message::odyssee
 {
 class HMIMessage : public IHMIMessage
 {
@@ -54,6 +54,6 @@ private:
 
     uint8_t* mData;
 };
-}  // namespace aquamqtt::message::next
+}  // namespace aquamqtt::message::odyssee
 
-#endif  // AQUAMQTT_HMIMESSAGE_H
+#endif  // AQUAMQTT_HMIMESSAGE_ODYSSEE_H

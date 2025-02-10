@@ -3,17 +3,17 @@
 namespace aquamqtt::message::next
 {
 
-MainStatusMessage::MainStatusMessage(uint8_t* data, uint8_t* previous)
+MainStatusMessage::MainStatusMessage(uint8_t* data, const uint8_t* previous)
     : mData(data)
     , mHasChangedFloat()
-    , mHasChangedU8()
     , mHasChangedBool()
+    , mHasChangedU8()
 {
     mCreatedWithoutPrevious = previous == nullptr;
     compareWith(previous);
 }
 
-void MainStatusMessage::compareWith(uint8_t* data)
+void MainStatusMessage::compareWith(const uint8_t* data)
 {
     if (data == nullptr)
     {
@@ -26,9 +26,7 @@ void MainStatusMessage::compareWith(uint8_t* data)
 
     for (int i = 0; i < numDiffs; ++i)
     {
-        auto indiceChanged = diffIndices[i];
-
-        switch (indiceChanged)
+        switch (diffIndices[i])
         {
             case 1:
                 mHasChangedFloat.insert(MAIN_ATTR_FLOAT::WATER_TEMPERATURE);
@@ -65,7 +63,7 @@ void MainStatusMessage::compareWith(uint8_t* data)
     }
 }
 
-float MainStatusMessage::getAttr(MAIN_ATTR_FLOAT attr)
+float MainStatusMessage::getAttr(const MAIN_ATTR_FLOAT attr)
 {
     switch (attr)
     {
@@ -81,11 +79,12 @@ float MainStatusMessage::getAttr(MAIN_ATTR_FLOAT attr)
             return static_cast<int8_t>(mData[3]);
         case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
             return mData[18];
+        default:
+            return 0;
     }
-    return 0;
 }
 
-bool MainStatusMessage::getAttr(MAIN_ATTR_BOOL attr)
+bool MainStatusMessage::getAttr(const MAIN_ATTR_BOOL attr)
 {
     switch (attr)
     {
@@ -103,14 +102,9 @@ bool MainStatusMessage::getAttr(MAIN_ATTR_BOOL attr)
             return mData[22] & 0x10;
         case MAIN_ATTR_BOOL::STATE_SOLAR:
             return mData[22] & 0x20;
-        case MAIN_ATTR_BOOL::CAPABILITY_HAS_HEAT_EXCHANGER:
-        case MAIN_ATTR_BOOL::CAPABILITY_HAS_CIRCULATION:
-        case MAIN_ATTR_BOOL::CAPABILITY_HAS_PV_INPUT:
-        case MAIN_ATTR_BOOL::CAPABILITY_HAS_COMMUNICATION:
-        case MAIN_ATTR_BOOL::CAPABILITY_HAS_ANTI_DRY_HEATING:
-            break;
+        default:
+            return false;
     }
-    return false;
 }
 
 uint8_t MainStatusMessage::getAttr(MAIN_ATTR_U8 attr)
@@ -123,11 +117,11 @@ uint16_t MainStatusMessage::getAttr(MAIN_ATTR_U16 attr)
     return 0;
 }
 
-void MainStatusMessage::setAttr(MAIN_ATTR_FLOAT attr, float value)
+void MainStatusMessage::setAttr(const MAIN_ATTR_FLOAT attr, float value)
 {
 }
 
-void MainStatusMessage::setAttr(MAIN_ATTR_BOOL attr, bool value)
+void MainStatusMessage::setAttr(const MAIN_ATTR_BOOL attr, const bool value)
 {
     switch (attr)
     {
@@ -173,7 +167,7 @@ void MainStatusMessage::setAttr(MAIN_ATTR_U16 attr, uint16_t value)
 {
 }
 
-bool MainStatusMessage::hasAttr(MAIN_ATTR_FLOAT attr) const
+bool MainStatusMessage::hasAttr(const MAIN_ATTR_FLOAT attr) const
 {
     switch (attr)
     {
@@ -184,11 +178,12 @@ bool MainStatusMessage::hasAttr(MAIN_ATTR_FLOAT attr) const
         case MAIN_ATTR_FLOAT::COMPRESSOR_OUTLET_TEMPERATURE:
         case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
             return true;
+        default:
+            return false;
     }
-    return false;
 }
 
-bool MainStatusMessage::hasAttr(MAIN_ATTR_BOOL attr) const
+bool MainStatusMessage::hasAttr(const MAIN_ATTR_BOOL attr) const
 {
     switch (attr)
     {
@@ -200,14 +195,9 @@ bool MainStatusMessage::hasAttr(MAIN_ATTR_BOOL attr) const
         case MAIN_ATTR_BOOL::STATE_DEFROST:
         case MAIN_ATTR_BOOL::STATE_SOLAR:
             return true;
-        case MAIN_ATTR_BOOL::CAPABILITY_HAS_HEAT_EXCHANGER:
-        case MAIN_ATTR_BOOL::CAPABILITY_HAS_CIRCULATION:
-        case MAIN_ATTR_BOOL::CAPABILITY_HAS_PV_INPUT:
-        case MAIN_ATTR_BOOL::CAPABILITY_HAS_COMMUNICATION:
-        case MAIN_ATTR_BOOL::CAPABILITY_HAS_ANTI_DRY_HEATING:
-            break;
+        default:
+            return false;
     }
-    return false;
 }
 
 bool MainStatusMessage::hasAttr(MAIN_ATTR_U8 attr) const
@@ -220,24 +210,24 @@ bool MainStatusMessage::hasAttr(MAIN_ATTR_U16 attr) const
     return false;
 }
 
-bool MainStatusMessage::hasChanged(MAIN_ATTR_FLOAT attr) const
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_FLOAT attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedFloat.find(attr) != mHasChangedFloat.end();
+    return mCreatedWithoutPrevious || mHasChangedFloat.contains(attr);
 }
 
-bool MainStatusMessage::hasChanged(MAIN_ATTR_BOOL attr) const
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_BOOL attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedBool.find(attr) != mHasChangedBool.end();
+    return mCreatedWithoutPrevious || mHasChangedBool.contains(attr);
 }
 
-bool MainStatusMessage::hasChanged(MAIN_ATTR_U8 attr) const
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_U8 attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedU8.find(attr) != mHasChangedU8.end();
+    return mCreatedWithoutPrevious || mHasChangedU8.contains(attr);
 }
 
-bool MainStatusMessage::hasChanged(MAIN_ATTR_U16 attr) const
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_U16 attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedU16.find(attr) != mHasChangedU16.end();
+    return mCreatedWithoutPrevious || mHasChangedU16.contains(attr);
 }
 
 uint8_t MainStatusMessage::getLength()
