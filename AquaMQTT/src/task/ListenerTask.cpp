@@ -8,7 +8,7 @@
 namespace aquamqtt
 {
 
-ListenerTask::ListenerTask() : mBuffer(true, true, true, true), mLastStatisticsUpdate(0){}
+ListenerTask::ListenerTask() : mBuffer(true, true, true, true, true), mLastStatisticsUpdate(0){}
 
 void ListenerTask::spawn()
 {
@@ -33,7 +33,7 @@ void ListenerTask::spawn()
 void ListenerTask::setup()  // NOLINT(*-convert-member-functions-to-static)
 {
     // if passthrough jumper is set, it doesn't make a difference if we read from Serial1 or Serial2
-    Serial2.begin(9550, SERIAL_8N2, aquamqtt::config::GPIO_MAIN_RX, aquamqtt::config::GPIO_MAIN_TX);
+    Serial2.begin(9550, SERIAL_8N2, config::GPIO_MAIN_RX, config::GPIO_MAIN_TX);
 }
 
 void ListenerTask::loop()

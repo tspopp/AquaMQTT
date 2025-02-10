@@ -5,32 +5,30 @@
 namespace aquamqtt::message::next
 {
 
-HMIMessage::HMIMessage(uint8_t* data, uint8_t* previous)
-    : mData(data)
-    , mHasChangedFloat()
+HMIMessage::HMIMessage(uint8_t* data, const uint8_t* previous)
+    : mHasChangedU8()
     , mHasChangedBool()
-    , mHasChangedU8()
+    , mHasChangedFloat()
+    , mData(data)
 {
     mCreatedWithoutPrevious = previous == nullptr;
     compareWith(previous);
 }
 
-void HMIMessage::compareWith(uint8_t* data)
+void HMIMessage::compareWith(const uint8_t* data)
 {
     if (data == nullptr)
     {
         return;
     }
 
-    uint8_t diffIndices[HMI_MESSAGE_LENGTH_NEXT] = { 0 };
+    uint8_t diffIndices[HMI_MESSAGE_LENGTH_NEXT] = { };
     size_t  numDiffs                             = 0;
     compareBuffers(mData, data, HMI_MESSAGE_LENGTH_NEXT, diffIndices, &numDiffs);
 
     for (int i = 0; i < numDiffs; ++i)
     {
-        auto indiceChanged = diffIndices[i];
-
-        switch (indiceChanged)
+        switch (diffIndices[i])
         {
             case 1:
                 mHasChangedFloat.insert(HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE);
@@ -43,6 +41,7 @@ void HMIMessage::compareWith(uint8_t* data)
                 break;
             case 4:
                 mHasChangedU8.insert(HMI_ATTR_U8::ANTI_LEGIONELLA_CYCLES);
+                mHasChangedU8.insert(HMI_ATTR_U8::CONFIG_AIRDUCT);
                 break;
             case 5:
                 mHasChangedBool.insert(HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED);
@@ -103,7 +102,7 @@ void HMIMessage::compareWith(uint8_t* data)
     }
 }
 
-uint8_t HMIMessage::getAttr(HMI_ATTR_U8 attr)
+uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
 {
     switch (attr)
     {
@@ -128,19 +127,19 @@ uint8_t HMIMessage::getAttr(HMI_ATTR_U8 attr)
             {
                 if (mData[6] & 0x10 && mData[6] & 0x20)
                 {
-                    return HMIInstallation::INST_HP_AND_EXT_PRIO_EXT;
+                    return INST_HP_AND_EXT_PRIO_EXT;
                 }
                 if (!(mData[6] & 0x10) && mData[6] & 0x20)
                 {
-                    return HMIInstallation::INST_HP_AND_EXT_OPT_EXT;
+                    return INST_HP_AND_EXT_OPT_EXT;
                 }
                 if (mData[6] & 0x10 && !(mData[6] & 0x20))
                 {
-                    return HMIInstallation::INST_HP_AND_EXT_OPT_HP;
+                    return INST_HP_AND_EXT_OPT_HP;
                 }
-                return HMIInstallation::INST_HP_AND_EXT_PRIO_HP;
+                return INST_HP_AND_EXT_PRIO_HP;
             }
-            return HMIInstallation::INST_HP_ONLY;
+            return INST_HP_ONLY;
         case HMI_ATTR_U8::CONFIG_AIRDUCT:
             switch (mData[4] & 0xF0)
             {
@@ -188,9 +187,9 @@ uint8_t HMIMessage::getAttr(HMI_ATTR_U8 attr)
         case HMI_ATTR_U8::OPERATION_TYPE:
             if (mData[3] & 0x40)
             {
-                return HMIOperationType::ALWAYS_ON;
+                return OT_ALWAYS_ON;
             }
-            return HMIOperationType::TIMER;
+            return OT_TIMER;
         case HMI_ATTR_U8::STATE_SETUP:
         case HMI_ATTR_U8::STATE_TEST:
             break;
@@ -198,7 +197,7 @@ uint8_t HMIMessage::getAttr(HMI_ATTR_U8 attr)
     return 0;
 }
 
-uint16_t HMIMessage::getAttr(HMI_ATTR_U16 attr)
+uint16_t HMIMessage::getAttr(const HMI_ATTR_U16 attr)
 {
     switch (attr)
     {
@@ -216,7 +215,7 @@ uint16_t HMIMessage::getAttr(HMI_ATTR_U16 attr)
     return 0;
 }
 
-bool HMIMessage::getAttr(HMI_ATTR_BOOL attr)
+bool HMIMessage::getAttr(const HMI_ATTR_BOOL attr)
 {
     switch (attr)
     {
@@ -230,7 +229,7 @@ bool HMIMessage::getAttr(HMI_ATTR_BOOL attr)
     return false;
 }
 
-float HMIMessage::getAttr(HMI_ATTR_FLOAT attr)
+float HMIMessage::getAttr(const HMI_ATTR_FLOAT attr)
 {
     switch (attr)
     {
@@ -240,29 +239,29 @@ float HMIMessage::getAttr(HMI_ATTR_FLOAT attr)
     return 0;
 }
 
-void HMIMessage::getAttr(HMI_ATTR_STR attr, char* buffer)
+void HMIMessage::getAttr(const HMI_ATTR_STR attr, char* buffer)
 {
     switch (attr)
     {
         case HMI_ATTR_STR::TIMER_WINDOW_A:
         case HMI_ATTR_STR::TIMER_WINDOW_B:
-            uint16_t      start         = attr == HMI_ATTR_STR::TIMER_WINDOW_A ? getAttr(HMI_ATTR_U16::TIMER_A_START)
-                                                                               : getAttr(HMI_ATTR_U16::TIMER_B_START);
-            uint16_t      duration      = attr == HMI_ATTR_STR::TIMER_WINDOW_A ? getAttr(HMI_ATTR_U16::TIMER_A_LENGTH)
-                                                                               : getAttr(HMI_ATTR_U16::TIMER_B_LENGTH);
-            const uint8_t beginHours    = start / 60;
-            const uint8_t beginMinutes  = start % 60;
-            const uint8_t lengthHours   = duration / 60;
-            const uint8_t lengthMinutes = duration % 60;
-            const uint8_t endMinutes    = (beginMinutes + lengthMinutes) % 60;
-            const uint8_t hourOverlap   = (beginMinutes + lengthMinutes) / 60;
-            const uint8_t endHours      = (beginHours + lengthHours) % 24 + hourOverlap;
+            const uint16_t start         = attr == HMI_ATTR_STR::TIMER_WINDOW_A ? getAttr(HMI_ATTR_U16::TIMER_A_START)
+                                                                                : getAttr(HMI_ATTR_U16::TIMER_B_START);
+            const uint16_t duration      = attr == HMI_ATTR_STR::TIMER_WINDOW_A ? getAttr(HMI_ATTR_U16::TIMER_A_LENGTH)
+                                                                                : getAttr(HMI_ATTR_U16::TIMER_B_LENGTH);
+            const uint8_t  beginHours    = start / 60;
+            const uint8_t  beginMinutes  = start % 60;
+            const uint8_t  lengthHours   = duration / 60;
+            const uint8_t  lengthMinutes = duration % 60;
+            const uint8_t  endMinutes    = (beginMinutes + lengthMinutes) % 60;
+            const uint8_t  hourOverlap   = (beginMinutes + lengthMinutes) / 60;
+            const uint8_t  endHours      = (beginHours + lengthHours) % 24 + hourOverlap;
             sprintf(buffer, "%02d:%02d-%02d:%02d", beginHours, beginMinutes, endHours, endMinutes);
             break;
     }
 }
 
-void HMIMessage::setAttr(HMI_ATTR_U8 attr, uint8_t value)
+void HMIMessage::setAttr(const HMI_ATTR_U8 attr, uint8_t value)
 {
     switch (attr)
     {
@@ -280,8 +279,7 @@ void HMIMessage::setAttr(HMI_ATTR_U8 attr, uint8_t value)
             break;
         case HMI_ATTR_U8::STATE_INSTALLATION_MODE:
         {
-            auto mode = static_cast<HMIInstallation>(value);
-            switch (mode)
+            switch (static_cast<HMIInstallation>(value))
             {
                 case INST_HP_ONLY:
                     mData[6] &= ~0x01;
@@ -326,7 +324,7 @@ void HMIMessage::setAttr(HMI_ATTR_U8 attr, uint8_t value)
         break;
         case HMI_ATTR_U8::CONFIG_AIRDUCT:
         {
-            auto config = static_cast<HMIAirDuctConfig>(value);
+            const auto config = static_cast<HMIAirDuctConfig>(value);
             if (config == AD_UNKNOWN)
             {
                 return;
@@ -345,8 +343,7 @@ void HMIMessage::setAttr(HMI_ATTR_U8 attr, uint8_t value)
         break;
         case HMI_ATTR_U8::CONFIG_FAN_EXHAUST:
         {
-            auto mode = static_cast<HMIFanExhaust>(value);
-            switch (mode)
+            switch (static_cast<HMIFanExhaust>(value))
             {
                 case EXHAUST_STOP:
                     mData[7] &= 0b11111100;
@@ -391,14 +388,14 @@ void HMIMessage::setAttr(HMI_ATTR_U8 attr, uint8_t value)
         case HMI_ATTR_U8::OPERATION_TYPE:
         {
             auto operationType = static_cast<HMIOperationType>(value);
-            if (operationType == HMIOperationType::TIMER)
+            if (operationType == OT_TIMER)
             {
                 mData[3] = (mData[3] & ~(1 << 6)) | (true << 6);
             }
-            else
+            else if (operationType == OT_ALWAYS_ON)
             {
                 mData[3] = (mData[3] & ~(1 << 6)) | (false << 6);
-            }
+            } // operation type off-peak hours is unsupported
         }
         break;
         case HMI_ATTR_U8::DATE_MONTH:
@@ -408,12 +405,12 @@ void HMIMessage::setAttr(HMI_ATTR_U8 attr, uint8_t value)
         case HMI_ATTR_U8::STATE_SETUP:
         case HMI_ATTR_U8::STATE_TEST:
         case HMI_ATTR_U8::ANTI_LEGIONELLA_CYCLES:
-            // TODO: implement this is needed
+            // TODO: implement this if needed
             break;
     }
 }
 
-void HMIMessage::setAttr(HMI_ATTR_BOOL attr, bool value)
+void HMIMessage::setAttr(const HMI_ATTR_BOOL attr, const bool value)
 {
     switch (attr)
     {
@@ -440,12 +437,12 @@ void HMIMessage::setAttr(HMI_ATTR_BOOL attr, bool value)
             }
             break;
         case HMI_ATTR_BOOL::PV_INPUT_ALLOWED:
-            // TODO: implement this is needed
+            // TODO: implement this if needed
             break;
     }
 }
 
-void HMIMessage::setAttr(HMI_ATTR_FLOAT attr, float value)
+void HMIMessage::setAttr(const HMI_ATTR_FLOAT attr, const float value)
 {
     switch (attr)
     {
@@ -456,23 +453,22 @@ void HMIMessage::setAttr(HMI_ATTR_FLOAT attr, float value)
     }
 }
 
-void HMIMessage::setAttr(HMI_ATTR_U16 attr, uint16_t value)
+void HMIMessage::setAttr(const HMI_ATTR_U16 attr, uint16_t value)
 {
     switch (attr)
     {
-
         case HMI_ATTR_U16::TIMER_A_START:
         case HMI_ATTR_U16::TIMER_A_LENGTH:
         case HMI_ATTR_U16::TIMER_B_START:
         case HMI_ATTR_U16::TIMER_B_LENGTH:
-            // TODO: implement this is needed
+            // TODO: implement this if needed
         case HMI_ATTR_U16::DATE_YEAR:
             // use custom method for setting month and year
             break;
     }
 }
 
-bool HMIMessage::hasAttr(HMI_ATTR_U8 attr) const
+bool HMIMessage::hasAttr(const HMI_ATTR_U8 attr) const
 {
     switch (attr)
     {
@@ -490,14 +486,12 @@ bool HMIMessage::hasAttr(HMI_ATTR_U8 attr) const
         case HMI_ATTR_U8::OPERATION_MODE:
         case HMI_ATTR_U8::OPERATION_TYPE:
             return true;
-        case HMI_ATTR_U8::STATE_SETUP:
-        case HMI_ATTR_U8::STATE_TEST:
+        default:
             return false;
     }
-    return false;
 }
 
-bool HMIMessage::hasAttr(HMI_ATTR_BOOL attr) const
+bool HMIMessage::hasAttr(const HMI_ATTR_BOOL attr) const
 {
     switch (attr)
     {
@@ -505,21 +499,23 @@ bool HMIMessage::hasAttr(HMI_ATTR_BOOL attr) const
         case HMI_ATTR_BOOL::HEATING_ELEMENT_ALLOWED:
         case HMI_ATTR_BOOL::PV_INPUT_ALLOWED:
             return true;
+        default:
+            return false;
     }
-    return false;
 }
 
-bool HMIMessage::hasAttr(HMI_ATTR_FLOAT attr) const
+bool HMIMessage::hasAttr(const HMI_ATTR_FLOAT attr) const
 {
     switch (attr)
     {
         case HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE:
             return true;
+        default:
+            return false;
     }
-    return false;
 }
 
-bool HMIMessage::hasAttr(HMI_ATTR_U16 attr) const
+bool HMIMessage::hasAttr(const HMI_ATTR_U16 attr) const
 {
     switch (attr)
     {
@@ -529,44 +525,46 @@ bool HMIMessage::hasAttr(HMI_ATTR_U16 attr) const
         case HMI_ATTR_U16::TIMER_B_LENGTH:
         case HMI_ATTR_U16::DATE_YEAR:
             return true;
+        default:
+            return false;
     }
-    return false;
 }
 
-bool HMIMessage::hasAttr(HMI_ATTR_STR attr) const
+bool HMIMessage::hasAttr(const HMI_ATTR_STR attr) const
 {
     switch (attr)
     {
         case HMI_ATTR_STR::TIMER_WINDOW_A:
         case HMI_ATTR_STR::TIMER_WINDOW_B:
             return true;
+        default:
+            return false;
     }
-    return false;
 }
 
-bool HMIMessage::hasChanged(HMI_ATTR_U8 attr) const
+bool HMIMessage::hasChanged(const HMI_ATTR_U8 attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedU8.find(attr) != mHasChangedU8.end();
+    return mCreatedWithoutPrevious || mHasChangedU8.contains(attr);
 }
 
-bool HMIMessage::hasChanged(HMI_ATTR_BOOL attr) const
+bool HMIMessage::hasChanged(const HMI_ATTR_BOOL attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedBool.find(attr) != mHasChangedBool.end();
+    return mCreatedWithoutPrevious || mHasChangedBool.contains(attr);
 }
 
-bool HMIMessage::hasChanged(HMI_ATTR_FLOAT attr) const
+bool HMIMessage::hasChanged(const HMI_ATTR_FLOAT attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedFloat.find(attr) != mHasChangedFloat.end();
+    return mCreatedWithoutPrevious || mHasChangedFloat.contains(attr);
 }
 
-bool HMIMessage::hasChanged(HMI_ATTR_U16 attr) const
+bool HMIMessage::hasChanged(const HMI_ATTR_U16 attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedU16.find(attr) != mHasChangedU16.end();
+    return mCreatedWithoutPrevious || mHasChangedU16.contains(attr);
 }
 
-bool HMIMessage::hasChanged(HMI_ATTR_STR attr) const
+bool HMIMessage::hasChanged(const HMI_ATTR_STR attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedStr.find(attr) != mHasChangedStr.end();
+    return mCreatedWithoutPrevious || mHasChangedStr.contains(attr);
 }
 
 uint8_t HMIMessage::getLength()
@@ -574,14 +572,14 @@ uint8_t HMIMessage::getLength()
     return HMI_MESSAGE_LENGTH_NEXT;
 }
 
-void HMIMessage::setDateMonthAndYear(uint8_t month, uint16_t year) const
+void HMIMessage::setDateMonthAndYear(const uint8_t month, const uint16_t year) const
 {
-    int pastJuly = month > 7 ? 1 : 0;
-    mData[18]      = ((year - 2000) * 2) + pastJuly;
+    const int pastJuly = month > 7 ? 1 : 0;
+    mData[18]          = ((year - 2000) * 2) + pastJuly;
 
-    int month_off_by_one = month - 1;
-    int monthValue = (pastJuly ? month_off_by_one - 8 : month_off_by_one) << 5;
-    mData[17]      = (mData[17] & 0x1F) | (monthValue & 0xE0);
+    const int month_off_by_one = month - 1;
+    const int monthValue       = (pastJuly ? month_off_by_one - 8 : month_off_by_one) << 5;
+    mData[17]                  = (mData[17] & 0x1F) | (monthValue & 0xE0);
 }
 
 }  // namespace aquamqtt::message::next

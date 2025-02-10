@@ -1,6 +1,7 @@
 #include "task/HMITask.h"
 
 #include <esp_task_wdt.h>
+#include <message/Factory.h>
 
 #include "config/Configuration.h"
 #include "message/MessageConstants.h"
@@ -15,7 +16,8 @@ namespace aquamqtt
 {
 
 HMITask::HMITask()
-    : mBuffer(true, false, false, false)
+// TODO: ODYSSEE clarify origin of extra message
+    : mBuffer(true, false, false, false, false)
     , mLastEmittedRequestId(UINT8_MAX)
     , mLastStatisticsUpdate(0)
     , mLastMessageSent(0)
@@ -50,23 +52,24 @@ void HMITask::spawn()
 
 void HMITask::setup()  // NOLINT(*-convert-member-functions-to-static)
 {
-    Serial1.begin(9550, SERIAL_8N2, aquamqtt::config::GPIO_HMI_RX, aquamqtt::config::GPIO_HMI_TX);
+    Serial1.begin(9550, SERIAL_8N2, config::GPIO_HMI_RX, config::GPIO_HMI_TX);
 }
 
 void HMITask::loop()
 {
     bool printSerialStats   = (millis() - mLastStatisticsUpdate) >= 5000;
-    bool performStateChange = (millis() - mLastMessageSent) >= aquamqtt::message::MESSAGE_PERIOD_MS;
+    bool performStateChange = (millis() - mLastMessageSent) >= message::MESSAGE_PERIOD_MS;
 
     while (Serial1.available())
     {
         mBuffer.pushByte(Serial1.read());
     }
 
+    // FIXME: Odyssee has another message 217, likely provided by the controller
     switch (mState)
     {
         case HMITaskState::REQUESTING_194:
-            Serial1.write(aquamqtt::message::HMI_MESSAGE_IDENTIFIER);
+            Serial1.write(message::HMI_MESSAGE_IDENTIFIER);
             Serial1.flush();
             mState           = HMITaskState::SLEEP_194;
             mLastMessageSent = millis();
@@ -242,23 +245,15 @@ void HMITask::sendMessage74()
         message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
 
         size_t length = MainStateProxy::getInstance().copyFrame(
-                aquamqtt::message::HMI_MESSAGE_IDENTIFIER,
+                message::HMI_MESSAGE_IDENTIFIER,
                 mTransferBuffer,
                 version,
                 checksumType);
 
         if (length > 0)
         {
-            if (version == message::PROTOCOL_LEGACY)
-            {
-                aquamqtt::message::legacy::HMIMessage hmiMessage(mTransferBuffer);
-                requestId = hmiMessage.getAttr(message::HMI_ATTR_U8::HMI_ERROR_ID_REQUESTED);
-            }
-            else
-            {
-                aquamqtt::message::next::HMIMessage hmiMessage(mTransferBuffer);
-                requestId = hmiMessage.getAttr(message::HMI_ATTR_U8::HMI_ERROR_ID_REQUESTED);
-            }
+            auto message = createHmiMessageFromBuffer(version, mTransferBuffer);
+            requestId = message->getAttr(message::HMI_ATTR_U8::HMI_ERROR_ID_REQUESTED);
         }
     }
 
@@ -274,28 +269,20 @@ void HMITask::sendMessage74()
     message::ProtocolVersion  version;
     message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
     size_t                    length       = MainStateProxy::getInstance().copyFrame(
-            aquamqtt::message::ERROR_MESSAGE_IDENTIFIER,
+            message::ERROR_MESSAGE_IDENTIFIER,
             mTransferBuffer,
             version,
             checksumType);
     if (length > 0)
     {
-        if (version == message::PROTOCOL_LEGACY)
-        {
-            aquamqtt::message::legacy::ErrorMessage errorMessage(mTransferBuffer);
-            availableRequestId = errorMessage.getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID);
-        }
-        else
-        {
-            aquamqtt::message::next::ErrorMessage errorMessage(mTransferBuffer);
-            availableRequestId = errorMessage.getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID);
-        }
+        auto errorMessage = message::createErrorMessageFromBuffer(version, mTransferBuffer);
+        availableRequestId = errorMessage->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID);
     }
 
     // emit the error message
     if (requestId == availableRequestId)
     {
-        Serial1.write(aquamqtt::message::ERROR_MESSAGE_IDENTIFIER);
+        Serial1.write(message::ERROR_MESSAGE_IDENTIFIER);
         Serial1.write(mTransferBuffer, length);
 
         if (checksumType == message::CHECKSUM_TYPE_CRC16)

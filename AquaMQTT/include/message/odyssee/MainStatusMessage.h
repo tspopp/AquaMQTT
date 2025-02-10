@@ -1,5 +1,5 @@
-#ifndef AQUAMQTT_MAINSTATUSMESSAGE_H
-#define AQUAMQTT_MAINSTATUSMESSAGE_H
+#ifndef AQUAMQTT_MAINSTATUSMESSAGE_ODYSSEE_H
+#define AQUAMQTT_MAINSTATUSMESSAGE_ODYSSEE_H
 
 #include <cstring>
 #include <memory>
@@ -7,7 +7,7 @@
 
 #include "message/IMainMessage.h"
 
-namespace aquamqtt::message::next
+namespace aquamqtt::message::odyssee
 {
 class MainStatusMessage : public IMainMessage
 {
@@ -50,6 +50,6 @@ private:
     std::set<MAIN_ATTR_U16>   mHasChangedU16;
 };
 
-}  // namespace aquamqtt::message::next
+}  // namespace aquamqtt::message::odyssee
 
 #endif  // AQUAMQTT_MAINSTATUSMESSAGE_H

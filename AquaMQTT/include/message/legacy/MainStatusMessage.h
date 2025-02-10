@@ -12,7 +12,7 @@ namespace aquamqtt::message::legacy
 class MainStatusMessage : public IMainMessage
 {
 public:
-    explicit MainStatusMessage(uint8_t* data, uint8_t* previous = nullptr);
+    explicit MainStatusMessage(uint8_t* data, const uint8_t* previous = nullptr);
 
     ~MainStatusMessage() override = default;
 
@@ -39,7 +39,7 @@ public:
     bool hasChanged(MAIN_ATTR_U16 attr) const override;
 
 private:
-    void compareWith(uint8_t* data);
+    void compareWith(const uint8_t* data);
 
     bool     mCreatedWithoutPrevious;
     uint8_t* mData;

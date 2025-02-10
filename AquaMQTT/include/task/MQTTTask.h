@@ -37,6 +37,8 @@ private:
 
     void updateEnergyStats(bool triggerFullUpdate, message::ProtocolVersion& version);
 
+    void updateExtraStatus(bool triggerFullUpdate, message::ProtocolVersion& version);
+
     void updateErrorStatus(message::ProtocolVersion& version);
 
     void updateStats();
@@ -55,6 +57,7 @@ private:
     uint8_t* mLastProcessedHMIMessage;
     uint8_t* mLastProcessedEnergyMessage;
     uint8_t* mLastProcessedMainMessage;
+    uint8_t* mLastProcessedExtraMessage;
 
     SimpleKalmanFilter mEvaporatorLowerAirTempFilter;
     float              mEvaporatorLowerAirTempFiltered;
@@ -66,6 +69,10 @@ private:
     float              mHotWaterTempFiltered;
     SimpleKalmanFilter mCompressorTempFilter;
     float              mCompressorTempFiltered;
+    SimpleKalmanFilter mHotWaterTempUpperFilter;
+    float              mHotWaterTempUpperFiltered;
+    SimpleKalmanFilter mHotWaterTempLowerFilter;
+    float              mHotWaterTempLowerFiltered;
 
     // helper to avoid code duplication
     void publishFloat(const char* subtopic, const char* topic, float value, bool retained = false);
