@@ -1,9 +1,7 @@
 #include "state/HMIStateProxy.h"
 
 #include "config/Configuration.h"
-#include "message/IHMIMessage.h"
-#include "message/legacy/HMIMessage.h"
-#include "message/next/HMIMessage.h"
+#include "message/Factory.h"
 
 namespace aquamqtt
 {
@@ -51,15 +49,7 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion&
         return;
     }
 
-    std::unique_ptr<message::IHMIMessage> message;
-    if (version == message::PROTOCOL_LEGACY)
-    {
-        message = std::make_unique<message::legacy::HMIMessage>(buffer);
-    }
-    else
-    {
-        message = std::make_unique<message::next::HMIMessage>(buffer);
-    }
+    std::unique_ptr<message::IHMIMessage> message = createHmiMessageFromBuffer(version, buffer);
 
     switch (currentOverrideMode())
     {
@@ -409,11 +399,11 @@ AquaMqttOverrideMode HMIStateProxy::currentOverrideMode() const
     {
         return AM_MODE_PV_FULL;
     }
-    else if (!mPVModeHeatElement && mPVModeHeatPump)
+    if (!mPVModeHeatElement && mPVModeHeatPump)
     {
         return AM_MODE_PV_HP_ONLY;
     }
-    else if (mPVModeHeatElement && !mPVModeHeatPump)
+    if (mPVModeHeatElement && !mPVModeHeatPump)
     {
         return AM_MODE_PV_HE_ONLY;
     }

@@ -69,11 +69,13 @@ private:
     bool mHasMainMessage;
     bool mHasEnergyMessage;
     bool mHasErrorMessage;
+    bool mHasExtraMessage;
 
-    uint8_t mMessageHmi[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
-    uint8_t mMessageMain[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
-    uint8_t mMessageEnergy[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
-    uint8_t mMessageError[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageHmi[message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageMain[message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageEnergy[message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageError[message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageExtra[message::HEATPUMP_MAX_FRAME_LENGTH];
 
     BufferStatistics mHmiStats;
     BufferStatistics mMainStats;

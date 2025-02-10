@@ -3,20 +3,13 @@
 #include <ArduinoJson.h>
 #include <WiFi.h>
 #include <esp_task_wdt.h>
+#include <message/Factory.h>
 
 #include "FastCRC.h"
 #include "config/Configuration.h"
 #include "message/IEnergyMessage.h"
 #include "message/IErrorMessage.h"
 #include "message/IHMIMessage.h"
-#include "message/legacy/ErrorMessage.h"
-#include "message/legacy/HMIMessage.h"
-#include "message/legacy/MainEnergyMessage.h"
-#include "message/legacy/MainStatusMessage.h"
-#include "message/next/ErrorMessage.h"
-#include "message/next/HMIMessage.h"
-#include "message/next/MainEnergyMessage.h"
-#include "message/next/MainStatusMessage.h"
 #include "mqtt/MQTTDefinitions.h"
 #include "mqtt/MQTTDiscovery.h"
 #include "state/HMIStateProxy.h"
@@ -39,6 +32,7 @@ MQTTTask::MQTTTask()
     , mLastProcessedHMIMessage(nullptr)
     , mLastProcessedEnergyMessage(nullptr)
     , mLastProcessedMainMessage(nullptr)
+    , mLastProcessedExtraMessage(nullptr)
     , mHotWaterTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
     , mHotWaterTempFiltered(0.0)
     , mAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
@@ -58,6 +52,7 @@ MQTTTask::~MQTTTask()
     delete mLastProcessedHMIMessage;
     delete mLastProcessedEnergyMessage;
     delete mLastProcessedMainMessage;
+    delete mLastProcessedExtraMessage;
 }
 
 void MQTTTask::messageReceived(String& topic, String& payload)
@@ -288,7 +283,7 @@ void MQTTTask::spawn()
 
 void MQTTTask::setup()
 {
-    mMQTTClient.begin(aquamqtt::config::brokerAddr, aquamqtt::config::brokerPort, mWiFiClient);
+    mMQTTClient.begin(config::brokerAddr, config::brokerPort, mWiFiClient);
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
             "%s%s%s%s",
             config::mqttPrefix,
@@ -427,6 +422,24 @@ void MQTTTask::loop()
         }
     }
 
+    if ((notify & 1 << 4) != 0 || fullUpdate)
+    {
+        message::ProtocolVersion  version      = message::PROTOCOL_UNKNOWN;
+        message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+        size_t                    length       = MainStateProxy::getInstance()
+                                .copyFrame(EXTRA_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
+        if (length > 0)
+        {
+            updateExtraStatus(fullUpdate, version);
+
+            if (mLastProcessedExtraMessage == nullptr)
+            {
+                mLastProcessedExtraMessage = new uint8_t[length];
+            }
+            memcpy(mLastProcessedExtraMessage, mTransferBuffer, length);
+        }
+    }
+
     if (statsUpdate)
     {
         updateStats();
@@ -503,9 +516,8 @@ void MQTTTask::updateStats()
         overrideJson[HMI_INSTALLATION_CONFIG]     = overrides.installationMode ? "1" : "0";
         overrideJson[HMI_FAN_EXHAUST_CONFIG]      = overrides.exhaustFanMode ? "1" : "0";
         overrideJson[HMI_AIR_DUCT_CONFIG]         = overrides.airductConfig ? "1" : "0";
-        overrideJson[HMI_TIME_AND_DATE]           = (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM
-                                           && aquamqtt::config::OPERATION_MODE
-                                                      != aquamqtt::config::EOperationMode::LISTENER)
+        overrideJson[HMI_TIME_AND_DATE]           = (config::OVERRIDE_TIME_AND_DATE_IN_MITM
+                                           && config::OPERATION_MODE != config::EOperationMode::LISTENER)
                                                             ? "1"
                                                             : "0";
         serializeJson(overrideJson, mPayloadBuffer, config::MQTT_MAX_PAYLOAD_SIZE);
@@ -550,19 +562,10 @@ void MQTTTask::updateStats()
 
 void MQTTTask::updateMainStatus(bool fullUpdate, message::ProtocolVersion& version)
 {
-    std::unique_ptr<message::IMainMessage> message;
-    if (version == ProtocolVersion::PROTOCOL_NEXT)
-    {
-        message = std::make_unique<message::next::MainStatusMessage>(
-                mTransferBuffer,
-                fullUpdate ? nullptr : mLastProcessedMainMessage);
-    }
-    else
-    {
-        message = std::make_unique<message::legacy::MainStatusMessage>(
-                mTransferBuffer,
-                fullUpdate ? nullptr : mLastProcessedMainMessage);
-    }
+    std::unique_ptr<IMainMessage> message = createMainMessageFromBuffer(
+            version,
+            mTransferBuffer,
+            fullUpdate ? nullptr : mLastProcessedMainMessage);
 
     publishFiltered(
             message,
@@ -823,19 +826,11 @@ void MQTTTask::updateMainStatus(bool fullUpdate, message::ProtocolVersion& versi
 
 void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& version)
 {
-    std::unique_ptr<message::IHMIMessage> message;
-    if (version == ProtocolVersion::PROTOCOL_NEXT)
-    {
-        message = std::make_unique<message::next::HMIMessage>(
-                mTransferBuffer,
-                fullUpdate ? nullptr : mLastProcessedHMIMessage);
-    }
-    else
-    {
-        message = std::make_unique<message::legacy::HMIMessage>(
-                mTransferBuffer,
-                fullUpdate ? nullptr : mLastProcessedHMIMessage);
-    }
+
+    std::unique_ptr<IHMIMessage> message = createHmiMessageFromBuffer(
+            version,
+            mTransferBuffer,
+            fullUpdate ? nullptr : mLastProcessedHMIMessage);
 
     if (message->hasAttr(HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE))
     {
@@ -1069,19 +1064,10 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
 
 void MQTTTask::updateEnergyStats(bool fullUpdate, message::ProtocolVersion& version)
 {
-    std::unique_ptr<message::IEnergyMessage> message;
-    if (version == ProtocolVersion::PROTOCOL_NEXT)
-    {
-        message = std::make_unique<message::next::MainEnergyMessage>(
-                mTransferBuffer,
-                fullUpdate ? nullptr : mLastProcessedEnergyMessage);
-    }
-    else
-    {
-        message = std::make_unique<message::legacy::MainEnergyMessage>(
-                mTransferBuffer,
-                fullUpdate ? nullptr : mLastProcessedEnergyMessage);
-    }
+    std::unique_ptr<message::IEnergyMessage> message = createEnergyMessageFromBuffer(
+            version,
+            mTransferBuffer,
+            fullUpdate ? nullptr : mLastProcessedEnergyMessage);
 
     if (message->hasAttr(ENERGY_ATTR_U32::TOTAL_HEATPUMP_HOURS))
     {
@@ -1271,17 +1257,30 @@ void MQTTTask::updateEnergyStats(bool fullUpdate, message::ProtocolVersion& vers
     }
 }
 
+void MQTTTask::updateExtraStatus(bool fullUpdate, message::ProtocolVersion& version)
+{
+    std::unique_ptr<message::IExtraMessage> message = creatExtraMessageFromBuffer(
+            version,
+            mTransferBuffer,
+            fullUpdate ? nullptr : mLastProcessedExtraMessage);
+
+    if (config::DEBUG_RAW_SERIAL_MESSAGES)
+    {
+        sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                "%s%s%s%s",
+                config::mqttPrefix,
+                BASE_TOPIC,
+                EXTRA_SUBTOPIC,
+                DEBUG);
+
+        toHexStr(mTransferBuffer, message->getLength(), reinterpret_cast<char*>(mPayloadBuffer));
+        mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+    }
+}
+
 void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
 {
-    std::unique_ptr<message::IErrorMessage> message;
-    if (version == ProtocolVersion::PROTOCOL_NEXT)
-    {
-        message = std::make_unique<message::next::ErrorMessage>(mTransferBuffer);
-    }
-    else
-    {
-        message = std::make_unique<message::legacy::ErrorMessage>(mTransferBuffer);
-    }
+    std::unique_ptr<message::IErrorMessage> message = createErrorMessageFromBuffer(version, mTransferBuffer);
 
     if (message->isEmpty())
     {
@@ -1521,6 +1520,12 @@ void MQTTTask::sendHomeassistantDiscovery()
     // cannot send discovery yet, protocol is still unknown
     ProtocolVersion protocolVersion = DHWState::getInstance().getVersion();
     if (protocolVersion == PROTOCOL_UNKNOWN)
+    {
+        return;
+    }
+
+    // FIXME: not yet implemented for protocol odyssee
+    if (protocolVersion == PROTOCOL_ODYSSEE)
     {
         return;
     }

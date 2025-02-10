@@ -13,6 +13,7 @@ constexpr char HMI_SUBTOPIC[]    = { "hmi/" };
 constexpr char MAIN_SUBTOPIC[]   = { "main/" };
 constexpr char ENERGY_SUBTOPIC[] = { "energy/" };
 constexpr char ERROR_SUBTOPIC[]  = { "error/" };
+constexpr char EXTRA_SUBTOPIC[]  = { "extra/" };
 constexpr char STATS_SUBTOPIC[]  = { "stats/" };
 
 // Enum Types
@@ -22,7 +23,8 @@ constexpr char ENUM_AQUAMQTT_MODE_LISTENER[] = { "LISTENER" };
 constexpr char ENUM_AQUAMQTT_MODE_MITM[]     = { "MITM" };
 
 constexpr char ENUM_AQUAMQTT_PROTOCOL_LEGACY[] = { "LEGACY" };
-constexpr char ENUM_AQUAMQTT_PROTOCL_NEXT[]    = { "NEXT" };
+constexpr char ENUM_AQUAMQTT_PROTOCOL_NEXT[]    = { "NEXT" };
+constexpr char ENUM_AQUAMQTT_PROTOCOL_ODYSSEE[]    = { "ODYSSEE" };
 
 constexpr char ENUM_BRAND_ATLANTIC[] = { "Atlantic" };
 constexpr char ENUM_BRAND_THERMOR[]  = { "Thermor" };
