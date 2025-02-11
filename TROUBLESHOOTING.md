@@ -71,6 +71,8 @@ flowchart TD
 
 3.) Inspect the MQTT attributes `msgHandled`, `droppedBytes`, `msgSent` and `msgCRCNOK`.
 
+**Note ⚠:** These MQTT attributes are disabled by default and have to be enabled within `Configuration.h`. Locate `MQTT_PUBLISH_SERIAL_STATISTICS` and set it to `true`.
+
 - If the connection is
   good, `droppedBytes` will remain at very low amount and do not rise any further. A few dropped bytes during the
   initial
