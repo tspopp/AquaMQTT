@@ -69,6 +69,10 @@ private:
     float              mHotWaterTempFiltered;
     SimpleKalmanFilter mCompressorTempFilter;
     float              mCompressorTempFiltered;
+    SimpleKalmanFilter mHotWaterTempUpperFilter;
+    float              mHotWaterTempUpperFiltered;
+    SimpleKalmanFilter mHotWaterTempLowerFilter;
+    float              mHotWaterTempLowerFiltered;
 
     // helper to avoid code duplication
     void publishFloat(const char* subtopic, const char* topic, float value, bool retained = false);

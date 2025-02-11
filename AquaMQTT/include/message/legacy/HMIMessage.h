@@ -11,7 +11,7 @@ namespace aquamqtt::message::legacy
 class HMIMessage : public IHMIMessage
 {
 public:
-    explicit HMIMessage(uint8_t* data, uint8_t* previous = nullptr);
+    explicit HMIMessage(uint8_t* data, const uint8_t* previous = nullptr);
 
     ~HMIMessage() override = default;
 
@@ -43,7 +43,7 @@ public:
     bool hasChanged(HMI_ATTR_STR attr) const override;
 
 private:
-    void compareWith(uint8_t* data);
+    void compareWith(const uint8_t* data);
 
     bool                     mCreatedWithoutPrevious;
     std::set<HMI_ATTR_U8>    mHasChangedU8;

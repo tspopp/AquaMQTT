@@ -22,28 +22,32 @@ using namespace mqtt;
 using namespace message;
 
 MQTTTask::MQTTTask()
-    : mLastStatsUpdate(0)
-    , mLastFullUpdate(0)
-    , mMQTTClient(256)
-    , mTransferBuffer{ 0 }
-    , mTaskHandle(nullptr)
+    : mTransferBuffer{ 0 }
     , mTopicBuffer{ 0 }
     , mPayloadBuffer{ 0 }
+    , mLastStatsUpdate(0)
+    , mLastFullUpdate(0)
+    , mMQTTClient(256)
+    , mTaskHandle(nullptr)
+    , mPublishedDiscovery(false)
     , mLastProcessedHMIMessage(nullptr)
     , mLastProcessedEnergyMessage(nullptr)
     , mLastProcessedMainMessage(nullptr)
     , mLastProcessedExtraMessage(nullptr)
-    , mHotWaterTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
-    , mHotWaterTempFiltered(0.0)
-    , mAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
-    , mAirTempFiltered(0.0)
     , mEvaporatorLowerAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
     , mEvaporatorLowerAirTempFiltered(0.0)
     , mEvaporatorUpperAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
     , mEvaporatorUpperAirTempFiltered(0.0)
+    , mAirTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mAirTempFiltered(0.0)
+    , mHotWaterTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mHotWaterTempFiltered(0.0)
     , mCompressorTempFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
     , mCompressorTempFiltered(0.0)
-    , mPublishedDiscovery(false)
+    , mHotWaterTempUpperFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mHotWaterTempUpperFiltered(0.0)
+    , mHotWaterTempLowerFilter(config::KALMAN_MEA_E, config::KALMAN_EST_E, config::KALMAN_Q)
+    , mHotWaterTempLowerFiltered(0.0)
 {
 }
 
@@ -605,6 +609,22 @@ void MQTTTask::updateMainStatus(bool fullUpdate, message::ProtocolVersion& versi
             mCompressorTempFilter,
             mCompressorTempFiltered,
             MAIN_COMPRESSOR_OUTLET_TEMP,
+            fullUpdate);
+
+    publishFiltered(
+            message,
+            MAIN_ATTR_FLOAT::WATER_LOWER_TEMPERATURE,
+            mHotWaterTempLowerFilter,
+            mHotWaterTempLowerFiltered,
+            MAIN_HOT_WATER_TEMP_LOWER,
+            fullUpdate);
+
+    publishFiltered(
+            message,
+            MAIN_ATTR_FLOAT::WATER_UPPER_TEMPERATURE,
+            mHotWaterTempUpperFilter,
+            mHotWaterTempUpperFiltered,
+            MAIN_HOT_WATER_TEMP_UPPER,
             fullUpdate);
 
     if (message->hasAttr(MAIN_ATTR_FLOAT::FAN_SPEED_PWM))

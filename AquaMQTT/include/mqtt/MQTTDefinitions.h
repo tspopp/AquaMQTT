@@ -22,9 +22,9 @@ constexpr char ENUM_UNKNOWN[] = { "UNKNOWN" };
 constexpr char ENUM_AQUAMQTT_MODE_LISTENER[] = { "LISTENER" };
 constexpr char ENUM_AQUAMQTT_MODE_MITM[]     = { "MITM" };
 
-constexpr char ENUM_AQUAMQTT_PROTOCOL_LEGACY[] = { "LEGACY" };
+constexpr char ENUM_AQUAMQTT_PROTOCOL_LEGACY[]  = { "LEGACY" };
 constexpr char ENUM_AQUAMQTT_PROTOCOL_NEXT[]    = { "NEXT" };
-constexpr char ENUM_AQUAMQTT_PROTOCOL_ODYSSEE[]    = { "ODYSSEE" };
+constexpr char ENUM_AQUAMQTT_PROTOCOL_ODYSSEE[] = { "ODYSSEE" };
 
 constexpr char ENUM_BRAND_ATLANTIC[] = { "Atlantic" };
 constexpr char ENUM_BRAND_THERMOR[]  = { "Thermor" };
@@ -79,6 +79,8 @@ constexpr char ENUM_AQUAMQTT_OVERRIDE_MODE_PV_FULL[] = { "PV BOOST" };
 // Subtopics
 constexpr char MAIN_ERROR_CODE[]                = { "errorCode" };
 constexpr char MAIN_HOT_WATER_TEMP[]            = { "waterTemp" };
+constexpr char MAIN_HOT_WATER_TEMP_LOWER[]      = { "waterTempLower" };
+constexpr char MAIN_HOT_WATER_TEMP_UPPER[]      = { "waterTempUpper" };
 constexpr char MAIN_SUPPLY_AIR_TEMP[]           = { "supplyAirTemp" };
 constexpr char MAIN_EVAPORATOR_AIR_TEMP_UPPER[] = { "evaporatorAirTemp" };
 constexpr char MAIN_EVAPORATOR_AIR_TEMP_LOWER[] = { "evaporatorAirTempLower" };

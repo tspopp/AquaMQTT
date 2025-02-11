@@ -5,7 +5,7 @@
 namespace aquamqtt::message::odyssee
 {
 
-HMIMessage::HMIMessage(uint8_t* data, uint8_t* previous)
+HMIMessage::HMIMessage(uint8_t* data, const uint8_t* previous)
     : mData(data)
     , mHasChangedFloat()
     , mHasChangedBool()
@@ -15,7 +15,7 @@ HMIMessage::HMIMessage(uint8_t* data, uint8_t* previous)
     compareWith(previous);
 }
 
-void HMIMessage::compareWith(uint8_t* data)
+void HMIMessage::compareWith(const uint8_t* data)
 {
     if (data == nullptr)
     {
@@ -28,10 +28,11 @@ void HMIMessage::compareWith(uint8_t* data)
 
     for (int i = 0; i < numDiffs; ++i)
     {
-        auto indiceChanged = diffIndices[i];
-
-        switch (indiceChanged)
+        switch (diffIndices[i])
         {
+            case 1:
+                mHasChangedFloat.insert(HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE);
+                break;
             default:
                 break;
         }
@@ -53,34 +54,41 @@ bool HMIMessage::getAttr(HMI_ATTR_BOOL attr)
     return false;
 }
 
-float HMIMessage::getAttr(HMI_ATTR_FLOAT attr)
+float HMIMessage::getAttr(const HMI_ATTR_FLOAT attr)
 {
+    switch (attr)
+    {
+        case HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE:
+            return mData[1];
+    }
     return 0;
 }
 
 void HMIMessage::getAttr(HMI_ATTR_STR attr, char* buffer)
 {
-
 }
 
 void HMIMessage::setAttr(HMI_ATTR_U8 attr, uint8_t value)
 {
-
 }
 
 void HMIMessage::setAttr(HMI_ATTR_BOOL attr, bool value)
 {
-
 }
 
-void HMIMessage::setAttr(HMI_ATTR_FLOAT attr, float value)
+void HMIMessage::setAttr(const HMI_ATTR_FLOAT attr, const float value)
 {
-
+    switch (attr)
+    {
+        case HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE:
+            // this heatpump does not support decimals
+            mData[1] = static_cast<int>(value);
+            break;
+    }
 }
 
 void HMIMessage::setAttr(HMI_ATTR_U16 attr, uint16_t value)
 {
-
 }
 
 bool HMIMessage::hasAttr(HMI_ATTR_U8 attr) const
@@ -93,8 +101,13 @@ bool HMIMessage::hasAttr(HMI_ATTR_BOOL attr) const
     return false;
 }
 
-bool HMIMessage::hasAttr(HMI_ATTR_FLOAT attr) const
+bool HMIMessage::hasAttr(const HMI_ATTR_FLOAT attr) const
 {
+    switch (attr)
+    {
+        case HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE:
+            return true;
+    }
     return false;
 }
 
@@ -108,29 +121,29 @@ bool HMIMessage::hasAttr(HMI_ATTR_STR attr) const
     return false;
 }
 
-bool HMIMessage::hasChanged(HMI_ATTR_U8 attr) const
+bool HMIMessage::hasChanged(const HMI_ATTR_U8 attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedU8.find(attr) != mHasChangedU8.end();
+    return mCreatedWithoutPrevious || mHasChangedU8.contains(attr);
 }
 
-bool HMIMessage::hasChanged(HMI_ATTR_BOOL attr) const
+bool HMIMessage::hasChanged(const HMI_ATTR_BOOL attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedBool.find(attr) != mHasChangedBool.end();
+    return mCreatedWithoutPrevious || mHasChangedBool.contains(attr);
 }
 
-bool HMIMessage::hasChanged(HMI_ATTR_FLOAT attr) const
+bool HMIMessage::hasChanged(const HMI_ATTR_FLOAT attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedFloat.find(attr) != mHasChangedFloat.end();
+    return mCreatedWithoutPrevious || mHasChangedFloat.contains(attr);
 }
 
-bool HMIMessage::hasChanged(HMI_ATTR_U16 attr) const
+bool HMIMessage::hasChanged(const HMI_ATTR_U16 attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedU16.find(attr) != mHasChangedU16.end();
+    return mCreatedWithoutPrevious || mHasChangedU16.contains(attr);
 }
 
-bool HMIMessage::hasChanged(HMI_ATTR_STR attr) const
+bool HMIMessage::hasChanged(const HMI_ATTR_STR attr) const
 {
-    return mCreatedWithoutPrevious || mHasChangedStr.find(attr) != mHasChangedStr.end();
+    return mCreatedWithoutPrevious || mHasChangedStr.contains(attr);
 }
 
 uint8_t HMIMessage::getLength()
