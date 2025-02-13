@@ -42,11 +42,10 @@ constexpr uint8_t ENERGY_MESSAGE_LENGTH_NEXT    = 45;
 constexpr uint8_t ENERGY_MESSAGE_LENGTH_LEGACY  = 31;
 constexpr uint8_t ENERGY_MESSAGE_LENGTH_ODYSSEE = 25;
 
-constexpr uint8_t ERROR_MESSAGE_IDENTIFIER    = 74;
-constexpr uint8_t ERROR_MESSAGE_LENGTH_NEXT   = 65;
-constexpr uint8_t ERROR_MESSAGE_LENGTH_LEGACY = 35;
-// TODO: to be determined
-constexpr uint8_t ERROR_MESSAGE_LENGTH_ODYSSEE = 255;
+constexpr uint8_t ERROR_MESSAGE_IDENTIFIER     = 74;
+constexpr uint8_t ERROR_MESSAGE_LENGTH_NEXT    = 65;
+constexpr uint8_t ERROR_MESSAGE_LENGTH_LEGACY  = 35;
+constexpr uint8_t ERROR_MESSAGE_LENGTH_ODYSSEE = 68;
 
 constexpr uint8_t EXTRA_MESSAGE_IDENTIFIER     = 217;
 constexpr uint8_t EXTRA_MESSAGE_LENGTH_ODYSSEE = 31;
@@ -142,39 +141,39 @@ static uint8_t lengthByFrameIdAndProtocol(const uint8_t frameId, const ProtocolV
     {
         switch (version)
         {
-        case PROTOCOL_NEXT:
-            return MAIN_MESSAGE_LENGTH_NEXT;
-        case PROTOCOL_ODYSSEE:
-            return MAIN_MESSAGE_LENGTH_ODYSSEE;
-        case PROTOCOL_LEGACY:
-        default:
-            return MAIN_MESSAGE_LENGTH_LEGACY;
+            case PROTOCOL_NEXT:
+                return MAIN_MESSAGE_LENGTH_NEXT;
+            case PROTOCOL_ODYSSEE:
+                return MAIN_MESSAGE_LENGTH_ODYSSEE;
+            case PROTOCOL_LEGACY:
+            default:
+                return MAIN_MESSAGE_LENGTH_LEGACY;
         }
     }
     if (frameId == ENERGY_MESSAGE_IDENTIFIER)
     {
         switch (version)
         {
-        case PROTOCOL_NEXT:
-            return ENERGY_MESSAGE_LENGTH_NEXT;
-        case PROTOCOL_ODYSSEE:
-            return ENERGY_MESSAGE_LENGTH_ODYSSEE;
-        case PROTOCOL_LEGACY:
-        default:
-            return ENERGY_MESSAGE_LENGTH_LEGACY;
+            case PROTOCOL_NEXT:
+                return ENERGY_MESSAGE_LENGTH_NEXT;
+            case PROTOCOL_ODYSSEE:
+                return ENERGY_MESSAGE_LENGTH_ODYSSEE;
+            case PROTOCOL_LEGACY:
+            default:
+                return ENERGY_MESSAGE_LENGTH_LEGACY;
         }
     }
     if (frameId == ERROR_MESSAGE_IDENTIFIER)
     {
         switch (version)
         {
-        case PROTOCOL_NEXT:
-            return ERROR_MESSAGE_LENGTH_NEXT;
-        case PROTOCOL_ODYSSEE:
-            return ERROR_MESSAGE_LENGTH_ODYSSEE;
-        case PROTOCOL_LEGACY:
-        default:
-            return ERROR_MESSAGE_LENGTH_LEGACY;
+            case PROTOCOL_NEXT:
+                return ERROR_MESSAGE_LENGTH_NEXT;
+            case PROTOCOL_ODYSSEE:
+                return ERROR_MESSAGE_LENGTH_ODYSSEE;
+            case PROTOCOL_LEGACY:
+            default:
+                return ERROR_MESSAGE_LENGTH_LEGACY;
         }
     }
     if (frameId == EXTRA_MESSAGE_IDENTIFIER)
@@ -183,7 +182,6 @@ static uint8_t lengthByFrameIdAndProtocol(const uint8_t frameId, const ProtocolV
     }
     return 0;
 }
-
 
 static const char* protocolVersionStr(ProtocolVersion version)
 {
@@ -241,20 +239,24 @@ static const char* operationModeStr(HMIOperationMode mode)
     }
 }
 
-enum HMIOperationType : bool
+enum HMIOperationType
 {
-    ALWAYS_ON = false,
-    TIMER     = true
+    OT_UNKNOWN,
+    OT_ALWAYS_ON,
+    OT_TIMER,
+    OT_OFF_PEAK_HOURS
 };
 
-static const char* operationTypeStr(HMIOperationType type)
+static const char* operationTypeStr(const HMIOperationType type)
 {
     switch (type)
     {
-        case ALWAYS_ON:
+        case OT_ALWAYS_ON:
             return reinterpret_cast<const char*>(mqtt::ENUM_OPERATION_TYPE_ALWAYS_ON);
-        case TIMER:
+        case OT_TIMER:
             return reinterpret_cast<const char*>(mqtt::ENUM_OPERATION_TYPE_TIMER);
+        case OT_OFF_PEAK_HOURS:
+            return reinterpret_cast<const char*>(mqtt::ENUM_OPERATION_TYPE_OFF_PEAK_HOURS);
         default:
             return reinterpret_cast<const char*>(mqtt::ENUM_UNKNOWN);
     }

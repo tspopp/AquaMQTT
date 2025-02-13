@@ -67,7 +67,7 @@ constexpr bool DEBUG_RAW_SERIAL_MESSAGES = true;
  * topics "msgHandled, msgUnhandled, msgCRCNOK and msgSent" topics for each serial
  * channel (hmi/main or listener),
  */
-constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = false;
+constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = true;
 
 /**
  * Choose to publish time and date used by the heatpump. This is mainly for debugging
@@ -75,7 +75,7 @@ constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = false;
  * enable this, if you are customizing the NTP timezone or server or even trying to
  * use the RTC module from the AquaMQTT board.
  */
-constexpr bool MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE = false;
+constexpr bool MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE = true;
 
 /**
  * Change the time interval where all known attributes are re-published to the MQTT broker.

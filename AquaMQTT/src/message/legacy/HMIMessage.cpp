@@ -233,9 +233,9 @@ uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
         case HMI_ATTR_U8::OPERATION_TYPE:
             if (mData[3] & 0x40)
             {
-                return TIMER;
+                return OT_TIMER;
             }
-            return ALWAYS_ON;
+            return OT_ALWAYS_ON;
         default:
             return 0;
     }
@@ -438,14 +438,14 @@ void HMIMessage::setAttr(const HMI_ATTR_U8 attr, uint8_t value)
         case HMI_ATTR_U8::OPERATION_TYPE:
         {
             auto operationType = static_cast<HMIOperationType>(value);
-            if (operationType == HMIOperationType::TIMER)
+            if (operationType == OT_TIMER)
             {
                 mData[3] = (mData[3] & ~(1 << 6)) | (true << 6);
             }
-            else
+            else if (operationType == OT_ALWAYS_ON)
             {
                 mData[3] = (mData[3] & ~(1 << 6)) | (false << 6);
-            }
+            } // operation type off-peak hours is unsupported
         }
         break;
         case HMI_ATTR_U8::DATE_MONTH:

@@ -6,10 +6,10 @@ namespace aquamqtt::message::next
 {
 
 HMIMessage::HMIMessage(uint8_t* data, const uint8_t* previous)
-    : mData(data)
-    , mHasChangedFloat()
+    : mHasChangedU8()
     , mHasChangedBool()
-    , mHasChangedU8()
+    , mHasChangedFloat()
+    , mData(data)
 {
     mCreatedWithoutPrevious = previous == nullptr;
     compareWith(previous);
@@ -22,7 +22,7 @@ void HMIMessage::compareWith(const uint8_t* data)
         return;
     }
 
-    uint8_t diffIndices[HMI_MESSAGE_LENGTH_NEXT] = { 0 };
+    uint8_t diffIndices[HMI_MESSAGE_LENGTH_NEXT] = { };
     size_t  numDiffs                             = 0;
     compareBuffers(mData, data, HMI_MESSAGE_LENGTH_NEXT, diffIndices, &numDiffs);
 
@@ -41,6 +41,7 @@ void HMIMessage::compareWith(const uint8_t* data)
                 break;
             case 4:
                 mHasChangedU8.insert(HMI_ATTR_U8::ANTI_LEGIONELLA_CYCLES);
+                mHasChangedU8.insert(HMI_ATTR_U8::CONFIG_AIRDUCT);
                 break;
             case 5:
                 mHasChangedBool.insert(HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED);
@@ -186,9 +187,9 @@ uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
         case HMI_ATTR_U8::OPERATION_TYPE:
             if (mData[3] & 0x40)
             {
-                return ALWAYS_ON;
+                return OT_ALWAYS_ON;
             }
-            return TIMER;
+            return OT_TIMER;
         case HMI_ATTR_U8::STATE_SETUP:
         case HMI_ATTR_U8::STATE_TEST:
             break;
@@ -387,14 +388,14 @@ void HMIMessage::setAttr(const HMI_ATTR_U8 attr, uint8_t value)
         case HMI_ATTR_U8::OPERATION_TYPE:
         {
             auto operationType = static_cast<HMIOperationType>(value);
-            if (operationType == TIMER)
+            if (operationType == OT_TIMER)
             {
                 mData[3] = (mData[3] & ~(1 << 6)) | (true << 6);
             }
-            else
+            else if (operationType == OT_ALWAYS_ON)
             {
                 mData[3] = (mData[3] & ~(1 << 6)) | (false << 6);
-            }
+            } // operation type off-peak hours is unsupported
         }
         break;
         case HMI_ATTR_U8::DATE_MONTH:

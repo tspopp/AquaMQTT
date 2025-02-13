@@ -61,8 +61,9 @@ constexpr char ENUM_TEST_MODE_ACTIVE_FAN_LOW[]                 = { "TESTING FAN 
 constexpr char ENUM_TEST_MODE_ACTIVE_DEFROSTING[]              = { "TESTING DEFROSTING" };
 constexpr char ENUM_TEST_MODE_ACTIVE_HEAT_PUMP_BOILER_BACKUP[] = { "TESTING HEAT PUMP AND BOILER BACKUP" };
 
-constexpr char ENUM_OPERATION_TYPE_ALWAYS_ON[] = { "ALWAYS ON" };
-constexpr char ENUM_OPERATION_TYPE_TIMER[]     = { "TIME WINDOW" };
+constexpr char ENUM_OPERATION_TYPE_ALWAYS_ON[]      = { "ALWAYS ON" };
+constexpr char ENUM_OPERATION_TYPE_TIMER[]          = { "TIME WINDOW" };
+constexpr char ENUM_OPERATION_TYPE_OFF_PEAK_HOURS[] = { "OFF-PEAK HOURS" };
 
 constexpr char ENUM_LAST_WILL_ONLINE[]  = { "ONLINE" };
 constexpr char ENUM_LAST_WILL_OFFLINE[] = { "OFFLINE" };

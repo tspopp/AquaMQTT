@@ -103,11 +103,15 @@ void MQTTTask::messageReceived(String& topic, String& payload)
     {
         if (strstr_P(payload.c_str(), ENUM_OPERATION_TYPE_TIMER) != nullptr)
         {
-            HMIStateProxy::getInstance().onOperationTypeChanged(std::make_unique<HMIOperationType>(TIMER));
+            HMIStateProxy::getInstance().onOperationTypeChanged(std::make_unique<HMIOperationType>(OT_TIMER));
         }
         else if (strstr_P(payload.c_str(), ENUM_OPERATION_TYPE_ALWAYS_ON) != nullptr)
         {
-            HMIStateProxy::getInstance().onOperationTypeChanged(std::make_unique<HMIOperationType>(ALWAYS_ON));
+            HMIStateProxy::getInstance().onOperationTypeChanged(std::make_unique<HMIOperationType>(OT_ALWAYS_ON));
+        }
+        else if (strstr_P(payload.c_str(), ENUM_OPERATION_TYPE_OFF_PEAK_HOURS) != nullptr)
+        {
+            HMIStateProxy::getInstance().onOperationTypeChanged(std::make_unique<HMIOperationType>(OT_OFF_PEAK_HOURS));
         }
         else
         {

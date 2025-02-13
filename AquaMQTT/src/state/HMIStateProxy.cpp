@@ -55,7 +55,7 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion&
     {
         case AM_MODE_PV_HP_ONLY:
             message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, message::HMIInstallation::INST_HP_ONLY);
-            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::ALWAYS_ON);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::OT_ALWAYS_ON);
             message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_INACTIVE);
             message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             // do not use heat element
@@ -64,7 +64,7 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion&
             break;
         case AM_MODE_PV_HE_ONLY:
             message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, message::HMIInstallation::INST_HP_ONLY);
-            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::ALWAYS_ON);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::OT_ALWAYS_ON);
             message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_INACTIVE);
             message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             // just use heat element
@@ -73,7 +73,7 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion&
             break;
         case AM_MODE_PV_FULL:
             message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, message::HMIInstallation::INST_HP_ONLY);
-            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::ALWAYS_ON);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::OT_ALWAYS_ON);
             message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_BOOST);
             message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             break;
