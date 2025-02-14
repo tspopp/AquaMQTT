@@ -1,6 +1,6 @@
 # Protocol (ODYSSEE)
 
-Another heat pump protocol observed in https://github.com/tspopp/AquaMQTT/issues/68 with an _Atlantic Odyssee Pi_ heatpump.
+Another heat pump protocol observed in https://github.com/tspopp/AquaMQTT/issues/68 with an _Atlantic Odyssee Pi_ heatpump (2015).
 
 ## Message Format
 
@@ -8,7 +8,7 @@ Another heat pump protocol observed in https://github.com/tspopp/AquaMQTT/issues
 ID  LEN                                                                                            CRC
 194 29   54 2   0  33 0  0 0   0   0   0   0  0   0  0 0   0 33 50 38 17 0 0 0 0 65 66 0 0          47
 67  25   64 0 251  15 0  0 0   0 195   0   0  0 176 46 0   0  0  0  0  0 0 0 0 0                   240
-217 31   31 0   0 232 0  1 0 129   1 236 210 88   0 14 1 204  0  0  1  0 0 2 0 0  0  0 0  0  0 0 0 208
+217 31    0 0 233   0 2  0 127 1 237 235  88  0  14  1 194 0  0  1  0  0 2 0 0 0  0  0 0 0  0 0     26  
 193 29   29 53  0  31 0 14 0  14   0  18   0  0   0 53 0  47  0  0  0  0 0 0 2 0  0  0 0 82 66       4
 ```
 
@@ -189,39 +189,39 @@ and provide a photo of the HMI controller together with a dump of the *energy* m
 
 _Until we are not sure what this message is about, I call it "extra" message ;)
 
-| Byte Number | Example (dec) | Purpose/Function | Other Information |
-|-------------|---------------|------------------|-------------------|
-| 0           | 31            | Length Field     |                   |
-| 1           |               |                  |                   |
-| 2           |               |                  |                   |
-| 3           |               |                  |                   |
-| 4           |               |                  |                   |
-| 5           |               |                  |                   |
-| 6           |               |                  |                   |
-| 7           |               |                  |                   |
-| 8           |               |                  |                   |
-| 9           |               |                  |                   |
-| 10          |               |                  |                   |
-| 11          |               |                  |                   |
-| 12          |               |                  |                   |
-| 13          |               |                  |                   |
-| 14          |               |                  |                   |
-| 15          |               |                  |                   |
-| 16          |               |                  |                   |
-| 17          |               |                  |                   |
-| 18          |               |                  |                   |
-| 19          |               |                  |                   |
-| 20          |               |                  |                   |
-| 21          |               |                  |                   |
-| 22          |               |                  |                   |
-| 23          |               |                  |                   |
-| 24          |               |                  |                   |
-| 25          |               |                  |                   |
-| 26          |               |                  |                   |
-| 27          |               |                  |                   |
-| 28          |               |                  |                   |
-| 29          |               |                  |                   |
-| 30          |               |                  |                   |
+| Byte Number | Example (dec) | Purpose/Function             | Other Information |
+|-------------|---------------|------------------------------|-------------------|
+| 0           | 31            | Length Field                 |                   |
+| 1           | 0             |                              |                   |
+| 2           | 0             |                              |                   |
+| 3           | 233           | Voltage Grid (?)             |                   |
+| 4           | 0             |                              |                   |
+| 5           | 2             | Power Consumption Heatpump ? |                   |
+| 6           | 0             | Power Consumption Heatpump ? |                   |
+| 7           | 127           |                              |                   |
+| 8           | 1             |                              |                   |
+| 9           | 237           |                              |                   |
+| 10          | 235           |                              |                   |
+| 11          | 88            |                              |                   |
+| 12          | 0             |                              |                   |
+| 13          | 14            |                              |                   |
+| 14          | 1             |                              |                   |
+| 15          | 194           |                              |                   |
+| 16          | 0             |                              |                   |
+| 17          | 0             |                              |                   |
+| 18          | 1             |                              |                   |
+| 19          | 0             |                              |                   |
+| 20          | 0             |                              |                   |
+| 21          | 2             |                              |                   |
+| 22          | 0             |                              |                   |
+| 23          | 0             |                              |                   |
+| 24          | 0             |                              |                   |
+| 25          | 0             |                              |                   |
+| 26          | 0             |                              |                   |
+| 27          | 0             |                              |                   |
+| 28          | 0             |                              |                   |
+| 29          | 0             |                              |                   |
+| 30          | 0             |                              |                   |
 
 ### Error Message (67)
 

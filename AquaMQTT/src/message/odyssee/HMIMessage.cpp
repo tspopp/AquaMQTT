@@ -109,6 +109,38 @@ uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
                 default:
                     return OT_UNKNOWN;
             }
+        case HMI_ATTR_U8::OPERATION_MODE:
+            // unfortunately we cannot parse the lower nibble, since BOOST and ABSENCE have different identifiers
+            // influenced by the operation type. For example, in operation type OFF_PEAK_HOURS Boost is 10, while in
+            // Timer and Always On it is 8
+            switch (mData[2])
+            {
+                case 10:
+                    // off-peak
+                case 72:
+                    // always on
+                case 24:
+                    // timer
+                    return OM_BOOST;
+                case 2:
+                case 66:
+                case 18:
+                    return OM_ECO_INACTIVE;
+                case 1:
+                case 65:
+                case 17:
+                    return OM_ECO_ACTIVE;
+                case 0:
+                case 64:
+                case 16:
+                    return OM_AUTO;
+                case 6:
+                case 68:
+                case 20:
+                    return OM_ABSENCE;
+                default:
+                    return OM_UNKNOWN;
+            }
         default:
             return 0;
     }
@@ -186,6 +218,7 @@ bool HMIMessage::hasAttr(const HMI_ATTR_U8 attr) const
         case HMI_ATTR_U8::CONFIG_AIRDUCT:
         case HMI_ATTR_U8::ANTI_LEGIONELLA_CYCLES:
         case HMI_ATTR_U8::OPERATION_TYPE:
+        case HMI_ATTR_U8::OPERATION_MODE:
             return true;
         default:
             return false;
