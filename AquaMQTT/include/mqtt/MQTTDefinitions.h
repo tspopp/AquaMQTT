@@ -165,6 +165,7 @@ constexpr char STATS_ACTIVE_OVERRIDES_MAIN[]      = { "activeOverridesMain" };
 constexpr char STATS_ENABLE_FLAG_PV_HEATPUMP[]    = { "flagPVModeHeatPump" };
 constexpr char STATS_ENABLE_FLAG_PV_HEATELEMENT[] = { "flagPVModeHeatElement" };
 constexpr char STATS_AQUAMQTT_PROTOCOL[]          = { "protocolVersion" };
+constexpr char STATS_TIMING[] = { "timing"};
 
 constexpr char DEBUG[] = { "debug" };
 

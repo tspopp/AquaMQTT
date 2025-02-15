@@ -7,8 +7,14 @@
 using namespace aquamqtt;
 using namespace aquamqtt::message;
 
-FrameBuffer::FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74, bool handle217)
-    : mHandle194(handle194)
+FrameBuffer::FrameBuffer(const bool handle194, const bool handle193,
+        const bool handle67,
+        const bool handle74,
+        const bool handle217)
+    : mLockedProtocol(PROTOCOL_UNKNOWN)
+    , mLockedChecksum(CHECKSUM_TYPE_UNKNOWN)
+    , mTransferBuffer{ 0 }
+    , mHandle194(handle194)
     , mHandle193(handle193)
     , mHandle67(handle67)
     , mHandle74(handle74)
@@ -17,9 +23,7 @@ FrameBuffer::FrameBuffer(bool handle194, bool handle193, bool handle67, bool han
     , mCRCFailCount(0)
     , mUnhandledCount(0)
     , mHandledCount(0)
-    , mTransferBuffer{ 0 }
-    , mLockedProtocol(PROTOCOL_UNKNOWN)
-    , mLockedChecksum(CHECKSUM_TYPE_UNKNOWN)
+    , mPreviousFrameId(0)
 {
 }
 
@@ -172,6 +176,13 @@ int FrameBuffer::handleFrame()
         // completed and valid frame, move complete frame and ownership to frame handler
         if (crcResult)
         {
+            // determine protocol frequencies without signal analyzer
+            if (mPreviousFrameId != 0) {
+                DHWState::getInstance().saveTiming(mPreviousFrameId, frameId, millis() - mLastValidFrameTimestamp);
+            }
+            mPreviousFrameId = frameId;
+            mLastValidFrameTimestamp = millis();
+
             // lock the protocol version, since we found a valid message and checksum is good
             if (mLockedProtocol != protocolVersion)
             {
@@ -192,6 +203,7 @@ int FrameBuffer::handleFrame()
             {
                 mUnhandledCount++;
             }
+
             return frameId;
         }
         mCRCFailCount++;

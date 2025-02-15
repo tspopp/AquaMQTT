@@ -4,9 +4,7 @@
 
 using namespace aquamqtt::message;
 
-namespace aquamqtt
-{
-
+namespace aquamqtt {
 DHWState& DHWState::getInstance()
 {
     static DHWState instance;
@@ -22,15 +20,15 @@ DHWState::DHWState()
     , mHasErrorMessage(false)
     , mHasExtraMessage(false)
     , mMessageHmi{}
-    , mMessageMain{}
-    , mMessageEnergy{}
-    , mMessageError{}
-    , mMessageExtra{}
-    , mHmiStats{ 0, 0, 0, 0, 0 }
-    , mMainStats{ 0, 0, 0, 0, 0 }
-    , mListenerStats{ 0, 0, 0, 0, 0 }
-    , mProtocolVersion(PROTOCOL_UNKNOWN)
-    , mChecksumType(CHECKSUM_TYPE_UNKNOWN)
+, mMessageMain{}
+, mMessageEnergy{}
+, mMessageError{}
+, mMessageExtra{}
+, mHmiStats{ 0, 0, 0, 0, 0 }
+, mMainStats{ 0, 0, 0, 0, 0 }
+, mListenerStats{ 0, 0, 0, 0, 0 }
+, mProtocolVersion(PROTOCOL_UNKNOWN)
+, mChecksumType(CHECKSUM_TYPE_UNKNOWN)
 {
 }
 
@@ -155,11 +153,7 @@ BufferStatistics DHWState::getFrameBufferStatistics(uint8_t source)
     return statistics;
 }
 
-size_t DHWState::copyFrame(
-        uint8_t                    frameId,
-        uint8_t*                   buffer,
-        ProtocolVersion&  version,
-        ProtocolChecksum& type)
+size_t DHWState::copyFrame(uint8_t frameId, uint8_t* buffer, ProtocolVersion& version, ProtocolChecksum& type)
 {
     size_t length = 0;
 
@@ -205,6 +199,7 @@ size_t DHWState::copyFrame(
     return length;
 }
 
+
 ProtocolVersion DHWState::getVersion()
 {
     message::ProtocolVersion version = PROTOCOL_UNKNOWN;
@@ -243,5 +238,34 @@ void DHWState::setChecksumType(ProtocolChecksum checksum)
 
     xSemaphoreGive(mMutex);
 }
+
+
+void DHWState::saveTiming(const uint8_t fromFrameId, const uint8_t toFrameId, const unsigned long millis)
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    mFrameTiming[fromFrameId][toFrameId] = millis;
+
+    xSemaphoreGive(mMutex);
+}
+
+std::map<uint8_t, std::map<uint8_t, unsigned long>> DHWState::getTiming() const
+{
+    std::map<uint8_t, std::map<uint8_t, unsigned long>> timing;
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return timing;
+    }
+
+    timing = mFrameTiming;
+
+    xSemaphoreGive(mMutex);
+
+    return timing;
+}
+
 
 }  // namespace aquamqtt

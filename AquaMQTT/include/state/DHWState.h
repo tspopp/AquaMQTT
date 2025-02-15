@@ -2,6 +2,7 @@
 #define AQUAMQTT_DHWSTATE_H
 
 #include <Arduino.h>
+#include <map>
 
 #include "message/MessageConstants.h"
 
@@ -57,6 +58,9 @@ public:
             message::ProtocolVersion&  version,
             message::ProtocolChecksum& type);
 
+    void saveTiming(uint8_t fromFrameId, uint8_t toFrameId, unsigned long millis);
+    std::map<uint8_t, std::map<uint8_t, unsigned long>> getTiming() const;
+
 private:
     TaskHandle_t mNotify;
 
@@ -80,6 +84,8 @@ private:
     BufferStatistics mHmiStats;
     BufferStatistics mMainStats;
     BufferStatistics mListenerStats;
+
+    std::map<uint8_t, std::map<uint8_t, unsigned long>> mFrameTiming;
 };
 
 }  // namespace aquamqtt
