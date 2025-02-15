@@ -46,6 +46,9 @@ private:
     uint64_t mCRCFailCount;
     uint64_t mUnhandledCount;
     uint64_t mHandledCount;
+
+    uint8_t       mPreviousFrameId;
+    unsigned long mLastValidFrameTimestamp;
 };
 
 #endif  // AQUAMQTT_FRAMEBUFFER_H

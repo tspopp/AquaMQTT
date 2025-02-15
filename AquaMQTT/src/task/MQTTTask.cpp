@@ -493,6 +493,26 @@ void MQTTTask::updateStats()
             publishul(STATS_SUBTOPIC, STATS_MSG_CRC_NOK, listenerStats.msgCRCFail);
             publishul(STATS_SUBTOPIC, STATS_DROPPED_BYTES, listenerStats.droppedBytes);
         }
+
+        // TODO: add a flag if we keep this in main branch
+        auto timingsMap = DHWState::getInstance().getTiming();
+        for (const auto& entry : timingsMap)
+        {
+            uint8_t fromId = entry.first;
+            for (auto innerEntry : entry.second)
+            {
+                uint8_t toid = innerEntry.first;;
+                unsigned long timingMillis = innerEntry.second;
+                sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                        "%s%s%s%s/%u-%u",
+                        config::mqttPrefix,
+                        BASE_TOPIC,
+                        STATS_SUBTOPIC, STATS_TIMING,
+                        fromId, toid);
+                ultoa(timingMillis, reinterpret_cast<char*>(mPayloadBuffer), 10);
+                mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), false, 0);
+            }
+        }
     }
     else
     {
@@ -911,10 +931,10 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
             }
         }
         // some heatpump protocols don't have TIME_SECONDS
-        else if (message->hasAttr(HMI_ATTR_U8::TIME_MINUTES)
-            && message->hasAttr(HMI_ATTR_U8::TIME_HOURS))
+        else if (message->hasAttr(HMI_ATTR_U8::TIME_MINUTES) && message->hasAttr(HMI_ATTR_U8::TIME_HOURS))
         {
-            if (fullUpdate || message->hasChanged(HMI_ATTR_U8::TIME_MINUTES) || message->hasChanged(HMI_ATTR_U8::TIME_HOURS))
+            if (fullUpdate || message->hasChanged(HMI_ATTR_U8::TIME_MINUTES)
+                || message->hasChanged(HMI_ATTR_U8::TIME_HOURS))
             {
                 sprintf(reinterpret_cast<char*>(mPayloadBuffer),
                         "%02d:%02d",
