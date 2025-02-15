@@ -910,6 +910,25 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
                 mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
             }
         }
+        // some heatpump protocols don't have TIME_SECONDS
+        else if (message->hasAttr(HMI_ATTR_U8::TIME_MINUTES)
+            && message->hasAttr(HMI_ATTR_U8::TIME_HOURS))
+        {
+            if (fullUpdate || message->hasChanged(HMI_ATTR_U8::TIME_MINUTES) || message->hasChanged(HMI_ATTR_U8::TIME_HOURS))
+            {
+                sprintf(reinterpret_cast<char*>(mPayloadBuffer),
+                        "%02d:%02d",
+                        message->getAttr(HMI_ATTR_U8::TIME_HOURS),
+                        message->getAttr(HMI_ATTR_U8::TIME_MINUTES));
+                sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                        "%s%s%s%s",
+                        config::mqttPrefix,
+                        BASE_TOPIC,
+                        HMI_SUBTOPIC,
+                        HMI_TIME);
+                mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+            }
+        }
 
         if (message->hasAttr(HMI_ATTR_U16::DATE_YEAR) && message->hasAttr(HMI_ATTR_U8::DATE_MONTH)
             && message->hasAttr(HMI_ATTR_U8::DATE_DAY))

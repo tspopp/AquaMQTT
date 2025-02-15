@@ -246,9 +246,15 @@ bool HMIMessage::hasAttr(const HMI_ATTR_FLOAT attr) const
     return false;
 }
 
-bool HMIMessage::hasAttr(HMI_ATTR_U16 attr) const
+bool HMIMessage::hasAttr(const HMI_ATTR_U16 attr) const
 {
-    return false;
+    switch (attr)
+    {
+        case HMI_ATTR_U16::DATE_YEAR:
+            return true;
+        default:
+            return false;
+    }
 }
 
 bool HMIMessage::hasAttr(HMI_ATTR_STR attr) const
