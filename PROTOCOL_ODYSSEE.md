@@ -189,39 +189,39 @@ and provide a photo of the HMI controller together with a dump of the *energy* m
 
 _Until we are not sure what this message is about, I call it "extra" message ;)
 
-| Byte Number | Example (dec) | Purpose/Function             | Other Information |
-|-------------|---------------|------------------------------|-------------------|
-| 0           | 31            | Length Field                 |                   |
-| 1           | 0             |                              |                   |
-| 2           | 0             |                              |                   |
-| 3           | 233           | Voltage Grid (?)             |                   |
-| 4           | 0             |                              |                   |
-| 5           | 2             | Power Consumption Heatpump ? |                   |
-| 6           | 0             | Power Consumption Heatpump ? |                   |
-| 7           | 127           |                              |                   |
-| 8           | 1             |                              |                   |
-| 9           | 237           |                              |                   |
-| 10          | 235           |                              |                   |
-| 11          | 88            |                              |                   |
-| 12          | 0             |                              |                   |
-| 13          | 14            |                              |                   |
-| 14          | 1             |                              |                   |
-| 15          | 194           |                              |                   |
-| 16          | 0             |                              |                   |
-| 17          | 0             |                              |                   |
-| 18          | 1             |                              |                   |
-| 19          | 0             |                              |                   |
-| 20          | 0             |                              |                   |
-| 21          | 2             |                              |                   |
-| 22          | 0             |                              |                   |
-| 23          | 0             |                              |                   |
-| 24          | 0             |                              |                   |
-| 25          | 0             |                              |                   |
-| 26          | 0             |                              |                   |
-| 27          | 0             |                              |                   |
-| 28          | 0             |                              |                   |
-| 29          | 0             |                              |                   |
-| 30          | 0             |                              |                   |
+| Byte Number | Example (dec) | Purpose/Function        | Other Information |
+|-------------|---------------|-------------------------|-------------------|
+| 0           | 31            | Length Field            |                   |
+| 1           | 0             |                         |                   |
+| 2           | 0             |                         |                   |
+| 3           | 233           | Voltage Grid (?)        |                   |
+| 4           | 0             | Voltage Grid (?)        |                   |
+| 5           | 2             | Power Consumption Total |                   |
+| 6           | 0             | Power Consumption Total |                   |
+| 7           | 127           |                         |                   |
+| 8           | 1             |                         |                   |
+| 9           | 237           |                         |                   |
+| 10          | 235           |                         |                   |
+| 11          | 88            |                         |                   |
+| 12          | 0             |                         |                   |
+| 13          | 14            |                         |                   |
+| 14          | 1             |                         |                   |
+| 15          | 194           |                         |                   |
+| 16          | 0             |                         |                   |
+| 17          | 0             |                         |                   |
+| 18          | 1             |                         |                   |
+| 19          | 0             |                         |                   |
+| 20          | 0             |                         |                   |
+| 21          | 2             |                         |                   |
+| 22          | 0             |                         |                   |
+| 23          | 0             |                         |                   |
+| 24          | 0             |                         |                   |
+| 25          | 0             |                         |                   |
+| 26          | 0             |                         |                   |
+| 27          | 0             |                         |                   |
+| 28          | 0             |                         |                   |
+| 29          | 0             |                         |                   |
+| 30          | 0             |                         |                   |
 
 ### Error Message (67)
 

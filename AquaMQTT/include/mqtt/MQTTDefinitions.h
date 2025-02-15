@@ -135,6 +135,7 @@ constexpr char ENERGY_POWER_TOTAL[]              = { "powerTotal" };
 constexpr char ENERGY_POWER_HEAT_ELEMENT[]       = { "powerHeatingElem" };
 constexpr char ENERGY_POWER_HEATPUMP[]           = { "powerHeatpump" };
 constexpr char ENERGY_TOTAL_WATER_PRODUCTION[]   = { "totalWaterProduction" };
+constexpr char ENERGY_VOLTAGE_GRID[]             = { "voltageGrid" };
 
 constexpr char ENERGY_DIAG_AIR_TEMP_MAX[]           = { "diagAirTempMax" };
 constexpr char ENERGY_DIAG_AIR_TEMP_MIN[]           = { "diagAirTempMin" };

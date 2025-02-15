@@ -76,6 +76,7 @@ enum class MQTT_ITEM_SENSOR
     ENERGY_DIAG_WATER_TEMP_MIN,
     MAIN_UPPER_HOT_WATER_TEMP,
     MAIN_LOWER_HOT_WATER_TEMP,
+    ENERGY_VOLTAGE_GRID,
     RESERVED_COUNT
 };
 
@@ -335,6 +336,18 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:lightning-bolt-outline";
             doc["uniq_id"]      = make_unique(temp, identifier, "energy_power_total");
             doc["dev_cla"]      = "power";
+            break;
+        case MQTT_ITEM_SENSOR::ENERGY_VOLTAGE_GRID:
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
+            doc["name"]         = "Voltage Grid";
+            doc["stat_t"]       = "~/energy/voltageGrid";
+            doc["unit_of_meas"] = "V";
+            doc["stat_cla"]     = "measurement";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_voltage_grid");
+            doc["dev_cla"]      = "voltage";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_POWER_HEAT_ELEMENT:
             if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)

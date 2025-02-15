@@ -1302,10 +1302,26 @@ void MQTTTask::updateEnergyStats(bool fullUpdate, message::ProtocolVersion& vers
 
 void MQTTTask::updateExtraStatus(bool fullUpdate, message::ProtocolVersion& version)
 {
-    std::unique_ptr<message::IExtraMessage> message = creatExtraMessageFromBuffer(
+    std::unique_ptr<message::IExtraMessage> message = createExtraMessageFromBuffer(
             version,
             mTransferBuffer,
             fullUpdate ? nullptr : mLastProcessedExtraMessage);
+
+    if (message->hasAttr(EXTRA_ATTR_U16::EXTRA_POWER_TOTAL))
+    {
+        if (fullUpdate || message->hasChanged(EXTRA_ATTR_U16::EXTRA_POWER_TOTAL))
+        {
+            publishul(ENERGY_SUBTOPIC, ENERGY_POWER_TOTAL, message->getAttr(EXTRA_ATTR_U16::EXTRA_POWER_TOTAL));
+        }
+    }
+
+    if (message->hasAttr(EXTRA_ATTR_U16::EXTRA_VOLTAGE_GRID))
+    {
+        if (fullUpdate || message->hasChanged(EXTRA_ATTR_U16::EXTRA_VOLTAGE_GRID))
+        {
+            publishul(ENERGY_SUBTOPIC, ENERGY_VOLTAGE_GRID, message->getAttr(EXTRA_ATTR_U16::EXTRA_VOLTAGE_GRID));
+        }
+    }
 
     if (config::DEBUG_RAW_SERIAL_MESSAGES)
     {
