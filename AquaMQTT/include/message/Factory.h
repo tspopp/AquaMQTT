@@ -106,7 +106,7 @@ static std::unique_ptr<IErrorMessage> createErrorMessageFromBuffer(const Protoco
 }
 
 static std::unique_ptr<IExtraMessage>
-        creatExtraMessageFromBuffer(const ProtocolVersion version, uint8_t* buffer, uint8_t* previousBuffer = nullptr)
+        createExtraMessageFromBuffer(const ProtocolVersion version, uint8_t* buffer, uint8_t* previousBuffer = nullptr)
 {
     std::unique_ptr<IExtraMessage> message = std::make_unique<odyssee::ExtraMessage>(buffer, previousBuffer);
     return std::move(message);
