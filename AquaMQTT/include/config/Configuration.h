@@ -38,7 +38,7 @@ constexpr char ntpServer[] = "pool.ntp.org";
 /**
  * Enable HomeAssistant MQTT Discovery Mode
  */
-constexpr bool ENABLE_HOMEASSISTANT_DISCOVERY_MODE = true;
+constexpr bool ENABLE_HOMEASSISTANT_DISCOVERY_MODE = false;
 
 /**
  * Homeassistant MQTT Discovery Prefix
@@ -49,7 +49,7 @@ constexpr char haDiscoveryPrefix[] = "homeassistant/";
 /**
  * The OperationMode which is used for AquaMqtt. Refer to EOperationMode
  */
-constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
+constexpr EOperationMode OPERATION_MODE = EOperationMode::LISTENER;
 
 /**
  * Choose if the time and date values sent to the main controller should override the ones sent by the hmi controller.
@@ -59,7 +59,7 @@ constexpr bool OVERRIDE_TIME_AND_DATE_IN_MITM = true;
 /**
  * Choose to publish raw messages represented as hex-string on debug mqtt topics
  */
-constexpr bool DEBUG_RAW_SERIAL_MESSAGES = false;
+constexpr bool DEBUG_RAW_SERIAL_MESSAGES = true;
 
 /**
  * Choose to publish message statistics from the serial interfaces, if everything
@@ -67,7 +67,7 @@ constexpr bool DEBUG_RAW_SERIAL_MESSAGES = false;
  * topics "msgHandled, msgUnhandled, msgCRCNOK and msgSent" topics for each serial
  * channel (hmi/main or listener),
  */
-constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = false;
+constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = true;
 
 /**
  * Choose to publish time and date used by the heatpump. This is mainly for debugging
@@ -75,7 +75,7 @@ constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = false;
  * enable this, if you are customizing the NTP timezone or server or even trying to
  * use the RTC module from the AquaMQTT board.
  */
-constexpr bool MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE = false;
+constexpr bool MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE = true;
 
 /**
  * Change the time interval where all known attributes are re-published to the MQTT broker.
@@ -92,7 +92,7 @@ constexpr uint16_t MQTT_STATS_UPDATE_MS = 5000;
  * Note: Filters are only applied within the MQTT channel, the communication between HMI and Controller
  * are still using raw temperature values and is not altered.
  */
-constexpr bool MQTT_FILTER_TEMPERATURE_NOISE = true;
+constexpr bool MQTT_FILTER_TEMPERATURE_NOISE = false;
 
 /**
  * Parametrize kalman filter for reading temperature values

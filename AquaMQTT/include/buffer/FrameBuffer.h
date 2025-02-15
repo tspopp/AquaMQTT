@@ -9,7 +9,7 @@
 class FrameBuffer
 {
 public:
-    explicit FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74);
+    explicit FrameBuffer(bool handle194, bool handle193, bool handle67, bool handle74, bool handle217);
 
     ~FrameBuffer() = default;
 
@@ -40,11 +40,15 @@ private:
     bool mHandle193;
     bool mHandle67;
     bool mHandle74;
+    bool mHandle217;
 
     uint64_t mDroppedCount;
     uint64_t mCRCFailCount;
     uint64_t mUnhandledCount;
     uint64_t mHandledCount;
+
+    uint8_t       mPreviousFrameId;
+    unsigned long mLastValidFrameTimestamp;
 };
 
 #endif  // AQUAMQTT_FRAMEBUFFER_H

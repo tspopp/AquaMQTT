@@ -2,6 +2,7 @@
 #define AQUAMQTT_DHWSTATE_H
 
 #include <Arduino.h>
+#include <map>
 
 #include "message/MessageConstants.h"
 
@@ -57,6 +58,9 @@ public:
             message::ProtocolVersion&  version,
             message::ProtocolChecksum& type);
 
+    void saveTiming(uint8_t fromFrameId, uint8_t toFrameId, unsigned long millis);
+    std::map<uint8_t, std::map<uint8_t, unsigned long>> getTiming() const;
+
 private:
     TaskHandle_t mNotify;
 
@@ -69,15 +73,19 @@ private:
     bool mHasMainMessage;
     bool mHasEnergyMessage;
     bool mHasErrorMessage;
+    bool mHasExtraMessage;
 
-    uint8_t mMessageHmi[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
-    uint8_t mMessageMain[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
-    uint8_t mMessageEnergy[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
-    uint8_t mMessageError[aquamqtt::message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageHmi[message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageMain[message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageEnergy[message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageError[message::HEATPUMP_MAX_FRAME_LENGTH];
+    uint8_t mMessageExtra[message::HEATPUMP_MAX_FRAME_LENGTH];
 
     BufferStatistics mHmiStats;
     BufferStatistics mMainStats;
     BufferStatistics mListenerStats;
+
+    std::map<uint8_t, std::map<uint8_t, unsigned long>> mFrameTiming;
 };
 
 }  // namespace aquamqtt

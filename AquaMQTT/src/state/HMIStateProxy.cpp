@@ -1,9 +1,7 @@
 #include "state/HMIStateProxy.h"
 
 #include "config/Configuration.h"
-#include "message/IHMIMessage.h"
-#include "message/legacy/HMIMessage.h"
-#include "message/next/HMIMessage.h"
+#include "message/Factory.h"
 
 namespace aquamqtt
 {
@@ -51,21 +49,13 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion&
         return;
     }
 
-    std::unique_ptr<message::IHMIMessage> message;
-    if (version == message::PROTOCOL_LEGACY)
-    {
-        message = std::make_unique<message::legacy::HMIMessage>(buffer);
-    }
-    else
-    {
-        message = std::make_unique<message::next::HMIMessage>(buffer);
-    }
+    std::unique_ptr<message::IHMIMessage> message = createHmiMessageFromBuffer(version, buffer);
 
     switch (currentOverrideMode())
     {
         case AM_MODE_PV_HP_ONLY:
             message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, message::HMIInstallation::INST_HP_ONLY);
-            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::ALWAYS_ON);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::OT_ALWAYS_ON);
             message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_INACTIVE);
             message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             // do not use heat element
@@ -74,7 +64,7 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion&
             break;
         case AM_MODE_PV_HE_ONLY:
             message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, message::HMIInstallation::INST_HP_ONLY);
-            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::ALWAYS_ON);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::OT_ALWAYS_ON);
             message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_INACTIVE);
             message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             // just use heat element
@@ -83,7 +73,7 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion&
             break;
         case AM_MODE_PV_FULL:
             message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, message::HMIInstallation::INST_HP_ONLY);
-            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::ALWAYS_ON);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::OT_ALWAYS_ON);
             message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_BOOST);
             message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             break;
@@ -409,11 +399,11 @@ AquaMqttOverrideMode HMIStateProxy::currentOverrideMode() const
     {
         return AM_MODE_PV_FULL;
     }
-    else if (!mPVModeHeatElement && mPVModeHeatPump)
+    if (!mPVModeHeatElement && mPVModeHeatPump)
     {
         return AM_MODE_PV_HP_ONLY;
     }
-    else if (mPVModeHeatElement && !mPVModeHeatPump)
+    if (mPVModeHeatElement && !mPVModeHeatPump)
     {
         return AM_MODE_PV_HE_ONLY;
     }
