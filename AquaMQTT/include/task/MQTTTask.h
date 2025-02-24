@@ -11,12 +11,12 @@
 
 namespace aquamqtt
 {
-class MQTTTask
+class MQTTTask final
 {
 public:
     MQTTTask();
 
-    virtual ~MQTTTask();
+    ~MQTTTask();
 
     void spawn();
 
@@ -29,7 +29,7 @@ private:
 
     void check_mqtt_connection();
 
-    static void messageReceived(String& topic, String& payload);
+    static void messageReceived(const String& topic, const String& payload);
 
     void updateMainStatus(bool triggerFullUpdate, message::ProtocolVersion& version);
 
@@ -100,12 +100,12 @@ private:
             T                                  enumClass);
 
     void publishFiltered(
-            std::unique_ptr<aquamqtt::message::IMainMessage>& message,
-            aquamqtt::message::MAIN_ATTR_FLOAT                attribute,
-            SimpleKalmanFilter&                               filter,
-            float&                                            mFilteredValue,
-            const char*                                       topic,
-            bool                                              fullUpdate);
+            const std::unique_ptr<aquamqtt::message::IMainMessage>& message,
+            aquamqtt::message::MAIN_ATTR_FLOAT                      attribute,
+            SimpleKalmanFilter&                                     filter,
+            float&                                                  mFilteredValue,
+            const char*                                             topic,
+            bool                                                    fullUpdate);
 };
 }  // namespace aquamqtt
 

@@ -7,9 +7,7 @@
 #include "Version.h"
 #include "message/MessageConstants.h"
 
-namespace aquamqtt
-{
-namespace discovery
+namespace aquamqtt::discovery
 {
 enum class MQTT_ITEM_SENSOR
 {
@@ -77,6 +75,7 @@ enum class MQTT_ITEM_SENSOR
     MAIN_UPPER_HOT_WATER_TEMP,
     MAIN_LOWER_HOT_WATER_TEMP,
     ENERGY_VOLTAGE_GRID,
+    ENERGY_AMPERAGE,
     RESERVED_COUNT
 };
 
@@ -147,7 +146,7 @@ enum class MQTT_ITEM_WATER_HEATER
 
 static JsonDocument defaultJson;
 
-static JsonDocument createFromDefault(uint16_t identifier)
+static JsonDocument createFromDefault(const uint16_t identifier)
 {
     // lazy init
     if (defaultJson.size() == 0)
@@ -174,10 +173,10 @@ static const char* make_unique(char* buffer, uint16_t identifier, const char* st
 }
 
 static bool buildConfiguration(
-        uint8_t*                           buffer,
-        aquamqtt::message::ProtocolVersion protocolVersion,
-        uint16_t                           identifier,
-        MQTT_ITEM_SENSOR                   item)
+        uint8_t*                       buffer,
+        const message::ProtocolVersion protocolVersion,
+        const uint16_t                 identifier,
+        const MQTT_ITEM_SENSOR         item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -348,6 +347,19 @@ static bool buildConfiguration(
             doc["stat_cla"]     = "measurement";
             doc["uniq_id"]      = make_unique(temp, identifier, "energy_voltage_grid");
             doc["dev_cla"]      = "voltage";
+            break;
+        case MQTT_ITEM_SENSOR::ENERGY_AMPERAGE:
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
+            doc["name"]         = "Amperage";
+            doc["stat_t"]       = "~/energy/amperage";
+            doc["unit_of_meas"] = "A";
+            doc["stat_cla"]     = "measurement";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_amperage");
+            doc["dev_cla"]      = "current";
+
             break;
         case MQTT_ITEM_SENSOR::ENERGY_POWER_HEAT_ELEMENT:
             if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
@@ -570,12 +582,20 @@ static bool buildConfiguration(
             doc["ic"]      = "mdi:virus-off";
             break;
         case MQTT_ITEM_SENSOR::HMI_TIMER_WINDOW_A:
+            if (protocolVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
             doc["name"]    = "Timer Window A";
             doc["stat_t"]  = "~/hmi/timerWindowA";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_win_a");
             doc["ic"]      = "mdi:calendar-clock";
             break;
         case MQTT_ITEM_SENSOR::HMI_TIMER_WINDOW_B:
+            if (protocolVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
             doc["name"]    = "Timer Window B";
             doc["stat_t"]  = "~/hmi/timerWindowB";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_win_b");
@@ -705,6 +725,10 @@ static bool buildConfiguration(
             doc["ic"]      = "mdi:test-tube";
             break;
         case MQTT_ITEM_SENSOR::HMI_PV_INPUT_ACTIVATED:
+            if (protocolVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
             doc["name"]    = "PV Input allowed";
             doc["stat_t"]  = "~/hmi/pvInputActivated";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_pv_allowed");
@@ -830,10 +854,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                 buffer,
-        message::ProtocolVersion protocolVersion,
-        uint16_t                 identifier,
-        MQTT_ITEM_BINARY_SENSOR  item)
+        uint8_t*                       buffer,
+        const message::ProtocolVersion protocolVersion,
+        const uint16_t                 identifier,
+        const MQTT_ITEM_BINARY_SENSOR  item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -880,6 +904,10 @@ static bool buildConfiguration(
             doc["pl_on"]   = "1";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_STATE_PV:
+            if (protocolVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
             doc["name"]    = "PV";
             doc["stat_t"]  = "~/main/statePV";
             doc["ic"]      = "mdi:solar-power-variant";
@@ -888,6 +916,10 @@ static bool buildConfiguration(
             doc["pl_on"]   = "1";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_STATE_SOLAR:
+            if (protocolVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
             doc["name"]    = "Solar";
             doc["stat_t"]  = "~/main/stateSolar";
             doc["ic"]      = "mdi:solar-power-variant-outline";
@@ -1080,10 +1112,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                 buffer,
-        message::ProtocolVersion protocolVersion,
-        uint16_t                 identifier,
-        MQTT_ITEM_NUMBER         item)
+        uint8_t*                       buffer,
+        const message::ProtocolVersion protocolVersion,
+        const uint16_t                 identifier,
+        const MQTT_ITEM_NUMBER         item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -1111,10 +1143,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                 buffer,
-        message::ProtocolVersion protocolVersion,
-        uint16_t                 identifier,
-        MQTT_ITEM_BUTTON         item)
+        uint8_t*                       buffer,
+        const message::ProtocolVersion protocolVersion,
+        const uint16_t                 identifier,
+        const MQTT_ITEM_BUTTON         item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -1138,10 +1170,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                 buffer,
-        message::ProtocolVersion protocolVersion,
-        uint16_t                 identifier,
-        MQTT_ITEM_SELECT         item)
+        uint8_t*                       buffer,
+        const message::ProtocolVersion protocolVersion,
+        const uint16_t                 identifier,
+        const MQTT_ITEM_SELECT         item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -1175,6 +1207,10 @@ static bool buildConfiguration(
             }
             break;
         case MQTT_ITEM_SELECT::HMI_INSTALLATION_CONFIG:
+            if (protocolVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
             doc["name"]    = "Installation Configuration";
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_instConfig");
@@ -1189,6 +1225,10 @@ static bool buildConfiguration(
             doc["ops"][5]  = mqtt::ENUM_INSTALLATION_SOLAR_BACKUP;
             break;
         case MQTT_ITEM_SELECT::HMI_FAN_EXHAUST_CONFIG:
+            if (protocolVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
             doc["name"]    = "Fan Exhaust Configuration";
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_fanExhaustConfig");
@@ -1220,10 +1260,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                 buffer,
-        message::ProtocolVersion protocolVersion,
-        uint16_t                 identifier,
-        MQTT_ITEM_SWITCH         item)
+        uint8_t*                       buffer,
+        const message::ProtocolVersion protocolVersion,
+        const uint16_t                 identifier,
+        const MQTT_ITEM_SWITCH         item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -1260,6 +1300,10 @@ static bool buildConfiguration(
             doc["pl_on"]   = "1";
             break;
         case MQTT_ITEM_SWITCH::HMI_HEATING_ELEMENT_ENABLED:
+            if (protocolVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
+            {
+                return false;
+            }
             doc["name"]    = "Allow Heating Element";
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_he_enabled");
@@ -1278,10 +1322,10 @@ static bool buildConfiguration(
 }
 
 static bool buildConfiguration(
-        uint8_t*                 buffer,
-        message::ProtocolVersion protocolVersion,
-        uint16_t                 identifier,
-        MQTT_ITEM_WATER_HEATER   item)
+        uint8_t*                       buffer,
+        const message::ProtocolVersion protocolVersion,
+        const uint16_t                 identifier,
+        const MQTT_ITEM_WATER_HEATER   item)
 {
     JsonDocument doc = createFromDefault(identifier);
     char         temp[100];
@@ -1315,7 +1359,6 @@ static bool buildConfiguration(
     return true;
 }
 
-}  // namespace discovery
-}  // namespace aquamqtt
+}  // namespace aquamqtt::discovery
 
 #endif  // AQUAMQTT_MQTTDISCOVERY_H

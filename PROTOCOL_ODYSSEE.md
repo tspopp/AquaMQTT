@@ -5,27 +5,34 @@ Another heat pump protocol observed in https://github.com/tspopp/AquaMQTT/issues
 ## Message Format
 
 ```
-ID  LEN                                                                                            CRC
-194 29   54 2   0  33 0  0 0   0   0   0   0  0   0  0 0   0 33 50 38 17 0 0 0 0 65 66 0 0          47
-67  25   64 0 251  15 0  0 0   0 195   0   0  0 176 46 0   0  0  0  0  0 0 0 0 0                   240
-217 31    0 0 233   0 2  0 127 1 237 235  88  0  14  1 194 0  0  1  0  0 2 0 0 0  0  0 0 0  0 0     26  
-193 29   29 53  0  31 0 14 0  14   0  18   0  0   0 53 0  47  0  0  0  0 0 0 2 0  0  0 0 82 66       4
+ID  LEN                                                                                                                                                                                            CRC
+194 29   54 2    0  33  0  0   0  0   0   0   0  0   0  0   0 0 33 50 38 17 0 0 0 0 65 66  0 0                                                                                                      47
+67  25   64 0  251  15  0  0   0  0 195   0   0  0 176 46   0 0  0  0  0  0 0 0 0 0                                                                                                                240
+217 31    0 0  233   0  2  0 127  1 237 235  88  0  14  1 194 0  0  1  0  0 2 0 0 0  0  0  0  0  0  0                                                                                               26  
+193 29   53  0  31   0 14  0  14  0  18   0   0  0  53  0  47 0  0  0  0  0 0 2 0 0  0  0 82 66                                                                                                      4  
+74  68   46 24  54   0 75  0  23  0  24   0  35  0   0  0  54 0 55  0 65  3 0 0 0 0  0  0  0  0 81 38 0 0 152 0 0 0 123 12 0 0 47 13 0 0 152 26 0 0 46 1 0 0 221 46 58 12 1 24 0 0 0 0 0 0 0 0 43  128
 ```
-
-Error Message
-```
-74 68 46 24 54 0 75 0 23 0 24 0 35 0 0 0 54 0 55 0 65 3 0 0 0 0 0 0 0 0 81 38 0 0 152 0 0 0 123 12 0 0 47 13 0 0 152 26 0 0 46 1 0 0 221 46 58 12 1 24 0 0 0 0 0 0 0 0 43 128
-```
-
 ## Identifier
 
 Pattern is...
-194 - 67 - 217 - 193
+194 - 74 - 67 - 217 - 193
 
-## Help Required:
-- Determine is there also an error message in this sequence? (See below, triggering a error message)
-- Determine frequency of messages (MITM)
-- Determine who is sending message 217? (disconnect hmi controller and see if this message is still there)
+```mermaid
+stateDiagram-v2
+
+67 : Energy (67)
+217 : Power (217)
+193 : Controller (193)
+194 : HMI (194)
+74 : Error (74) (optional)
+
+67 --> 217: 100ms
+217 --> 193: 100ms
+193 --> 194: 100ms
+194 --> 74: 150ms
+194 --> 67: 300ms
+74 --> 67: 150ms
+```
 
 ## Checksum
 
@@ -42,186 +49,157 @@ Paste hex here: https://www.scadacore.com/tools/programming-calculators/online-c
 
 ### HMI Message (194)
 
-| Byte Number | Example (dec) | Purpose/Function       | Other Information |
-|-------------|---------------|------------------------|-------------------|
-| 0           | 29            | Length Field           |                   |
-| 1           | 54            |                        |                   |
-| 2           | 2             |                        |                   |
-| 3           | 0             |                        |                   |
-| 4           | 33            |                        |                   |
-| 5           | 0             |                        |                   |
-| 6           | 0             |                        |                   |
-| 7           | 0             |                        |                   |
-| 8           | 0             |                        |                   |
-| 9           | 0             |                        |                   |
-| 10          | 0             |                        |                   |
-| 11          | 0             |                        |                   |
-| 12          | 0             |                        |                   |
-| 13          | 0             |                        |                   |
-| 14          | 0             |                        |                   |
-| 15          | 0             |                        |                   |
-| 16          | 0             |                        |                   |
-| 17          | 33            |                        |                   |
-| 18          | 50            |                        |                   |
-| 19          | 38            |                        |                   |
-| 20          | 17            |                        |                   |
-| 21          | 0             |                        |                   |
-| 22          | 0             |                        |                   |
-| 23          | 0             |                        |                   |
-| 24          | 0             |                        |                   |
-| 25          | 65            |                        |                   |
-| 26          | 66            |                        |                   |
-| 27          | 0             | Error Number Requested |                   |
-| 28          | 0             | Error Request Id       |                   |
+| Byte Number | Example (dec) | Purpose/Function                    | Other Information                                               |
+|-------------|---------------|-------------------------------------|-----------------------------------------------------------------|
+| 0           | 29            | Length Field                        |                                                                 |
+| 1           | 54            | Water Target Temperature            |                                                                 |
+| 2           | 2             | Operation Type and Mode             |                                                                 |
+| 3           | 0             | ?                                   | Changes to 4 in case we entered a programmed time window        |
+| 4           | 33            | Anti-Legionella / Air-Duct          |                                                                 |
+| 5           | 0             | Emergency-Mode On/Off               |                                                                 |
+| 6           | 0             |                                     |                                                                 |
+| 7           | 0             |                                     |                                                                 |
+| 8           | 0             |                                     |                                                                 |
+| 9           | 0             | Timer Window Remaining Time (hours) | In case we enter a programmed time window,                      |
+| 10          | 0             | Timer Window Remaining Time (hours) | this will down count the remaining time within the time window. |
+| 11          | 0             |                                     |                                                                 |
+| 12          | 0             |                                     |                                                                 |
+| 13          | 0             |                                     |                                                                 |
+| 14          | 0             |                                     |                                                                 |
+| 15          | 0             |                                     |                                                                 |
+| 16          | 0             |                                     |                                                                 |
+| 17          | 59            | Current Date                        |                                                                 |
+| 18          | 50            | Current Date                        |                                                                 |
+| 19          | 31            | Time Minutes                        |                                                                 |
+| 20          | 9             | Time Hours                          |                                                                 |
+| 21          | 0             |                                     |                                                                 |
+| 22          | 0             |                                     |                                                                 |
+| 23          | 0             |                                     |                                                                 |
+| 24          | 0             |                                     |                                                                 |
+| 25          | 65            |                                     |                                                                 |
+| 26          | 66            |                                     |                                                                 |
+| 27          | 0             | Error Number Requested              |                                                                 |
+| 28          | 0             | Error Request Id                    |                                                                 |
 
 
 ## Help Required:
 
-- *TODO: OperationMode: Boost, Eco On, Eco Off, Auto,Absence*
-- *TODO: TimerWindow A/B*
-- *TODO: Anti-Legionalla Setting*
-- *TODO: AirDuct Config: INT/INT, EXT/INT, EXT/EXT*
 - *TODO: Installation Config: WP-Only, WP+ExtBoiler-Prio-WP,...*
-- *TODO: Exhaust Fan Config: (Only in EXT/INT): STOP, LOW-SPEED, HIGH-SPEED*
-- *TODO: Heating Element Enabled On/Off*
-- *TODO: PV Mode allowed On/Off*
-
 
 ### Main Message (193)
 
-| Byte Number | Example (dec) | Purpose/Function | Other Information |
-|-------------|---------------|------------------|-------------------|
-| 0           | 29            | Length Field     |                   |
-| 1           |               |                  |                   |
-| 2           |               |                  |                   |
-| 3           |               |                  |                   |
-| 4           |               |                  |                   |
-| 5           |               |                  |                   |
-| 6           |               |                  |                   |
-| 7           |               |                  |                   |
-| 8           |               |                  |                   |
-| 9           |               |                  |                   |
-| 10          |               |                  |                   |
-| 11          |               |                  |                   |
-| 12          |               |                  |                   |
-| 13          |               |                  |                   |
-| 14          |               |                  |                   |
-| 15          |               |                  |                   |
-| 16          |               |                  |                   |
-| 17          |               |                  |                   |
-| 18          |               |                  |                   |
-| 19          |               |                  |                   |
-| 20          |               |                  |                   |
-| 21          |               |                  |                   |
-| 22          |               |                  |                   |
-| 23          |               |                  |                   |
-| 24          |               |                  |                   |
-| 25          |               |                  |                   |
-| 26          |               |                  |                   |
-| 27          |               |                  |                   |
-| 28          |               |                  |                   |
+| Byte Number | Example (dec) | Purpose/Function              | Other Information |
+|-------------|---------------|-------------------------------|-------------------|
+| 0           | 29            | Length Field                  |                   |
+| 1           | 53            | Water Temperature             |                   |
+| 2           | 0             |                               |                   |
+| 3           | 31            | Compressor Outlet Temperature |                   |
+| 4           | 0             |                               |                   |
+| 5           | 14            | Upper Evaporator Temperature  |                   |
+| 6           | 0             |                               |                   |
+| 7           | 14            | Lower Evaporator Temperature  |                   |
+| 8           | 0             |                               |                   |
+| 9           | 18            | Input Air Temperature         |                   |
+| 10          | 0             |                               |                   |
+| 11          | 0             |                               |                   |
+| 12          | 0             |                               |                   |
+| 13          | 53            | Upper Water Temperature       |                   |
+| 14          | 0             |                               |                   |
+| 15          | 47            | Lower Water Temperature       |                   |
+| 16          | 0             |                               |                   |
+| 17          | 0             | Picture Bitmask / States      |                   |
+| 18          | 0             | Fan Speed PWM 0-100%          |                   |
+| 19          | 0             |                               |                   |
+| 20          | 0             |                               |                   |
+| 21          | 0             |                               |                   |
+| 22          | 2             |                               |                   |
+| 23          | 0             |                               |                   |
+| 24          | 0             |                               |                   |
+| 25          | 0             |                               |                   |
+| 26          | 0             |                               |                   |
+| 27          | 82            |                               |                   |
+| 28          | 66            |                               |                   |
 
+##### Byte No 17: Picture Bitmask
 
-_To identify this attributes within the message, try to locate the information within the HMI controller,
-and provide a photo of the HMI controller together with a dump of the *main* message. We should find the values shown in the HMI controller within the message.
-For determining the values from super secret menu, you change a setting in the super secret menu of the hmi controller and watch the change of main message._
+Findings...
 
-- *TODO: Hot Water Temp*
-- *TODO: Input Air Temp*
-- *TODO: Lower Evaporator Temp*
-- *TODO: Upper Evaporator Temp*
-- *TODO: PWM Level Settings (Super Secret Menu)*
-- *TODO: Status Bitmask (Fan On/Off, Defrost On/Off, PV On/Off, Solar On/Off, HeatElement On/Off, HeatPump On/Off, Boiler Backup On/Off)*
-- *TODO: Current Fan PWM Level*
-- *TODO: Min T Target (Super Secret Menu)*
-- *TODO: Anti-Legionella T Target (Super Secret Menu)*
-- *TODO: Error Codes*
-- *TODO: Wattage Heat Element (Super Secret Menu)*
-- *TODO: Boiler Capacity (Super Secret Menu)*
-- *TODO: Brand (Super Secret Menu)*
-- *TODO: Setting Bitflags (Super Secret Menu)*
+```
+0dec   | 0000 0000: Nothing
+1dec   | 0000 0001: Heating Element
+24dec  | 0001 1000: Fan is turned on (observed via testmode)
+26dec  | 0001 1010: Heatpump + Fan
+27dec  | 0001 1011: Heatpump + Heating Element
+32dec  | 0010 0000: Defrost
+56dec  | 0011 1000: Fan + Defrost
+58dec  | 0011 1010: Heatpump + defrost
+```
 
 ### Energy Message (67)
 
-| Byte Number | Example (dec) | Purpose/Function | Other Information |
-|-------------|---------------|------------------|-------------------|
-| 0           | 25            | Length Field     |                   |
-| 1           |               |                  |                   |
-| 2           |               |                  |                   |
-| 3           |               |                  |                   |
-| 4           |               |                  |                   |
-| 5           |               |                  |                   |
-| 6           |               |                  |                   |
-| 7           |               |                  |                   |
-| 8           |               |                  |                   |
-| 9           |               |                  |                   |
-| 10          |               |                  |                   |
-| 11          |               |                  |                   |
-| 12          |               |                  |                   |
-| 13          |               |                  |                   |
-| 14          |               |                  |                   |
-| 15          |               |                  |                   |
-| 16          |               |                  |                   |
-| 17          |               |                  |                   |
-| 18          |               |                  |                   |
-| 19          |               |                  |                   |
-| 20          |               |                  |                   |
-| 21          |               |                  |                   |
-| 22          |               |                  |                   |
-| 23          |               |                  |                   |
-| 24          |               |                  |                   |
+| Byte Number | Example (dec) | Purpose/Function         | Other Information                 |
+|-------------|---------------|--------------------------|-----------------------------------|
+| 0           | 25            | Length Field             |                                   |
+| 1           | 67            |                          |                                   |
+| 2           | 0             |                          |                                   |
+| 3           | 81            | ?                        | Unknown Upcounting Value (Hours?) |
+| 4           | 16            | ?                        | Unknown Upcounting Value (Hours?) |
+| 5           | 0             |                          |                                   |
+| 6           | 0             |                          |                                   |
+| 7           | 0             |                          |                                   |
+| 8           | 0             |                          |                                   |
+| 9           | 198           | Total heat element Hours |                                   |
+| 10          | 0             | Total heat element Hours |                                   |
+| 11          | 0             | Total heat element Hours |                                   |
+| 12          | 0             | Total heat element Hours |                                   |
+| 13          | 6             | Total Heatpump Hours     |                                   |
+| 14          | 47            | Total Heatpump Hours     |                                   |
+| 15          | 0             | Total Heatpump Hours     |                                   |
+| 16          | 0             | Total Heatpump Hours     |                                   |
+| 17          | 0             |                          |                                   |
+| 18          | 0             |                          |                                   |
+| 19          | 0             |                          |                                   |
+| 20          | 0             |                          |                                   |
+| 21          | 0             |                          |                                   |
+| 22          | 0             |                          |                                   |
+| 23          | 0             |                          |                                   |
+| 24          | 0             |                          |                                   |
 
-## Help Required:
+### Power Message (217)
 
-_To identify this attributes within the message, try to locate the information within the HMI controller,
-and provide a photo of the HMI controller together with a dump of the *energy* message. We should find the values shown in the HMI controller within the message._
-
-- *TODO: Power Consumption Heatpump*
-- *TODO: Power Consumption Heating Element*
-- *TODO: Power Consumption Total (Both)*
-- *TODO: Total Water Production (l)*
-- *TODO: Total Operation Hours (Heatpump)*
-- *TODO: Total Operation Hours (Heating Element)*
-- *TODO: Total Operation Hours (Both)*
-- *TODO: Total Energy Counter (Wh)*
-
-### Extra Message (217)
-
-_Until we are not sure what this message is about, I call it "extra" message ;)
-
-| Byte Number | Example (dec) | Purpose/Function        | Other Information |
-|-------------|---------------|-------------------------|-------------------|
-| 0           | 31            | Length Field            |                   |
-| 1           | 0             |                         |                   |
-| 2           | 0             |                         |                   |
-| 3           | 233           | Voltage Grid (?)        |                   |
-| 4           | 0             | Voltage Grid (?)        |                   |
-| 5           | 2             | Power Consumption Total |                   |
-| 6           | 0             | Power Consumption Total |                   |
-| 7           | 127           |                         |                   |
-| 8           | 1             |                         |                   |
-| 9           | 237           |                         |                   |
-| 10          | 235           |                         |                   |
-| 11          | 88            |                         |                   |
-| 12          | 0             |                         |                   |
-| 13          | 14            |                         |                   |
-| 14          | 1             |                         |                   |
-| 15          | 194           |                         |                   |
-| 16          | 0             |                         |                   |
-| 17          | 0             |                         |                   |
-| 18          | 1             |                         |                   |
-| 19          | 0             |                         |                   |
-| 20          | 0             |                         |                   |
-| 21          | 2             |                         |                   |
-| 22          | 0             |                         |                   |
-| 23          | 0             |                         |                   |
-| 24          | 0             |                         |                   |
-| 25          | 0             |                         |                   |
-| 26          | 0             |                         |                   |
-| 27          | 0             |                         |                   |
-| 28          | 0             |                         |                   |
-| 29          | 0             |                         |                   |
-| 30          | 0             |                         |                   |
+| Byte Number | Example (dec) | Purpose/Function            | Other Information |
+|-------------|---------------|-----------------------------|-------------------|
+| 0           | 31            | Length Field                |                   |
+| 1           | 218           | Amperage / Current (A)      | 2,18A             |
+| 2           | 0             | Amperage / Current (A)      |                   |
+| 3           | 237           | Voltage Grid (V)            | 237 V             |
+| 4           | 0             | Voltage Grid (V)            |                   |
+| 5           | 7             | Power Consumption Total (W) | 519 W             |
+| 6           | 2             | Power Consumption Total (W) |                   |
+| 7           | 68            |                             |                   |
+| 8           | 1             |                             |                   |
+| 9           | 139           | Total Energy (Wh)           | 5.865.611 Wh      |
+| 10          | 128           | Total Energy (Wh)           |                   |
+| 11          | 89            | Total Energy (Wh)           |                   |
+| 12          | 0             | Total Energy (Wh)           |                   |
+| 13          | 14            |                             |                   |
+| 14          | 1             |                             |                   |
+| 15          | 200           |                             |                   |
+| 16          | 0             |                             |                   |
+| 17          | 0             |                             |                   |
+| 18          | 1             |                             |                   |
+| 19          | 0             |                             |                   |
+| 20          | 0             |                             |                   |
+| 21          | 2             |                             |                   |
+| 22          | 0             |                             |                   |
+| 23          | 0             |                             |                   |
+| 24          | 0             |                             |                   |
+| 25          | 0             |                             |                   |
+| 26          | 0             |                             |                   |
+| 27          | 0             |                             |                   |
+| 28          | 0             |                             |                   |
+| 29          | 0             |                             |                   |
+| 30          | 0             |                             |                   |
 
 ### Error Message (67)
 

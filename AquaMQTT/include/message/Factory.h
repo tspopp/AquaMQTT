@@ -30,7 +30,7 @@ static std::unique_ptr<IHMIMessage>
         createHmiMessageFromBuffer(const ProtocolVersion version, uint8_t* buffer, uint8_t* previousBuffer = nullptr)
 {
     std::unique_ptr<IHMIMessage> message;
-    if (version == message::PROTOCOL_LEGACY)
+    if (version == PROTOCOL_LEGACY)
     {
         message = std::make_unique<legacy::HMIMessage>(buffer, previousBuffer);
     }
@@ -70,7 +70,7 @@ static std::unique_ptr<IEnergyMessage> createEnergyMessageFromBuffer(
         uint8_t*              buffer,
         uint8_t*              previousBuffer = nullptr)
 {
-    std::unique_ptr<message::IEnergyMessage> message;
+    std::unique_ptr<IEnergyMessage> message;
     if (version == PROTOCOL_NEXT)
     {
         message = std::make_unique<next::MainEnergyMessage>(buffer, previousBuffer);

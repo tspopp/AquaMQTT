@@ -2,31 +2,27 @@
 
 namespace aquamqtt::message::odyssee
 {
-    MainStatusMessage::MainStatusMessage(uint8_t* data, const uint8_t* previous)
-        : mData(data)
-          , mHasChangedFloat()
-          , mHasChangedBool()
-          , mHasChangedU8()
+MainStatusMessage::MainStatusMessage(uint8_t* data, const uint8_t* previous) : mData(data)
+{
+    mCreatedWithoutPrevious = previous == nullptr;
+    compareWith(previous);
+}
+
+void MainStatusMessage::compareWith(const uint8_t* data)
+{
+    if (data == nullptr)
     {
-        mCreatedWithoutPrevious = previous == nullptr;
-        compareWith(previous);
+        return;
     }
 
-    void MainStatusMessage::compareWith(const uint8_t* data)
+    uint8_t diffIndices[MAIN_MESSAGE_LENGTH_ODYSSEE] = { 0 };
+    size_t  numDiffs                                 = 0;
+    compareBuffers(mData, data, MAIN_MESSAGE_LENGTH_ODYSSEE, diffIndices, &numDiffs);
+
+    for (int i = 0; i < numDiffs; ++i)
     {
-        if (data == nullptr)
+        switch (diffIndices[i])
         {
-            return;
-        }
-
-        uint8_t diffIndices[MAIN_MESSAGE_LENGTH_NEXT] = {0};
-        size_t numDiffs = 0;
-        compareBuffers(mData, data, MAIN_MESSAGE_LENGTH_NEXT, diffIndices, &numDiffs);
-
-        for (int i = 0; i < numDiffs; ++i)
-        {
-            switch (diffIndices[i])
-            {
             case 1:
                 mHasChangedFloat.insert(MAIN_ATTR_FLOAT::WATER_TEMPERATURE);
                 break;
@@ -48,19 +44,26 @@ namespace aquamqtt::message::odyssee
             case 15:
                 mHasChangedFloat.insert(MAIN_ATTR_FLOAT::WATER_LOWER_TEMPERATURE);
                 break;
+            case 17:
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_HEATING_ELEMENT);
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_HEATPUMP);
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_BOILER_BACKUP);
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_FAN);
+                mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_DEFROST);
+                break;
             case 18:
                 mHasChangedFloat.insert(MAIN_ATTR_FLOAT::FAN_SPEED_PWM);
                 break;
             default:
                 break;
-            }
         }
     }
+}
 
-    float MainStatusMessage::getAttr(const MAIN_ATTR_FLOAT attr)
+float MainStatusMessage::getAttr(const MAIN_ATTR_FLOAT attr)
+{
+    switch (attr)
     {
-        switch (attr)
-        {
         case MAIN_ATTR_FLOAT::WATER_TEMPERATURE:
             return static_cast<int8_t>(mData[1]);
         case MAIN_ATTR_FLOAT::AIR_TEMPERATURE:
@@ -79,44 +82,58 @@ namespace aquamqtt::message::odyssee
             return mData[18];
         default:
             return 0;
-        }
     }
+}
 
-    bool MainStatusMessage::getAttr(MAIN_ATTR_BOOL attr)
+bool MainStatusMessage::getAttr(MAIN_ATTR_BOOL attr)
+{
+    switch (attr)
     {
-        return false;
+        case MAIN_ATTR_BOOL::STATE_HEATING_ELEMENT:
+            return mData[17] & 0x01;
+        case MAIN_ATTR_BOOL::STATE_HEATPUMP:
+            return mData[17] & 0x02;
+        case MAIN_ATTR_BOOL::STATE_BOILER_BACKUP:
+            return mData[17] & 0x04;
+        case MAIN_ATTR_BOOL::STATE_FAN:
+            return mData[17] & 0x08;
+        case MAIN_ATTR_BOOL::STATE_DEFROST:
+            return mData[17] & 0x20;
+        default:
+            return false;
     }
+}
 
-    uint8_t MainStatusMessage::getAttr(MAIN_ATTR_U8 attr)
-    {
-        return 0;
-    }
+uint8_t MainStatusMessage::getAttr(MAIN_ATTR_U8 attr)
+{
+    return 0;
+}
 
-    uint16_t MainStatusMessage::getAttr(MAIN_ATTR_U16 attr)
-    {
-        return 0;
-    }
+uint16_t MainStatusMessage::getAttr(MAIN_ATTR_U16 attr)
+{
+    return 0;
+}
 
-    void MainStatusMessage::setAttr(MAIN_ATTR_FLOAT attr, float value)
-    {
-    }
+void MainStatusMessage::setAttr(MAIN_ATTR_FLOAT attr, float value)
+{
+}
 
-    void MainStatusMessage::setAttr(MAIN_ATTR_BOOL attr, bool value)
-    {
-    }
+void MainStatusMessage::setAttr(MAIN_ATTR_BOOL attr, bool value)
+{
+}
 
-    void MainStatusMessage::setAttr(MAIN_ATTR_U8 attr, uint8_t value)
-    {
-    }
+void MainStatusMessage::setAttr(MAIN_ATTR_U8 attr, uint8_t value)
+{
+}
 
-    void MainStatusMessage::setAttr(MAIN_ATTR_U16 attr, uint16_t value)
-    {
-    }
+void MainStatusMessage::setAttr(MAIN_ATTR_U16 attr, uint16_t value)
+{
+}
 
-    bool MainStatusMessage::hasAttr(const MAIN_ATTR_FLOAT attr) const
+bool MainStatusMessage::hasAttr(const MAIN_ATTR_FLOAT attr) const
+{
+    switch (attr)
     {
-        switch (attr)
-        {
         case MAIN_ATTR_FLOAT::WATER_TEMPERATURE:
         case MAIN_ATTR_FLOAT::AIR_TEMPERATURE:
         case MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE:
@@ -128,46 +145,56 @@ namespace aquamqtt::message::odyssee
             return true;
         default:
             return false;
-        }
     }
+}
 
-    bool MainStatusMessage::hasAttr(const MAIN_ATTR_BOOL attr) const
+bool MainStatusMessage::hasAttr(const MAIN_ATTR_BOOL attr) const
+{
+    switch (attr)
     {
-        return false;
+        case MAIN_ATTR_BOOL::STATE_HEATING_ELEMENT:
+        case MAIN_ATTR_BOOL::STATE_HEATPUMP:
+        case MAIN_ATTR_BOOL::STATE_BOILER_BACKUP:
+        case MAIN_ATTR_BOOL::STATE_FAN:
+        case MAIN_ATTR_BOOL::STATE_DEFROST:
+            return true;
+        default:
+            return false;
     }
+}
 
-    bool MainStatusMessage::hasAttr(const MAIN_ATTR_U8 attr) const
-    {
-        return false;
-    }
+bool MainStatusMessage::hasAttr(const MAIN_ATTR_U8 attr) const
+{
+    return false;
+}
 
-    bool MainStatusMessage::hasAttr(const MAIN_ATTR_U16 attr) const
-    {
-        return false;
-    }
+bool MainStatusMessage::hasAttr(const MAIN_ATTR_U16 attr) const
+{
+    return false;
+}
 
-    bool MainStatusMessage::hasChanged(const MAIN_ATTR_FLOAT attr) const
-    {
-        return mCreatedWithoutPrevious || mHasChangedFloat.contains(attr);
-    }
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_FLOAT attr) const
+{
+    return mCreatedWithoutPrevious || mHasChangedFloat.contains(attr);
+}
 
-    bool MainStatusMessage::hasChanged(const MAIN_ATTR_BOOL attr) const
-    {
-        return mCreatedWithoutPrevious || mHasChangedBool.contains(attr);
-    }
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_BOOL attr) const
+{
+    return mCreatedWithoutPrevious || mHasChangedBool.contains(attr);
+}
 
-    bool MainStatusMessage::hasChanged(const MAIN_ATTR_U8 attr) const
-    {
-        return mCreatedWithoutPrevious || mHasChangedU8.contains(attr);
-    }
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_U8 attr) const
+{
+    return mCreatedWithoutPrevious || mHasChangedU8.contains(attr);
+}
 
-    bool MainStatusMessage::hasChanged(const MAIN_ATTR_U16 attr) const
-    {
-        return mCreatedWithoutPrevious || mHasChangedU16.contains(attr);
-    }
+bool MainStatusMessage::hasChanged(const MAIN_ATTR_U16 attr) const
+{
+    return mCreatedWithoutPrevious || mHasChangedU16.contains(attr);
+}
 
-    uint8_t MainStatusMessage::getLength()
-    {
-        return MAIN_MESSAGE_LENGTH_ODYSSEE;
-    }
-} // namespace aquamqtt::message::odyssee
+uint8_t MainStatusMessage::getLength()
+{
+    return MAIN_MESSAGE_LENGTH_ODYSSEE;
+}
+}  // namespace aquamqtt::message::odyssee

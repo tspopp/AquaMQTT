@@ -4,11 +4,7 @@
 
 namespace aquamqtt::message::odyssee
 {
-HMIMessage::HMIMessage(uint8_t* data, const uint8_t* previous)
-    : mHasChangedU8()
-    , mHasChangedBool()
-    , mHasChangedFloat()
-    , mData(data)
+HMIMessage::HMIMessage(uint8_t* data, const uint8_t* previous) : mData(data)
 {
     mCreatedWithoutPrevious = previous == nullptr;
     compareWith(previous);
@@ -21,9 +17,9 @@ void HMIMessage::compareWith(const uint8_t* data)
         return;
     }
 
-    uint8_t diffIndices[HMI_MESSAGE_LENGTH_NEXT] = { 0 };
-    size_t  numDiffs                             = 0;
-    compareBuffers(mData, data, HMI_MESSAGE_LENGTH_NEXT, diffIndices, &numDiffs);
+    uint8_t diffIndices[HMI_MESSAGE_LENGTH_ODYSSEE] = { 0 };
+    size_t  numDiffs                                = 0;
+    compareBuffers(mData, data, HMI_MESSAGE_LENGTH_ODYSSEE, diffIndices, &numDiffs);
 
     for (int i = 0; i < numDiffs; ++i)
     {
@@ -43,10 +39,10 @@ void HMIMessage::compareWith(const uint8_t* data)
             case 5:
                 mHasChangedBool.insert(HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED);
                 break;
-            case 20:
+            case 19:
                 mHasChangedU8.insert(HMI_ATTR_U8::TIME_MINUTES);
                 break;
-            case 21:
+            case 20:
                 mHasChangedU8.insert(HMI_ATTR_U8::TIME_HOURS);
                 break;
             case 17:
@@ -74,9 +70,9 @@ uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
         case HMI_ATTR_U8::ANTI_LEGIONELLA_CYCLES:
             return mData[4] & 0x0F;
         case HMI_ATTR_U8::TIME_MINUTES:
-            return mData[20];
+            return mData[19];
         case HMI_ATTR_U8::TIME_HOURS:
-            return mData[21];
+            return mData[20];
         case HMI_ATTR_U8::DATE_DAY:
             return mData[17] & 0x1F;
         case HMI_ATTR_U8::DATE_MONTH:

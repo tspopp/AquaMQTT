@@ -1,9 +1,7 @@
 #ifndef AQUAMQTT_MODES_H
 #define AQUAMQTT_MODES_H
 
-namespace aquamqtt
-{
-namespace config
+namespace aquamqtt::config
 {
 enum EOperationMode
 {
@@ -24,6 +22,5 @@ enum EOperationMode
     MITM,
 };
 }
-}  // namespace aquamqtt
 
 #endif  // AQUAMQTT_MODES_H

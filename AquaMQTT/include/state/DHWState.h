@@ -2,6 +2,8 @@
 #define AQUAMQTT_DHWSTATE_H
 
 #include <Arduino.h>
+#include <RingBuf.h>
+
 #include <map>
 
 #include "message/MessageConstants.h"
@@ -38,7 +40,7 @@ private:
 public:
     DHWState& operator=(const DHWState&) = delete;
 
-    message::ProtocolVersion getVersion();
+    message::ProtocolVersion getVersion() const;
 
     void setVersion(message::ProtocolVersion version);
 
@@ -48,9 +50,9 @@ public:
 
     void storeFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* payload);
 
-    void updateFrameBufferStatistics(uint8_t source, BufferStatistics statistics);
+    void updateFrameBufferStatistics(message::FrameBufferChannel source, BufferStatistics statistics);
 
-    BufferStatistics getFrameBufferStatistics(uint8_t source);
+    BufferStatistics getFrameBufferStatistics(message::FrameBufferChannel source);
 
     size_t copyFrame(
             uint8_t                    frameId,
@@ -58,8 +60,13 @@ public:
             message::ProtocolVersion&  version,
             message::ProtocolChecksum& type);
 
-    void saveTiming(uint8_t fromFrameId, uint8_t toFrameId, unsigned long millis);
-    std::map<uint8_t, std::map<uint8_t, unsigned long>> getTiming() const;
+    void debugSaveFrameTiming(uint8_t fromFrameId, uint8_t toFrameId, unsigned long millis);
+
+    std::map<uint8_t, std::map<uint8_t, unsigned long>> debugGetFrameTiming() const;
+
+    void debugAddToDropBuffer(message::FrameBufferChannel source, int val);
+
+    size_t debugTakeDropBuffer(message::FrameBufferChannel source, uint8_t* buffer);
 
 private:
     TaskHandle_t mNotify;
@@ -86,6 +93,9 @@ private:
     BufferStatistics mListenerStats;
 
     std::map<uint8_t, std::map<uint8_t, unsigned long>> mFrameTiming;
+    RingBuf<int, message::HEATPUMP_MAX_FRAME_LENGTH>    mDroppedBufferListener;
+    RingBuf<int, message::HEATPUMP_MAX_FRAME_LENGTH>    mDroppedBufferHmi;
+    RingBuf<int, message::HEATPUMP_MAX_FRAME_LENGTH>    mDroppedBufferController;
 };
 
 }  // namespace aquamqtt

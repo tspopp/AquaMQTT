@@ -7,20 +7,12 @@
 namespace aquamqtt
 {
 
-enum class ControllerTaskState
-{
-    AWAITING_67,
-    AWAITING_193,
-    CHECK_FOR_HMI_TRIGGER,
-    AWAITING_74,
-};
-
-class ControllerTask
+class ControllerTask final
 {
 public:
     ControllerTask();
 
-    virtual ~ControllerTask() = default;
+    ~ControllerTask() = default;
 
     void spawn();
 
@@ -35,13 +27,13 @@ private:
 
     static void flushReadBuffer();
 
-private:
-    FrameBuffer         mBuffer;
-    unsigned long       mLastStatisticsUpdate;
-    uint8_t             mTransferBuffer[message::HEATPUMP_MAX_FRAME_LENGTH];
-    FastCRC16           mCRC;
-    uint64_t            mMessagesSent;
-    ControllerTaskState mState;
+    FrameBuffer   mBuffer;
+    unsigned long mLastStatisticsUpdate;
+    uint8_t       mTransferBuffer[message::HEATPUMP_MAX_FRAME_LENGTH];
+    FastCRC16     mCRC;
+    uint64_t      mMessagesSent;
+
+    RingBuf<int, 2> mSequence;
 };
 }  // namespace aquamqtt
 

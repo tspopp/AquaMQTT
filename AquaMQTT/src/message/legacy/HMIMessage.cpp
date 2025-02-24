@@ -6,10 +6,7 @@ namespace aquamqtt::message::legacy
 {
 
 HMIMessage::HMIMessage(uint8_t* data, const uint8_t* previous)
-    : mHasChangedU8()
-    , mHasChangedBool()
-    , mHasChangedFloat()
-    , mData(data)
+    : mData(data)
 {
     mCreatedWithoutPrevious = previous == nullptr;
     compareWith(previous);

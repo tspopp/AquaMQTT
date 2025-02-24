@@ -2,7 +2,6 @@
 
 namespace aquamqtt::message::legacy
 {
-
 ErrorMessage::ErrorMessage(uint8_t* data) : mData(data)
 {
 }
@@ -39,30 +38,29 @@ uint8_t ErrorMessage::getAttr(ERROR_ATTR_U8 attr)
             return mData[29] & 0x1F;
         case ERROR_ATTR_U8::ERROR_DATE_MONTH:
             return (mData[29] >> 5) + ((mData[30] % 2) * 8);
-        case ERROR_ATTR_U8::ERROR_DATE_YEAR:
-            return 2000 + (mData[30] / 2);
     }
     return 0;
 }
 
-uint16_t ErrorMessage::getAttr(ERROR_ATTR_U16 attr)
+uint16_t ErrorMessage::getAttr(const ERROR_ATTR_U16 attr)
 {
     switch (attr)
     {
-
         case ERROR_ATTR_U16::ERROR_TOTAL_HEATPUMP_HOURS:
             return ((uint16_t) mData[28] << 8) | (uint16_t) mData[27];
         case ERROR_ATTR_U16::ERROR_TOTAL_HEATING_ELEMENT_HOURS:
             return ((uint16_t) mData[26] << 8) | (uint16_t) mData[25];
+        case ERROR_ATTR_U16::ERROR_DATE_YEAR:
+            return 2000 + (mData[30] / 2);
+        default:
+            return 0;
     }
-    return 0;
 }
 
 float ErrorMessage::getAttr(ERROR_ATTR_FLOAT attr)
 {
     switch (attr)
     {
-
         case ERROR_ATTR_FLOAT::ERROR_WATER_TEMPERATURE:
             return (float) (((short int) (mData[5] << 8) | mData[4]) / 10.0);
         case ERROR_ATTR_FLOAT::ERROR_AIR_TEMPERATURE:
@@ -89,7 +87,6 @@ bool ErrorMessage::hasAttr(ERROR_ATTR_U8 attr) const
         case ERROR_ATTR_U8::ERROR_TIME_HOURS:
         case ERROR_ATTR_U8::ERROR_DATE_DAY:
         case ERROR_ATTR_U8::ERROR_DATE_MONTH:
-        case ERROR_ATTR_U8::ERROR_DATE_YEAR:
             return true;
     }
     return false;
@@ -101,6 +98,7 @@ bool ErrorMessage::hasAttr(ERROR_ATTR_U16 attr) const
     {
         case ERROR_ATTR_U16::ERROR_TOTAL_HEATPUMP_HOURS:
         case ERROR_ATTR_U16::ERROR_TOTAL_HEATING_ELEMENT_HOURS:
+        case ERROR_ATTR_U16::ERROR_DATE_YEAR:
             return true;
     }
     return false;
