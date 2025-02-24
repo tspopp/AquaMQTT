@@ -27,11 +27,11 @@ Disassemble the heatpump as described within the chapter "**Opening the product 
 
 Once disassembled you can locate the connector on the back side of the HMI Controller...
 
-<img src="img/hmi_controller_back.jpg?raw=true" width=40% height=40%>
+<img src="img/hmi_controller_back.jpg" width=40% height=40%>
 
 ... which is connected to the following port of the Main Controller:
 
-<img src="img/main_controller.jpg?raw=true" width=40% height=40%>
+<img src="img/main_controller.jpg" width=40% height=40%>
 
 - VCC 5V (green)
 - GND (red/brown)
@@ -44,13 +44,19 @@ The AquaMQTT Board intercepts the data line (white) and is using the provided VC
 
 Place the AquaMqtt Board to the back side of the hmi controller and connect the DHW HMI Connector with the original HMI controller. Match the connections accordingly:
 
-<img src="img/installed.jpg?raw=true" width=40% height=40%>
+<img src="img/installed.jpg" width=40% height=40%>
 
 ## Wiring
 
+### Revision 1.0
+
 Connect the original connector cable to the DHW Main Connector on the AquaMqtt Board as shown here:
 
-<img src="img/wired_up.jpg?raw=true" width=40% height=40%>
+<img src="img/wired_up.jpg" width=40% height=40%>
+
+### Revision 2.0
+
+<img src="img/wired_up_rev2.jpg" width=40% height=40%>
 
 ### Man-In-The-Middle Mode
 
@@ -58,7 +64,7 @@ The man in the middle mode is the default mode of AquaMQTT and the intended purp
 
 1. Connect the original cable coming from the main controller to the AquaMQTT Boards Connector `DHW main`.
 
-    **Make sure that green (5V) and brown (GND) is facing towards `J1` on the board**
+    **Make sure that green (5V) and brown (GND) is facing towards `J1` (rev 1.0) / `J3` (rev 2.0) on the board**
 
 2. Connect the hmi controller to the AquaMQTT Boards Connector `DHW HMI` using your customized cable or jumper cable. 
 
@@ -66,7 +72,7 @@ The man in the middle mode is the default mode of AquaMQTT and the intended purp
 
 In listener mode, the AquaMQTT board expects to read any serial information exchanged by the DHW HMI Controller and DHW Main Controller on the AquaMQTT Boards Connector `DHW main`. The intended way of using listener mode is:
 
-1. Set the Passthrough Jumper on the AquaMQTT Board: `J7 PSTRH`
+1. Set the Passthrough (PSTRH) Jumper on the AquaMQTT Board.
 
 2. Connect the cables as mentioned in Man-In-The-Middle Board.
 

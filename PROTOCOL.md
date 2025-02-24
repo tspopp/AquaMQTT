@@ -95,13 +95,13 @@ If an error message is requested by the HMI controller, the sequence contains an
 56ms idle
 ```
 
-<img src="img/sequence.png?raw=true" width=100% height=100%>
+<img src="img/sequence.png" width=100% height=100%>
 
 In case we disconnect the HMI controller during operation, we will notice that the 194 frame is no longer complete:
 
-<img src="img/nohmi1.png?raw=true" width=100% height=100%>
+<img src="img/nohmi1.png" width=100% height=100%>
 
-<img src="img/nohmi2.png?raw=true" width=50% height=50%>
+<img src="img/nohmi2.png" width=50% height=50%>
 
 Therefore, message 194 is completed by the HMI controller, whereas 193 and 67 are emitted by the main controller.
 

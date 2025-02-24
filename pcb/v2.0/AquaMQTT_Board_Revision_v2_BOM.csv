@@ -1,0 +1,9 @@
+﻿Designator,Footprint,Quantity,Value,LCSC Part #
+J1,PinHeader_1x04_P2.54mm_Vertical,1,Serial,C5116483
+J3,PinHeader_2x04_P2.54mm_Vertical,1,DHW MAIN,C32713277
+J5,PinSocket_1x15_P2.54mm_Vertical,1,Nano L,C7499333
+J6,PinSocket_1x15_P2.54mm_Vertical,1,Nano R,C7499333
+J7,PinHeader_2x04_P2.54mm_Vertical,1,DHW HMI,C32713277
+J8,PinHeader_1x02_P2.54mm_Vertical,1,Passthrough,C5360898
+"R1, R2",R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,2,R10k,C410695
+"U1, U2",SSOP-8_2.95x2.8mm_P0.65mm,2,SN74LVC2T45DCUR,C347590

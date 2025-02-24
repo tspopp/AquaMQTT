@@ -9,12 +9,12 @@ towards compatibility:
 
 2.) The heat-pumps HMI controller looks very familiar to these:
 
-<img src="img/hmi.jpg?raw=true" width=25% height=25%>
+<img src="img/hmi.jpg" width=25% height=25%>
 <img src="https://www.thermor.fr/var/site/storage/images/3/8/0/4/244083-45-eng-GB/CHAUFFE_EAU_THERMODYNAMIQUE_AEROMAX5_COMMANDE_THERMOR.jpg" width=25% height=25%>
 
 3.) The main controller board installed in the heat-pump looks similar to these:
 
-<img src="img/main_controller.jpg?raw=true" width=30% height=40%>
+<img src="img/main_controller.jpg" width=30% height=40%>
 
 ### Q: What is the difference between Listener and MITM Mode?
 
