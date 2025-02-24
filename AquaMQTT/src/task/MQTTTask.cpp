@@ -22,9 +22,9 @@ using namespace mqtt;
 using namespace message;
 
 MQTTTask::MQTTTask()
-    : mTransferBuffer{ 0 }
-    , mTopicBuffer{ 0 }
-    , mPayloadBuffer{ 0 }
+    : mTransferBuffer{}
+    , mTopicBuffer{}
+    , mPayloadBuffer{}
     , mLastStatsUpdate(0)
     , mLastFullUpdate(0)
     , mMQTTClient(256)
@@ -59,7 +59,7 @@ MQTTTask::~MQTTTask()
     delete mLastProcessedExtraMessage;
 }
 
-void MQTTTask::messageReceived(String& topic, String& payload)
+void MQTTTask::messageReceived(const String& topic, const String& payload)
 {
     Serial.println("incoming: " + topic + " - " + payload);
 
@@ -118,7 +118,6 @@ void MQTTTask::messageReceived(String& topic, String& payload)
             HMIStateProxy::getInstance().onOperationTypeChanged(std::unique_ptr<HMIOperationType>(nullptr));
         }
     }
-
     else if (strstr_P(topic.c_str(), HMI_EMERGENCY_MODE) != nullptr)
     {
         if (payload.isEmpty())
@@ -238,13 +237,13 @@ void MQTTTask::messageReceived(String& topic, String& payload)
             (strlen(optionalSubscribeTopicSetPvHeatPumpFlag) != 0)
             && strstr_P(topic.c_str(), optionalSubscribeTopicSetPvHeatPumpFlag) != nullptr)
     {
-        bool enabled = strcmp(payload.c_str(), "1") == 0;
+        const bool enabled = strcmp(payload.c_str(), "1") == 0;
         HMIStateProxy::getInstance().onPVModeHeatpumpEnabled(enabled);
         MainStateProxy::getInstance().onPVModeHeatpumpEnabled(enabled);
     }
     else if (strstr_P(topic.c_str(), STATS_ENABLE_FLAG_PV_HEATPUMP) != nullptr)
     {
-        bool enabled = strcmp(payload.c_str(), "1") == 0;
+        const bool enabled = strcmp(payload.c_str(), "1") == 0;
         HMIStateProxy::getInstance().onPVModeHeatpumpEnabled(enabled);
         MainStateProxy::getInstance().onPVModeHeatpumpEnabled(enabled);
     }
@@ -252,13 +251,13 @@ void MQTTTask::messageReceived(String& topic, String& payload)
             (strlen(optionalSubscribeTopicSetPvHeatElementFlag) != 0)
             && strstr_P(topic.c_str(), optionalSubscribeTopicSetPvHeatElementFlag) != nullptr)
     {
-        bool enabled = strcmp(payload.c_str(), "1") == 0;
+        const bool enabled = strcmp(payload.c_str(), "1") == 0;
         HMIStateProxy::getInstance().onPVModeHeatElementEnabled(enabled);
         MainStateProxy::getInstance().onPVModeHeatElementEnabled(enabled);
     }
     else if (strstr_P(topic.c_str(), STATS_ENABLE_FLAG_PV_HEATELEMENT) != nullptr)
     {
-        bool enabled = strcmp(payload.c_str(), "1") == 0;
+        const bool enabled = strcmp(payload.c_str(), "1") == 0;
         HMIStateProxy::getInstance().onPVModeHeatElementEnabled(enabled);
         MainStateProxy::getInstance().onPVModeHeatElementEnabled(enabled);
     }
@@ -355,23 +354,23 @@ void MQTTTask::loop()
 {
     check_mqtt_connection();
 
-    auto mqttCycle = pdMS_TO_TICKS(5);
+    constexpr auto mqttCycle = pdMS_TO_TICKS(5);
 
     sendHomeassistantDiscovery();
 
-    bool fullUpdate = (millis() - mLastFullUpdate) >= config::MQTT_FULL_UPDATE_MS;
+    const bool fullUpdate = (millis() - mLastFullUpdate) >= config::MQTT_FULL_UPDATE_MS;
 
-    bool statsUpdate = (millis() - mLastStatsUpdate) >= config::MQTT_STATS_UPDATE_MS;
+    const bool statsUpdate = (millis() - mLastStatsUpdate) >= config::MQTT_STATS_UPDATE_MS;
 
-    auto notify = ulTaskNotifyTake(pdTRUE, mqttCycle);
+    const auto notify = ulTaskNotifyTake(pdTRUE, mqttCycle);
 
     if ((notify & 1 << 8) != 0 || fullUpdate)
     {
-        message::ProtocolVersion  version      = message::PROTOCOL_UNKNOWN;
-        message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+        ProtocolVersion  version      = PROTOCOL_UNKNOWN;
+        ProtocolChecksum checksumType = CHECKSUM_TYPE_UNKNOWN;
 
-        size_t length = HMIStateProxy::getInstance()
-                                .copyFrame(HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
+        const size_t length = HMIStateProxy::getInstance()
+                                      .copyFrame(HMI_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
         if (length > 0)
         {
             updateHMIStatus(fullUpdate, version);
@@ -386,10 +385,10 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 7) != 0 || fullUpdate)
     {
-        message::ProtocolVersion  version      = message::PROTOCOL_UNKNOWN;
-        message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
-        size_t                    length       = MainStateProxy::getInstance()
-                                .copyFrame(MAIN_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
+        ProtocolVersion  version      = PROTOCOL_UNKNOWN;
+        ProtocolChecksum checksumType = CHECKSUM_TYPE_UNKNOWN;
+        const size_t     length       = MainStateProxy::getInstance()
+                                      .copyFrame(MAIN_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
         if (length > 0)
         {
             updateMainStatus(fullUpdate, version);
@@ -404,10 +403,10 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 6) != 0 || fullUpdate)
     {
-        message::ProtocolVersion  version      = message::PROTOCOL_UNKNOWN;
-        message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
-        size_t                    length       = MainStateProxy::getInstance()
-                                .copyFrame(ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
+        ProtocolVersion  version      = PROTOCOL_UNKNOWN;
+        ProtocolChecksum checksumType = CHECKSUM_TYPE_UNKNOWN;
+        const size_t     length       = MainStateProxy::getInstance()
+                                      .copyFrame(ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
         if (length > 0)
         {
             updateEnergyStats(fullUpdate, version);
@@ -422,8 +421,8 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 5) != 0)
     {
-        message::ProtocolVersion  version      = message::PROTOCOL_UNKNOWN;
-        message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+        ProtocolVersion  version      = PROTOCOL_UNKNOWN;
+        ProtocolChecksum checksumType = CHECKSUM_TYPE_UNKNOWN;
         if (MainStateProxy::getInstance().copyFrame(ERROR_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType))
         {
             updateErrorStatus(version);
@@ -432,10 +431,10 @@ void MQTTTask::loop()
 
     if ((notify & 1 << 4) != 0 || fullUpdate)
     {
-        message::ProtocolVersion  version      = message::PROTOCOL_UNKNOWN;
-        message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
-        size_t                    length       = MainStateProxy::getInstance()
-                                .copyFrame(EXTRA_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
+        ProtocolVersion  version      = PROTOCOL_UNKNOWN;
+        ProtocolChecksum checksumType = CHECKSUM_TYPE_UNKNOWN;
+        const size_t     length       = MainStateProxy::getInstance()
+                                      .copyFrame(EXTRA_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
         if (length > 0)
         {
             updateExtraStatus(fullUpdate, version);
@@ -485,47 +484,123 @@ void MQTTTask::updateStats()
 
     if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
     {
+        if (config::DEBUG_PUBLISH_DROPPED_MESSAGES)
+        {
+            auto len = DHWState::getInstance().debugTakeDropBuffer(FrameBufferChannel::CH_LISTENER, mTransferBuffer);
+            if (len != 0)
+            {
+                sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                        "%s%s%s%s",
+                        config::mqttPrefix,
+                        BASE_TOPIC,
+                        STATS_SUBTOPIC,
+                        DROPPED);
+
+                toHexStr(mTransferBuffer, len, reinterpret_cast<char*>(mPayloadBuffer));
+                mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+            }
+        }
+
+        if (config::DEBUG_PUBLISH_DROPPED_MESSAGES)
+        {
+            auto len = DHWState::getInstance().debugTakeDropBuffer(FrameBufferChannel::CH_LISTENER, mTransferBuffer);
+            if (len != 0)
+            {
+                sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                        "%s%s%s%s",
+                        config::mqttPrefix,
+                        BASE_TOPIC,
+                        STATS_SUBTOPIC,
+                        DROPPED);
+
+                toHexStr(mTransferBuffer, len, reinterpret_cast<char*>(mPayloadBuffer));
+                mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+            }
+        }
+
         if (config::MQTT_PUBLISH_SERIAL_STATISTICS)
         {
-            auto listenerStats = DHWState::getInstance().getFrameBufferStatistics(0);
+            auto listenerStats = DHWState::getInstance().getFrameBufferStatistics(FrameBufferChannel::CH_LISTENER);
             publishul(STATS_SUBTOPIC, STATS_MSG_HANDLED, listenerStats.msgHandled);
             publishul(STATS_SUBTOPIC, STATS_MSG_UNHANDLED, listenerStats.msgUnhandled);
             publishul(STATS_SUBTOPIC, STATS_MSG_CRC_NOK, listenerStats.msgCRCFail);
             publishul(STATS_SUBTOPIC, STATS_DROPPED_BYTES, listenerStats.droppedBytes);
         }
 
-        // TODO: add a flag if we keep this in main branch
-        auto timingsMap = DHWState::getInstance().getTiming();
-        for (const auto& entry : timingsMap)
+        if (config::DEBUG_PUBLISH_FRAME_TIMING_IN_LISTENER_MODE)
         {
-            uint8_t fromId = entry.first;
-            for (auto innerEntry : entry.second)
+            auto timingsMap = DHWState::getInstance().debugGetFrameTiming();
+            for (const auto& entry : timingsMap)
             {
-                uint8_t toid = innerEntry.first;;
-                unsigned long timingMillis = innerEntry.second;
-                sprintf(reinterpret_cast<char*>(mTopicBuffer),
-                        "%s%s%s%s/%u-%u",
-                        config::mqttPrefix,
-                        BASE_TOPIC,
-                        STATS_SUBTOPIC, STATS_TIMING,
-                        fromId, toid);
-                ultoa(timingMillis, reinterpret_cast<char*>(mPayloadBuffer), 10);
-                mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), false, 0);
+                uint8_t fromId = entry.first;
+                for (auto innerEntry : entry.second)
+                {
+                    uint8_t       toid         = innerEntry.first;
+                    unsigned long timingMillis = innerEntry.second;
+                    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                            "%s%s%s%s/%u-%u",
+                            config::mqttPrefix,
+                            BASE_TOPIC,
+                            STATS_SUBTOPIC,
+                            STATS_TIMING,
+                            fromId,
+                            toid);
+                    ultoa(timingMillis, reinterpret_cast<char*>(mPayloadBuffer), 10);
+                    mMQTTClient.publish(
+                            reinterpret_cast<char*>(mTopicBuffer),
+                            reinterpret_cast<char*>(mPayloadBuffer),
+                            false,
+                            0);
+                }
             }
         }
     }
     else
     {
+
+        if (config::DEBUG_PUBLISH_DROPPED_MESSAGES)
+        {
+            auto len = DHWState::getInstance().debugTakeDropBuffer(FrameBufferChannel::CH_HMI, mTransferBuffer);
+            if (len != 0)
+            {
+                sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                        "%s%s%s%s%s",
+                        config::mqttPrefix,
+                        BASE_TOPIC,
+                        STATS_SUBTOPIC,
+                        HMI_SUBTOPIC,
+                        DROPPED);
+
+                toHexStr(mTransferBuffer, len, reinterpret_cast<char*>(mPayloadBuffer));
+                mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+            }
+
+            len = DHWState::getInstance().debugTakeDropBuffer(FrameBufferChannel::CH_MAIN, mTransferBuffer);
+            if (len != 0)
+            {
+                sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                        "%s%s%s%s%s",
+                        config::mqttPrefix,
+                        BASE_TOPIC,
+                        STATS_SUBTOPIC,
+                        MAIN_SUBTOPIC,
+                        DROPPED);
+
+                toHexStr(mTransferBuffer, len, reinterpret_cast<char*>(mPayloadBuffer));
+                mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+            }
+        }
+
         if (config::MQTT_PUBLISH_SERIAL_STATISTICS)
         {
-            auto hmiStats = DHWState::getInstance().getFrameBufferStatistics(1);
+            auto hmiStats = DHWState::getInstance().getFrameBufferStatistics(FrameBufferChannel::CH_HMI);
             publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_HANDLED, hmiStats.msgHandled);
             publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_UNHANDLED, hmiStats.msgUnhandled);
             publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_CRC_NOK, hmiStats.msgCRCFail);
             publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_DROPPED_BYTES, hmiStats.droppedBytes);
             publishul(STATS_SUBTOPIC, HMI_SUBTOPIC, STATS_MSG_SENT, hmiStats.msgSent);
 
-            auto mainStats = DHWState::getInstance().getFrameBufferStatistics(2);
+            auto mainStats = DHWState::getInstance().getFrameBufferStatistics(FrameBufferChannel::CH_MAIN);
             publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_HANDLED, mainStats.msgHandled);
             publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_UNHANDLED, mainStats.msgUnhandled);
             publishul(STATS_SUBTOPIC, MAIN_SUBTOPIC, STATS_MSG_CRC_NOK, mainStats.msgCRCFail);
@@ -588,7 +663,7 @@ void MQTTTask::updateStats()
     }
 }
 
-void MQTTTask::updateMainStatus(bool fullUpdate, message::ProtocolVersion& version)
+void MQTTTask::updateMainStatus(bool fullUpdate, ProtocolVersion& version)
 {
     std::unique_ptr<IMainMessage> message = createMainMessageFromBuffer(
             version,
@@ -868,7 +943,7 @@ void MQTTTask::updateMainStatus(bool fullUpdate, message::ProtocolVersion& versi
     }
 }
 
-void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& version)
+void MQTTTask::updateHMIStatus(bool fullUpdate, ProtocolVersion& version)
 {
 
     std::unique_ptr<IHMIMessage> message = createHmiMessageFromBuffer(
@@ -1125,9 +1200,9 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
     }
 }
 
-void MQTTTask::updateEnergyStats(bool fullUpdate, message::ProtocolVersion& version)
+void MQTTTask::updateEnergyStats(bool fullUpdate, ProtocolVersion& version)
 {
-    std::unique_ptr<message::IEnergyMessage> message = createEnergyMessageFromBuffer(
+    std::unique_ptr<IEnergyMessage> message = createEnergyMessageFromBuffer(
             version,
             mTransferBuffer,
             fullUpdate ? nullptr : mLastProcessedEnergyMessage);
@@ -1320,9 +1395,9 @@ void MQTTTask::updateEnergyStats(bool fullUpdate, message::ProtocolVersion& vers
     }
 }
 
-void MQTTTask::updateExtraStatus(bool fullUpdate, message::ProtocolVersion& version)
+void MQTTTask::updateExtraStatus(bool fullUpdate, ProtocolVersion& version)
 {
-    std::unique_ptr<message::IExtraMessage> message = createExtraMessageFromBuffer(
+    std::unique_ptr<IExtraMessage> message = createExtraMessageFromBuffer(
             version,
             mTransferBuffer,
             fullUpdate ? nullptr : mLastProcessedExtraMessage);
@@ -1343,6 +1418,30 @@ void MQTTTask::updateExtraStatus(bool fullUpdate, message::ProtocolVersion& vers
         }
     }
 
+    if (message->hasAttr(EXTRA_ATTR_U32::EXTRA_TOTAL_ENERGY))
+    {
+        if (fullUpdate || message->hasChanged(EXTRA_ATTR_U32::EXTRA_TOTAL_ENERGY))
+        {
+            publishul(ENERGY_SUBTOPIC, ENERGY_TOTAL_ENERGY_WH, message->getAttr(EXTRA_ATTR_U32::EXTRA_TOTAL_ENERGY));
+        }
+    }
+
+    if (message->hasAttr(EXTRA_ATTR_FLOAT::EXTRA_AMPERAGE))
+    {
+        if (fullUpdate || message->hasChanged(EXTRA_ATTR_FLOAT::EXTRA_AMPERAGE))
+        {
+            dtostrf(message->getAttr(EXTRA_ATTR_FLOAT::EXTRA_AMPERAGE), 4, 2, reinterpret_cast<char*>(mPayloadBuffer));
+            sprintf(reinterpret_cast<char*>(mTopicBuffer),
+                    "%s%s%s%s",
+                    config::mqttPrefix,
+                    BASE_TOPIC,
+                    ENERGY_SUBTOPIC,
+                    ENERGY_AMPERAGE);
+            mMQTTClient
+                    .publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), false, 0);
+        }
+    }
+
     if (config::DEBUG_RAW_SERIAL_MESSAGES)
     {
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
@@ -1357,17 +1456,16 @@ void MQTTTask::updateExtraStatus(bool fullUpdate, message::ProtocolVersion& vers
     }
 }
 
-void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
+void MQTTTask::updateErrorStatus(ProtocolVersion& version)
 {
-    std::unique_ptr<message::IErrorMessage> message = createErrorMessageFromBuffer(version, mTransferBuffer);
+    std::unique_ptr<IErrorMessage> message = createErrorMessageFromBuffer(version, mTransferBuffer);
 
     if (message->isEmpty())
     {
         return;
     }
 
-    if (message->hasAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID)
-        && message->hasAttr(message::ERROR_ATTR_U8::ERROR_ERROR_CODE))
+    if (message->hasAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID) && message->hasAttr(ERROR_ATTR_U8::ERROR_ERROR_CODE))
     {
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%u/%s",
@@ -1380,48 +1478,46 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
         mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
     }
 
-    if (!message->isEmpty() && message->hasAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID))
+    if (!message->isEmpty() && message->hasAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID))
     {
-        if (message->hasAttr(message::ERROR_ATTR_U8::ERROR_DATE_DAY)
-            && message->hasAttr(message::ERROR_ATTR_U8::ERROR_DATE_MONTH)
-            && message->hasAttr(message::ERROR_ATTR_U8::ERROR_DATE_YEAR))
+        if (message->hasAttr(ERROR_ATTR_U8::ERROR_DATE_DAY) && message->hasAttr(ERROR_ATTR_U8::ERROR_DATE_MONTH)
+            && message->hasAttr(ERROR_ATTR_U16::ERROR_DATE_YEAR))
         {
 
             sprintf(reinterpret_cast<char*>(mPayloadBuffer),
                     "%d.%d.%d",
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_DATE_DAY),
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_DATE_MONTH),
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_DATE_YEAR));
+                    message->getAttr(ERROR_ATTR_U8::ERROR_DATE_DAY),
+                    message->getAttr(ERROR_ATTR_U8::ERROR_DATE_MONTH),
+                    message->getAttr(ERROR_ATTR_U16::ERROR_DATE_YEAR));
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
                     config::mqttPrefix,
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
+                    message->getAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID),
                     HMI_DATE);
             mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
         }
 
-        if (message->hasAttr(message::ERROR_ATTR_U8::ERROR_TIME_HOURS)
-            && message->hasAttr(message::ERROR_ATTR_U8::ERROR_TIME_MINUTES))
+        if (message->hasAttr(ERROR_ATTR_U8::ERROR_TIME_HOURS) && message->hasAttr(ERROR_ATTR_U8::ERROR_TIME_MINUTES))
         {
             sprintf(reinterpret_cast<char*>(mPayloadBuffer),
                     "%02d:%02d",
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_TIME_HOURS),
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_TIME_MINUTES));
+                    message->getAttr(ERROR_ATTR_U8::ERROR_TIME_HOURS),
+                    message->getAttr(ERROR_ATTR_U8::ERROR_TIME_MINUTES));
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
                     config::mqttPrefix,
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
+                    message->getAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID),
                     HMI_TIME);
             mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
         }
 
-        if (message->hasAttr(message::ERROR_ATTR_FLOAT::ERROR_WATER_TEMPERATURE))
+        if (message->hasAttr(ERROR_ATTR_FLOAT::ERROR_WATER_TEMPERATURE))
         {
-            dtostrf(message->getAttr(message::ERROR_ATTR_FLOAT::ERROR_WATER_TEMPERATURE),
+            dtostrf(message->getAttr(ERROR_ATTR_FLOAT::ERROR_WATER_TEMPERATURE),
                     3,
                     1,
                     reinterpret_cast<char*>(mPayloadBuffer));
@@ -1430,7 +1526,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     config::mqttPrefix,
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
+                    message->getAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID),
                     MAIN_HOT_WATER_TEMP);
             mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
         }
@@ -1446,7 +1542,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     config::mqttPrefix,
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
+                    message->getAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID),
                     MAIN_SUPPLY_AIR_TEMP);
             mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
         }
@@ -1462,7 +1558,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     config::mqttPrefix,
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
+                    message->getAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID),
                     MAIN_EVAPORATOR_AIR_TEMP_LOWER);
             mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
         }
@@ -1478,7 +1574,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     config::mqttPrefix,
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
+                    message->getAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID),
                     MAIN_EVAPORATOR_AIR_TEMP_UPPER);
             mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
         }
@@ -1494,7 +1590,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     config::mqttPrefix,
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
+                    message->getAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID),
                     MAIN_FAN_PWM);
             mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
         }
@@ -1509,7 +1605,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     config::mqttPrefix,
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
+                    message->getAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID),
                     ENERGY_TOTAL_HEATPUMP_HOURS);
             mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
         }
@@ -1524,7 +1620,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     config::mqttPrefix,
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
-                    message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
+                    message->getAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID),
                     ENERGY_TOTAL_HEATING_ELEM_HOURS);
             mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
         }
@@ -1603,12 +1699,6 @@ void MQTTTask::sendHomeassistantDiscovery()
         return;
     }
 
-    // FIXME: not yet implemented for protocol odyssee
-    if (protocolVersion == PROTOCOL_ODYSSEE)
-    {
-        return;
-    }
-
     unsigned long long mac = ESP.getEfuseMac();
     FastCRC16          crc;
     uint16_t           identifier = crc.ccitt(reinterpret_cast<uint8_t*>(&mac), sizeof(mac));
@@ -1647,19 +1737,19 @@ void MQTTTask::publishDiscovery(uint16_t identifier, ProtocolVersion protocolVer
 }
 
 void MQTTTask::publishFiltered(
-        std::unique_ptr<IMainMessage>& message,
-        MAIN_ATTR_FLOAT                attribute,
-        SimpleKalmanFilter&            filter,
-        float&                         mFilteredValue,
-        const char*                    topic,
-        bool                           fullUpdate)
+        const std::unique_ptr<IMainMessage>& message,
+        const MAIN_ATTR_FLOAT                attribute,
+        SimpleKalmanFilter&                  filter,
+        float&                               mFilteredValue,
+        const char*                          topic,
+        const bool                           fullUpdate)
 {
 
     if (message->hasAttr(attribute))
     {
-        float rawValue              = message->getAttr(attribute);
-        auto  previousFilteredValue = mFilteredValue;
-        mFilteredValue              = std::round(filter.updateEstimate(rawValue) * 10.0f) / 10.0f;
+        const float rawValue              = message->getAttr(attribute);
+        const auto  previousFilteredValue = mFilteredValue;
+        mFilteredValue                    = std::round(filter.updateEstimate(rawValue) * 10.0f) / 10.0f;
 
         if (fullUpdate)
         {

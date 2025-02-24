@@ -27,7 +27,7 @@ enum AquaMqttOverrideMode
     AM_MODE_PV_FULL    = 3
 };
 
-static const char* aquamqttOverrideStr(AquaMqttOverrideMode mode)
+static const char* aquamqttOverrideStr(const AquaMqttOverrideMode mode)
 {
     switch (mode)
     {
@@ -50,7 +50,7 @@ static const char* aquamqttOverrideStr(AquaMqttOverrideMode mode)
  * and overrides set using mqtt control topics
  */
 
-class HMIStateProxy : public mqtt::IMQTTCallback
+class HMIStateProxy final : public mqtt::IMQTTCallback
 {
 public:
     static HMIStateProxy& getInstance();
@@ -67,7 +67,7 @@ public:
 
     void setListener(TaskHandle_t handle);
 
-    void applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion& version);
+    void applyHMIOverrides(uint8_t* buffer, const message::ProtocolVersion& version) const;
 
     size_t copyFrame(
             uint8_t                    frameId,
@@ -93,17 +93,17 @@ public:
 
     void onPVModeHeatpumpEnabled(bool enabled) override;
 
-    bool isPVModeHeatPumpEnabled();
+    bool isPVModeHeatPumpEnabled() const;
 
     void onPVModeHeatElementEnabled(bool enabled) override;
 
-    bool isPVModeHeatElementEnabled();
+    bool isPVModeHeatElementEnabled() const;
 
     void onResetOverrides() override;
 
-    AquaMqttOverrides getOverrides();
+    AquaMqttOverrides getOverrides() const;
 
-    AquaMqttOverrideMode getOverrideMode();
+    AquaMqttOverrideMode getOverrideMode() const;
 
     void updateTime(uint8_t seconds, uint8_t minutes, uint8_t hours, uint8_t days, uint8_t month, uint16_t year);
 

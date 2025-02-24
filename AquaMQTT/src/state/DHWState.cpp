@@ -4,7 +4,8 @@
 
 using namespace aquamqtt::message;
 
-namespace aquamqtt {
+namespace aquamqtt
+{
 DHWState& DHWState::getInstance()
 {
     static DHWState instance;
@@ -12,27 +13,27 @@ DHWState& DHWState::getInstance()
 }
 
 DHWState::DHWState()
-    : mMutex(xSemaphoreCreateMutex())
-    , mNotify(nullptr)
-    , mHasEnergyMessage(false)
-    , mHasMainMessage(false)
+    : mNotify(nullptr)
+    , mMutex(xSemaphoreCreateMutex())
+    , mProtocolVersion(PROTOCOL_UNKNOWN)
+    , mChecksumType(CHECKSUM_TYPE_UNKNOWN)
     , mHasHmiMessage(false)
+    , mHasMainMessage(false)
+    , mHasEnergyMessage(false)
     , mHasErrorMessage(false)
     , mHasExtraMessage(false)
     , mMessageHmi{}
-, mMessageMain{}
-, mMessageEnergy{}
-, mMessageError{}
-, mMessageExtra{}
-, mHmiStats{ 0, 0, 0, 0, 0 }
-, mMainStats{ 0, 0, 0, 0, 0 }
-, mListenerStats{ 0, 0, 0, 0, 0 }
-, mProtocolVersion(PROTOCOL_UNKNOWN)
-, mChecksumType(CHECKSUM_TYPE_UNKNOWN)
+    , mMessageMain{}
+    , mMessageEnergy{}
+    , mMessageError{}
+    , mMessageExtra{}
+    , mHmiStats{ 0, 0, 0, 0, 0 }
+    , mMainStats{ 0, 0, 0, 0, 0 }
+    , mListenerStats{ 0, 0, 0, 0, 0 }
 {
 }
 
-void DHWState::setListener(TaskHandle_t handle)
+void DHWState::setListener(const TaskHandle_t handle)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
@@ -44,7 +45,7 @@ void DHWState::setListener(TaskHandle_t handle)
     xSemaphoreGive(mMutex);
 }
 
-void DHWState::storeFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* payload)
+void DHWState::storeFrame(const uint8_t frameId, const uint8_t payloadLength, uint8_t* payload)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
@@ -104,22 +105,22 @@ void DHWState::storeFrame(uint8_t frameId, uint8_t payloadLength, uint8_t* paylo
     xSemaphoreGive(mMutex);
 }
 
-void DHWState::updateFrameBufferStatistics(uint8_t source, BufferStatistics statistics)
+void DHWState::updateFrameBufferStatistics(const FrameBufferChannel source, BufferStatistics statistics)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
         return;
     }
 
-    if (source == 0)
+    if (source == FrameBufferChannel::CH_LISTENER)
     {
         mListenerStats = statistics;
     }
-    else if (source == 1)
+    else if (source == FrameBufferChannel::CH_HMI)
     {
         mHmiStats = statistics;
     }
-    else if (source == 2)
+    else if (source == FrameBufferChannel::CH_MAIN)
     {
         mMainStats = statistics;
     }
@@ -127,7 +128,7 @@ void DHWState::updateFrameBufferStatistics(uint8_t source, BufferStatistics stat
     xSemaphoreGive(mMutex);
 }
 
-BufferStatistics DHWState::getFrameBufferStatistics(uint8_t source)
+BufferStatistics DHWState::getFrameBufferStatistics(const FrameBufferChannel source)
 {
     BufferStatistics statistics{};
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
@@ -135,15 +136,15 @@ BufferStatistics DHWState::getFrameBufferStatistics(uint8_t source)
         return BufferStatistics{};
     }
 
-    if (source == 0)
+    if (source == FrameBufferChannel::CH_LISTENER)
     {
         statistics = mListenerStats;
     }
-    else if (source == 1)
+    else if (source == FrameBufferChannel::CH_HMI)
     {
         statistics = mHmiStats;
     }
-    else if (source == 2)
+    else if (source == FrameBufferChannel::CH_MAIN)
     {
         statistics = mMainStats;
     }
@@ -153,7 +154,7 @@ BufferStatistics DHWState::getFrameBufferStatistics(uint8_t source)
     return statistics;
 }
 
-size_t DHWState::copyFrame(uint8_t frameId, uint8_t* buffer, ProtocolVersion& version, ProtocolChecksum& type)
+size_t DHWState::copyFrame(const uint8_t frameId, uint8_t* buffer, ProtocolVersion& version, ProtocolChecksum& type)
 {
     size_t length = 0;
 
@@ -199,10 +200,9 @@ size_t DHWState::copyFrame(uint8_t frameId, uint8_t* buffer, ProtocolVersion& ve
     return length;
 }
 
-
-ProtocolVersion DHWState::getVersion()
+ProtocolVersion DHWState::getVersion() const
 {
-    message::ProtocolVersion version = PROTOCOL_UNKNOWN;
+    ProtocolVersion version = PROTOCOL_UNKNOWN;
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
         return version;
@@ -215,7 +215,7 @@ ProtocolVersion DHWState::getVersion()
     return version;
 }
 
-void DHWState::setVersion(ProtocolVersion version)
+void DHWState::setVersion(const ProtocolVersion version)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
@@ -227,7 +227,7 @@ void DHWState::setVersion(ProtocolVersion version)
     xSemaphoreGive(mMutex);
 }
 
-void DHWState::setChecksumType(ProtocolChecksum checksum)
+void DHWState::setChecksumType(const ProtocolChecksum checksum)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
@@ -239,8 +239,7 @@ void DHWState::setChecksumType(ProtocolChecksum checksum)
     xSemaphoreGive(mMutex);
 }
 
-
-void DHWState::saveTiming(const uint8_t fromFrameId, const uint8_t toFrameId, const unsigned long millis)
+void DHWState::debugSaveFrameTiming(const uint8_t fromFrameId, const uint8_t toFrameId, const unsigned long millis)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
@@ -252,7 +251,7 @@ void DHWState::saveTiming(const uint8_t fromFrameId, const uint8_t toFrameId, co
     xSemaphoreGive(mMutex);
 }
 
-std::map<uint8_t, std::map<uint8_t, unsigned long>> DHWState::getTiming() const
+std::map<uint8_t, std::map<uint8_t, unsigned long>> DHWState::debugGetFrameTiming() const
 {
     std::map<uint8_t, std::map<uint8_t, unsigned long>> timing;
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
@@ -267,5 +266,71 @@ std::map<uint8_t, std::map<uint8_t, unsigned long>> DHWState::getTiming() const
     return timing;
 }
 
+void DHWState::debugAddToDropBuffer(const FrameBufferChannel source, const int val)
+{
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return;
+    }
+
+    RingBuf<int, HEATPUMP_MAX_FRAME_LENGTH>* buf;
+    if (source == FrameBufferChannel::CH_LISTENER)
+    {
+        buf = &mDroppedBufferListener;
+    }
+    else if (source == FrameBufferChannel::CH_HMI)
+    {
+        buf = &mDroppedBufferHmi;
+    }
+    else
+    {
+        buf = &mDroppedBufferController;
+    }
+
+    if (buf->isFull())
+    {
+        buf->clear();
+    }
+    buf->push(val);
+
+    xSemaphoreGive(mMutex);
+}
+
+size_t DHWState::debugTakeDropBuffer(const FrameBufferChannel source, uint8_t* buffer)
+{
+
+    if (!xSemaphoreTake(mMutex, portMAX_DELAY))
+    {
+        return 0;
+    }
+
+    size_t cursor = 0;
+
+    RingBuf<int, HEATPUMP_MAX_FRAME_LENGTH>* buf;
+    if (source == FrameBufferChannel::CH_LISTENER)
+    {
+        buf = &mDroppedBufferListener;
+    }
+    else if (source == FrameBufferChannel::CH_HMI)
+    {
+        buf = &mDroppedBufferHmi;
+    }
+    else
+    {
+        buf = &mDroppedBufferController;
+    }
+
+    while (!buf->isEmpty())
+    {
+        int retVal;
+        buf->pop(retVal);
+        buffer[cursor] = retVal;
+        cursor++;
+    }
+
+    xSemaphoreGive(mMutex);
+
+    return cursor;
+}
 
 }  // namespace aquamqtt

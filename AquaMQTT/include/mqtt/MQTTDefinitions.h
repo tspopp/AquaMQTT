@@ -136,6 +136,7 @@ constexpr char ENERGY_POWER_HEAT_ELEMENT[]       = { "powerHeatingElem" };
 constexpr char ENERGY_POWER_HEATPUMP[]           = { "powerHeatpump" };
 constexpr char ENERGY_TOTAL_WATER_PRODUCTION[]   = { "totalWaterProduction" };
 constexpr char ENERGY_VOLTAGE_GRID[]             = { "voltageGrid" };
+constexpr char ENERGY_AMPERAGE[]                 = { "amperage" };
 
 constexpr char ENERGY_DIAG_AIR_TEMP_MAX[]           = { "diagAirTempMax" };
 constexpr char ENERGY_DIAG_AIR_TEMP_MIN[]           = { "diagAirTempMin" };
@@ -165,9 +166,10 @@ constexpr char STATS_ACTIVE_OVERRIDES_MAIN[]      = { "activeOverridesMain" };
 constexpr char STATS_ENABLE_FLAG_PV_HEATPUMP[]    = { "flagPVModeHeatPump" };
 constexpr char STATS_ENABLE_FLAG_PV_HEATELEMENT[] = { "flagPVModeHeatElement" };
 constexpr char STATS_AQUAMQTT_PROTOCOL[]          = { "protocolVersion" };
-constexpr char STATS_TIMING[] = { "timing"};
+constexpr char STATS_TIMING[]                     = { "timing" };
 
-constexpr char DEBUG[] = { "debug" };
+constexpr char DEBUG[]   = { "debug" };
+constexpr char DROPPED[] = { "droppedBuffer" };
 
 // CTRL
 constexpr char AQUAMQTT_RESET_OVERRIDES[] = { "reset" };

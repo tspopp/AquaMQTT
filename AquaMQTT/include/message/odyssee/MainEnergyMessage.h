@@ -11,7 +11,7 @@ namespace aquamqtt::message::odyssee
 class MainEnergyMessage : public IEnergyMessage
 {
 public:
-    explicit MainEnergyMessage(uint8_t* data, uint8_t* previous);
+    explicit MainEnergyMessage(uint8_t* data, const uint8_t* previous);
 
     ~MainEnergyMessage() override = default;
 
@@ -33,7 +33,7 @@ public:
     bool hasChanged(ENERGY_ATTR_I8 attr) const override;
 
 private:
-    void compareWith(uint8_t* data);
+    void compareWith(const uint8_t* data);
 
     bool     mCreatedWithoutPrevious;
     uint8_t* mData;

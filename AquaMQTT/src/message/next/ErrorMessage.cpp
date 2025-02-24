@@ -1,10 +1,6 @@
 #include "message/next/ErrorMessage.h"
 
-namespace aquamqtt
-{
-namespace message
-{
-namespace next
+namespace aquamqtt::message::next
 {
 
 ErrorMessage::ErrorMessage(uint8_t* data) : mData(data)
@@ -30,14 +26,9 @@ uint8_t ErrorMessage::getAttr(ERROR_ATTR_U8 attr)
             return mData[1];
         case ERROR_ATTR_U8::ERROR_ERROR_CODE:
             return mData[2];
-        case ERROR_ATTR_U8::ERROR_TIME_MINUTES:
-        case ERROR_ATTR_U8::ERROR_TIME_HOURS:
-        case ERROR_ATTR_U8::ERROR_DATE_DAY:
-        case ERROR_ATTR_U8::ERROR_DATE_MONTH:
-        case ERROR_ATTR_U8::ERROR_DATE_YEAR:
-            break;
+        default:
+            return 0;
     }
-    return 0;
 }
 
 uint16_t ErrorMessage::getAttr(ERROR_ATTR_U16 attr)
@@ -57,14 +48,9 @@ bool ErrorMessage::hasAttr(ERROR_ATTR_U8 attr) const
         case ERROR_ATTR_U8::ERROR_REQUEST_ID:
         case ERROR_ATTR_U8::ERROR_ERROR_CODE:
             return true;
-        case ERROR_ATTR_U8::ERROR_TIME_MINUTES:
-        case ERROR_ATTR_U8::ERROR_TIME_HOURS:
-        case ERROR_ATTR_U8::ERROR_DATE_DAY:
-        case ERROR_ATTR_U8::ERROR_DATE_MONTH:
-        case ERROR_ATTR_U8::ERROR_DATE_YEAR:
-            break;
+        default:
+            return false;
     }
-    return false;
 }
 
 bool ErrorMessage::hasAttr(ERROR_ATTR_U16 attr) const
@@ -77,6 +63,4 @@ bool ErrorMessage::hasAttr(ERROR_ATTR_FLOAT attr) const
     return false;
 }
 
-}  // namespace next
-}  // namespace message
-}  // namespace aquamqtt
+}  // namespace aquamqtt::message::next

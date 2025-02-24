@@ -14,19 +14,19 @@ HMIStateProxy& HMIStateProxy::getInstance()
 
 HMIStateProxy::HMIStateProxy()
     : IMQTTCallback()
-    , mMutex(xSemaphoreCreateMutex())
     , mNotify(nullptr)
-    , mOperationMode(nullptr)
-    , mOperationType(nullptr)
-    , mTargetTemperature(nullptr)
+    , mMutex(xSemaphoreCreateMutex())
     , mTimeIsSet(false)
-    , mPVModeHeatPump(false)
-    , mPVModeHeatElement(false)
-    , mEmergencyModeEnabled(nullptr)
-    , mHeatingElementEnabled(nullptr)
+    , mTargetTemperature(nullptr)
+    , mOperationType(nullptr)
+    , mOperationMode(nullptr)
     , mInstallationMode(nullptr)
     , mFanExhaustMode(nullptr)
     , mAirductConfig(nullptr)
+    , mEmergencyModeEnabled(nullptr)
+    , mHeatingElementEnabled(nullptr)
+    , mPVModeHeatPump(false)
+    , mPVModeHeatElement(false)
 {
 }
 
@@ -42,14 +42,14 @@ void HMIStateProxy::setListener(TaskHandle_t handle)
     xSemaphoreGive(mMutex);
 }
 
-void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion& version)
+void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, const message::ProtocolVersion& version) const
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
         return;
     }
 
-    std::unique_ptr<message::IHMIMessage> message = createHmiMessageFromBuffer(version, buffer);
+    const std::unique_ptr<message::IHMIMessage> message = createHmiMessageFromBuffer(version, buffer);
 
     switch (currentOverrideMode())
     {
@@ -152,7 +152,7 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, message::ProtocolVersion&
 }
 
 size_t HMIStateProxy::copyFrame(
-        uint8_t                    frameId,
+        const uint8_t              frameId,
         uint8_t*                   buffer,
         message::ProtocolVersion&  version,
         message::ProtocolChecksum& type)
@@ -339,7 +339,7 @@ void HMIStateProxy::onResetOverrides()
     xSemaphoreGive(mMutex);
 }
 
-AquaMqttOverrides HMIStateProxy::getOverrides()
+AquaMqttOverrides HMIStateProxy::getOverrides() const
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
@@ -370,12 +370,12 @@ AquaMqttOverrides HMIStateProxy::getOverrides()
 }
 
 void HMIStateProxy::updateTime(
-        uint8_t  seconds,
-        uint8_t  minutes,
-        uint8_t  hours,
-        uint8_t  days,
-        uint8_t  month,
-        uint16_t year)
+        const uint8_t  seconds,
+        const uint8_t  minutes,
+        const uint8_t  hours,
+        const uint8_t  days,
+        const uint8_t  month,
+        const uint16_t year)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
@@ -446,42 +446,42 @@ void HMIStateProxy::onInstallationModeChanged(std::unique_ptr<message::HMIInstal
     xSemaphoreGive(mMutex);
 }
 
-AquaMqttOverrideMode HMIStateProxy::getOverrideMode()
+AquaMqttOverrideMode HMIStateProxy::getOverrideMode() const
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
         return AM_MODE_STANDARD;
     }
 
-    auto retVal = currentOverrideMode();
+    const auto retVal = currentOverrideMode();
 
     xSemaphoreGive(mMutex);
 
     return retVal;
 }
 
-bool HMIStateProxy::isPVModeHeatPumpEnabled()
+bool HMIStateProxy::isPVModeHeatPumpEnabled() const
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
         return false;
     }
 
-    auto retVal = mPVModeHeatPump;
+    const auto retVal = mPVModeHeatPump;
 
     xSemaphoreGive(mMutex);
 
     return retVal;
 }
 
-bool HMIStateProxy::isPVModeHeatElementEnabled()
+bool HMIStateProxy::isPVModeHeatElementEnabled() const
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
         return false;
     }
 
-    auto retVal = mPVModeHeatElement;
+    const auto retVal = mPVModeHeatElement;
 
     xSemaphoreGive(mMutex);
 

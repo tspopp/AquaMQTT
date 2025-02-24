@@ -14,9 +14,7 @@
 
 #include "Modes.h"
 
-namespace aquamqtt
-{
-namespace config
+namespace aquamqtt::config
 {
 /**
  * Defines the network name of your esp32 device in your network
@@ -38,7 +36,7 @@ constexpr char ntpServer[] = "pool.ntp.org";
 /**
  * Enable HomeAssistant MQTT Discovery Mode
  */
-constexpr bool ENABLE_HOMEASSISTANT_DISCOVERY_MODE = false;
+constexpr bool ENABLE_HOMEASSISTANT_DISCOVERY_MODE = true;
 
 /**
  * Homeassistant MQTT Discovery Prefix
@@ -49,7 +47,7 @@ constexpr char haDiscoveryPrefix[] = "homeassistant/";
 /**
  * The OperationMode which is used for AquaMqtt. Refer to EOperationMode
  */
-constexpr EOperationMode OPERATION_MODE = EOperationMode::LISTENER;
+constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
 
 /**
  * Choose if the time and date values sent to the main controller should override the ones sent by the hmi controller.
@@ -60,6 +58,21 @@ constexpr bool OVERRIDE_TIME_AND_DATE_IN_MITM = true;
  * Choose to publish raw messages represented as hex-string on debug mqtt topics
  */
 constexpr bool DEBUG_RAW_SERIAL_MESSAGES = true;
+
+/**
+ * Choose to collect the message sequence and frequencies in LISTENER mode.
+ * Will provide timings to /stats/timing on topics such as "67-217": 100ms
+ * Time it took after processing valid 67 message to receiving and processing
+ * valid 217 message in milliseconds.
+ */
+constexpr bool DEBUG_PUBLISH_FRAME_TIMING_IN_LISTENER_MODE = false;
+
+/**
+ * Choose to publish packets which were dropped by the FrameBuffer.
+ * Depending on the mode and serial channel this will provide dropped bytes to
+ * /stats/droppedBuffer or /stats/+/droppedBuffer
+ */
+constexpr bool DEBUG_PUBLISH_DROPPED_MESSAGES = false;
 
 /**
  * Choose to publish message statistics from the serial interfaces, if everything
@@ -128,7 +141,7 @@ constexpr float MAX_WATER_TEMPERATURE = 62.0;
 constexpr float ABSENCE_WATER_TEMPERATURE = 20.0;
 
 /**
- * Self explanatory internal settings: most probably you don't want to change them.
+ * Self-explanatory internal settings: most probably you don't want to change them.
  */
 constexpr uint32_t WATCHDOG_TIMEOUT_MS    = 60000;
 constexpr uint16_t WIFI_RECONNECT_CYCLE_S = 10;
@@ -139,7 +152,7 @@ constexpr uint16_t MQTT_MAX_PAYLOAD_SIZE  = 1024;
  * Pin assignments for AquaMQTT Board Rev 1.0
  * There are different GPIO ports depending on the hardware.
  * The ENV_DEVKIT_ESP32 macro is set by the platformio environment.
- * By default we use the pin assignments of the Arduino Nano ESP32
+ * By default, we use the pin assignments of the Arduino Nano ESP32
  */
 #ifdef ENV_DEVKIT_ESP32
 constexpr uint8_t GPIO_MAIN_RX = 5;
@@ -155,7 +168,6 @@ constexpr uint8_t GPIO_HMI_TX  = 5;
 constexpr uint8_t GPIO_SDA_RTC = A4;
 constexpr uint8_t GPIO_SCL_RTC = A5;
 
-}  // namespace config
-}  // namespace aquamqtt
+}  // namespace aquamqtt::config
 
 #endif  // AQUAMQTT_CONFIGURATION_H

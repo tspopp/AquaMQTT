@@ -18,8 +18,8 @@ MainStateProxy& MainStateProxy::getInstance()
 
 MainStateProxy::MainStateProxy()
     : IMQTTCallback()
-    , mMutex(xSemaphoreCreateMutex())
     , mNotify(nullptr)
+    , mMutex(xSemaphoreCreateMutex())
     , mPVModeHeatPump(false)
     , mPVModeHeatElement(false)
 {
@@ -37,7 +37,7 @@ void MainStateProxy::setListener(TaskHandle_t handle)
     xSemaphoreGive(mMutex);
 }
 
-void MainStateProxy::applyMainOverrides(uint8_t* buffer, message::ProtocolVersion& version)
+void MainStateProxy::applyMainOverrides(uint8_t* buffer, const message::ProtocolVersion& version) const
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
@@ -101,7 +101,7 @@ void MainStateProxy::onEmergencyModeEnabledChanged(std::unique_ptr<bool> enabled
     // noop
 }
 
-void MainStateProxy::onPVModeHeatpumpEnabled(bool enabled)
+void MainStateProxy::onPVModeHeatpumpEnabled(const bool enabled)
 {
 
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
@@ -120,7 +120,7 @@ void MainStateProxy::onPVModeHeatpumpEnabled(bool enabled)
     xSemaphoreGive(mMutex);
 }
 
-void MainStateProxy::onPVModeHeatElementEnabled(bool enabled)
+void MainStateProxy::onPVModeHeatElementEnabled(const bool enabled)
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {
@@ -163,7 +163,7 @@ void MainStateProxy::onResetOverrides()
     // noop
 }
 
-AquaMqttMainOverrides MainStateProxy::getOverrides()
+AquaMqttMainOverrides MainStateProxy::getOverrides() const
 {
     if (!xSemaphoreTake(mMutex, portMAX_DELAY))
     {

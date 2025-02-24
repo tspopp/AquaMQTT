@@ -8,7 +8,7 @@
 namespace aquamqtt
 {
 
-ListenerTask::ListenerTask() : mBuffer(true, true, true, true, true), mLastStatisticsUpdate(0){}
+ListenerTask::ListenerTask() : mBuffer(message::FrameBufferChannel::CH_LISTENER), mLastStatisticsUpdate(0){}
 
 void ListenerTask::spawn()
 {
@@ -49,7 +49,7 @@ void ListenerTask::loop()
     if (printSerialStats)
     {
         DHWState::getInstance().updateFrameBufferStatistics(
-                0,
+                message::FrameBufferChannel::CH_LISTENER,
                 BufferStatistics{ mBuffer.getHandledCount(),
                                   mBuffer.getUnhandledCount(),
                                   mBuffer.getCRCFailedCount(),

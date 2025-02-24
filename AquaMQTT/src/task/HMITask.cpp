@@ -5,26 +5,20 @@
 
 #include "config/Configuration.h"
 #include "message/MessageConstants.h"
-#include "message/legacy/ErrorMessage.h"
-#include "message/legacy/HMIMessage.h"
-#include "message/next/ErrorMessage.h"
-#include "message/next/HMIMessage.h"
-#include "state/HMIStateProxy.h"
 #include "state/MainStateProxy.h"
 
 namespace aquamqtt
 {
 
 HMITask::HMITask()
-// TODO: ODYSSEE clarify origin of extra message
-    : mBuffer(true, false, false, false, false)
-    , mLastEmittedRequestId(UINT8_MAX)
+    : mBuffer(message::FrameBufferChannel::CH_HMI)
     , mLastStatisticsUpdate(0)
     , mLastMessageSent(0)
-    , mTransferBuffer{ 0 }
-    , mCRC()
-    , mState(HMITaskState::REQUESTING_194)
+    , mLastEmittedRequestId(UINT8_MAX)
+    , mTransferBuffer{}
     , mMessagesSent(0)
+    , mState(HMITaskState::REQUEST_194)
+    , mVersion(message::PROTOCOL_UNKNOWN)
 {
 }
 
@@ -57,93 +51,109 @@ void HMITask::setup()  // NOLINT(*-convert-member-functions-to-static)
 
 void HMITask::loop()
 {
-    bool printSerialStats   = (millis() - mLastStatisticsUpdate) >= 5000;
-    bool performStateChange = (millis() - mLastMessageSent) >= message::MESSAGE_PERIOD_MS;
+    if (mVersion == message::ProtocolVersion::PROTOCOL_UNKNOWN)
+    {
+        mVersion = DHWState::getInstance().getVersion();
+    }
+
+    const bool printSerialStats   = (millis() - mLastStatisticsUpdate) >= 5000;
+    const bool performStateChange = (millis() - mLastMessageSent) >= message::MESSAGE_PERIOD_MS;
 
     while (Serial1.available())
     {
         mBuffer.pushByte(Serial1.read());
     }
 
-    // FIXME: Odyssee has another message 217, likely provided by the controller
     switch (mState)
     {
-        case HMITaskState::REQUESTING_194:
-            Serial1.write(message::HMI_MESSAGE_IDENTIFIER);
-            Serial1.flush();
+        case HMITaskState::REQUEST_194:
             mState           = HMITaskState::SLEEP_194;
             mLastMessageSent = millis();
+            Serial1.write(message::HMI_MESSAGE_IDENTIFIER);
+            Serial1.flush();
             break;
         case HMITaskState::SLEEP_194:
-            if (performStateChange)
+            if (mVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
             {
-                mState = HMITaskState::SENDING_67;
+                awaitStateChangeTo(HMITaskState::SEND_74POST, performStateChange);
             }
             else
             {
-                vTaskDelay(pdMS_TO_TICKS(5));
+                awaitStateChangeTo(HMITaskState::SEND_67, performStateChange);
             }
             break;
-        case HMITaskState::SENDING_67:
-            sendMessage67();
-            flushReadBuffer();
+        case HMITaskState::SEND_67:
             mState           = HMITaskState::SLEEP_67;
             mLastMessageSent = millis();
+            sendMessage67();
+            flushReadBuffer();
             break;
         case HMITaskState::SLEEP_67:
-            if (performStateChange)
+            if (mVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
             {
-                mState = HMITaskState::SENDING_193;
+                awaitStateChangeTo(HMITaskState::SEND_217, performStateChange);
             }
             else
             {
-                vTaskDelay(pdMS_TO_TICKS(5));
+                awaitStateChangeTo(HMITaskState::SEND_193, performStateChange);
             }
             break;
-        case HMITaskState::SENDING_193:
-            sendMessage193();
-            flushReadBuffer();
-            mState           = HMITaskState::SLEEP_193;
+        case HMITaskState::SEND_74POST:
+            mState           = HMITaskState::SLEEP_74POST;
             mLastMessageSent = millis();
-            break;
-        case HMITaskState::SLEEP_193:
-            if (performStateChange)
-            {
-                mState = HMITaskState::SENDING_74;
-            }
-            else
-            {
-                vTaskDelay(pdMS_TO_TICKS(5));
-            }
-            break;
-        case HMITaskState::SENDING_74:
             sendMessage74();
             flushReadBuffer();
-            mState           = HMITaskState::SLEEP_74;
-            mLastMessageSent = millis();
             break;
-        case HMITaskState::SLEEP_74:
-            if (performStateChange)
+        case HMITaskState::SLEEP_74POST:
+            awaitStateChangeTo(HMITaskState::SEND_67, performStateChange);
+            break;
+        case HMITaskState::SEND_193:
+            mState           = HMITaskState::SLEEP_193;
+            mLastMessageSent = millis();
+            sendMessage193();
+            flushReadBuffer();
+            break;
+        case HMITaskState::SLEEP_193:
+            if (mVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
             {
-                mState = HMITaskState::REQUESTING_194;
+                awaitStateChangeTo(HMITaskState::REQUEST_194, performStateChange);
             }
             else
             {
-                vTaskDelay(pdMS_TO_TICKS(5));
+                awaitStateChangeTo(HMITaskState::SEND_74PRE, performStateChange);
             }
+            break;
+        case HMITaskState::SEND_217:
+            mState           = HMITaskState::SLEEP_217;
+            mLastMessageSent = millis();
+            sendMessage217();
+            flushReadBuffer();
+            break;
+        case HMITaskState::SLEEP_217:
+            awaitStateChangeTo(HMITaskState::SEND_193, performStateChange);
+            break;
+        case HMITaskState::SEND_74PRE:
+            mState           = HMITaskState::SLEEP_74PRE;
+            mLastMessageSent = millis();
+            sendMessage74();
+            flushReadBuffer();
+            break;
+        case HMITaskState::SLEEP_74PRE:
+            awaitStateChangeTo(HMITaskState::REQUEST_194, performStateChange);
             break;
     }
 
-    DHWState::getInstance().updateFrameBufferStatistics(
-            1,
-            BufferStatistics{ mBuffer.getHandledCount(),
-                              mBuffer.getUnhandledCount(),
-                              mBuffer.getCRCFailedCount(),
-                              mBuffer.getDroppedCount(),
-                              mMessagesSent });
-
     if (printSerialStats)
     {
+
+        DHWState::getInstance().updateFrameBufferStatistics(
+                message::FrameBufferChannel::CH_HMI,
+                BufferStatistics{ mBuffer.getHandledCount(),
+                                  mBuffer.getUnhandledCount(),
+                                  mBuffer.getCRCFailedCount(),
+                                  mBuffer.getDroppedCount(),
+                                  mMessagesSent });
+
         Serial.print("[hmi]: handled=");
         Serial.print(mBuffer.getHandledCount());
         Serial.print(", unhandled=");
@@ -164,6 +174,18 @@ void HMITask::loop()
     }
 }
 
+void HMITask::awaitStateChangeTo(const HMITaskState state, const bool performStateChange)
+{
+    if (performStateChange)
+    {
+        mState = state;
+    }
+    else
+    {
+        vTaskDelay(pdMS_TO_TICKS(5));
+    }
+}
+
 void HMITask::flushReadBuffer()
 {
     while (Serial1.available())
@@ -176,8 +198,8 @@ void HMITask::sendMessage193()
 {
     message::ProtocolVersion  version;
     message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
-    size_t                    length       = MainStateProxy::getInstance()
-                            .copyFrame(message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
+    const size_t              length       = MainStateProxy::getInstance()
+                                  .copyFrame(message::MAIN_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
 
     if (length <= 0 || version == message::PROTOCOL_UNKNOWN)
     {
@@ -190,13 +212,13 @@ void HMITask::sendMessage193()
 
     if (checksumType == message::CHECKSUM_TYPE_CRC16)
     {
-        uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
+        const uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
         Serial1.write((uint8_t) (crc >> 8));
         Serial1.write((uint8_t) (crc & 0xFF));
     }
     else
     {
-        uint8_t checksum = message::generateXorChecksum(mTransferBuffer, length);
+        const uint8_t checksum = message::generateXorChecksum(mTransferBuffer, length);
         Serial1.write(checksum);
     }
 
@@ -209,8 +231,11 @@ void HMITask::sendMessage67()
     message::ProtocolVersion  version;
     message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
 
-    size_t length = MainStateProxy::getInstance()
-                            .copyFrame(message::ENERGY_MESSAGE_IDENTIFIER, mTransferBuffer, version, checksumType);
+    const size_t length = MainStateProxy::getInstance().copyFrame(
+            message::ENERGY_MESSAGE_IDENTIFIER,
+            mTransferBuffer,
+            version,
+            checksumType);
 
     if (length <= 0 || version == message::PROTOCOL_UNKNOWN)
     {
@@ -223,13 +248,13 @@ void HMITask::sendMessage67()
 
     if (checksumType == message::CHECKSUM_TYPE_CRC16)
     {
-        uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
+        const uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
         Serial1.write((uint8_t) (crc >> 8));
         Serial1.write((uint8_t) (crc & 0xFF));
     }
     else
     {
-        uint8_t checksum = message::generateXorChecksum(mTransferBuffer, length);
+        const uint8_t checksum = message::generateXorChecksum(mTransferBuffer, length);
         Serial1.write(checksum);
     }
     Serial1.flush();
@@ -244,7 +269,7 @@ void HMITask::sendMessage74()
         message::ProtocolVersion  version;
         message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
 
-        size_t length = MainStateProxy::getInstance().copyFrame(
+        const size_t length = MainStateProxy::getInstance().copyFrame(
                 message::HMI_MESSAGE_IDENTIFIER,
                 mTransferBuffer,
                 version,
@@ -252,8 +277,8 @@ void HMITask::sendMessage74()
 
         if (length > 0)
         {
-            auto message = createHmiMessageFromBuffer(version, mTransferBuffer);
-            requestId = message->getAttr(message::HMI_ATTR_U8::HMI_ERROR_ID_REQUESTED);
+            const auto message = createHmiMessageFromBuffer(version, mTransferBuffer);
+            requestId          = message->getAttr(message::HMI_ATTR_U8::HMI_ERROR_ID_REQUESTED);
         }
     }
 
@@ -268,15 +293,15 @@ void HMITask::sendMessage74()
     uint8_t                   availableRequestId = 0;
     message::ProtocolVersion  version;
     message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
-    size_t                    length       = MainStateProxy::getInstance().copyFrame(
+    const size_t              length       = MainStateProxy::getInstance().copyFrame(
             message::ERROR_MESSAGE_IDENTIFIER,
             mTransferBuffer,
             version,
             checksumType);
     if (length > 0)
     {
-        auto errorMessage = message::createErrorMessageFromBuffer(version, mTransferBuffer);
-        availableRequestId = errorMessage->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID);
+        const auto errorMessage = message::createErrorMessageFromBuffer(version, mTransferBuffer);
+        availableRequestId      = errorMessage->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID);
     }
 
     // emit the error message
@@ -287,19 +312,54 @@ void HMITask::sendMessage74()
 
         if (checksumType == message::CHECKSUM_TYPE_CRC16)
         {
-            uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
+            const uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
             Serial1.write((uint8_t) (crc >> 8));
             Serial1.write((uint8_t) (crc & 0xFF));
         }
         else
         {
-            uint8_t checksum = message::generateXorChecksum(mTransferBuffer, length);
+            const uint8_t checksum = message::generateXorChecksum(mTransferBuffer, length);
             Serial1.write(checksum);
         }
         Serial1.flush();
         mMessagesSent++;
         mLastEmittedRequestId = requestId;
     }
+}
+
+void HMITask::sendMessage217()
+{
+    message::ProtocolVersion  version;
+    message::ProtocolChecksum checksumType = message::CHECKSUM_TYPE_UNKNOWN;
+
+    const size_t length = MainStateProxy::getInstance().copyFrame(
+            message::EXTRA_MESSAGE_IDENTIFIER,
+            mTransferBuffer,
+            version,
+            checksumType);
+
+    if (length <= 0 || version == message::PROTOCOL_UNKNOWN)
+    {
+        Serial.println("[hmi] no power message yet, cannot forward");
+        return;
+    }
+
+    Serial1.write(message::EXTRA_MESSAGE_IDENTIFIER);
+    Serial1.write(mTransferBuffer, length);
+
+    if (checksumType == message::CHECKSUM_TYPE_CRC16)
+    {
+        const uint16_t crc = mCRC.ccitt(mTransferBuffer, length);
+        Serial1.write((uint8_t) (crc >> 8));
+        Serial1.write((uint8_t) (crc & 0xFF));
+    }
+    else
+    {
+        const uint8_t checksum = message::generateXorChecksum(mTransferBuffer, length);
+        Serial1.write(checksum);
+    }
+    Serial1.flush();
+    mMessagesSent++;
 }
 
 }  // namespace aquamqtt

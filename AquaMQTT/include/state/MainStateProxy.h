@@ -18,12 +18,12 @@ struct AquaMqttMainOverrides
  * state and applies overrides for customizing the HMI
  */
 
-class MainStateProxy : public mqtt::IMQTTCallback
+class MainStateProxy final : public mqtt::IMQTTCallback
 {
 public:
     static MainStateProxy& getInstance();
 
-    virtual ~MainStateProxy() = default;
+    ~MainStateProxy() override = default;
 
     MainStateProxy(const MainStateProxy&) = delete;
 
@@ -35,7 +35,7 @@ public:
 
     void setListener(TaskHandle_t handle);
 
-    void applyMainOverrides(uint8_t* buffer, message::ProtocolVersion& version);
+    void applyMainOverrides(uint8_t* buffer, const message::ProtocolVersion& version) const;
 
     size_t copyFrame(
             uint8_t                    frameId,
@@ -65,7 +65,7 @@ public:
 
     void onResetOverrides() override;
 
-    AquaMqttMainOverrides getOverrides();
+    AquaMqttMainOverrides getOverrides() const;
 
 private:
     TaskHandle_t      mNotify;

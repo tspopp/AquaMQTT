@@ -8,15 +8,11 @@
 
 namespace aquamqtt
 {
-
 ControllerTask::ControllerTask()
-    // TODO: ODYSSEE clarify origin of extra message
-    : mBuffer(false, true, true, true, true)
+    : mBuffer(message::FrameBufferChannel::CH_MAIN)
     , mLastStatisticsUpdate(0)
-    , mTransferBuffer{ 0 }
-    , mCRC()
+    , mTransferBuffer{}
     , mMessagesSent(0)
-    , mState(ControllerTaskState::AWAITING_67)
 {
 }
 
@@ -50,76 +46,49 @@ void ControllerTask::setup()  // NOLINT(*-convert-member-functions-to-static)
 
 void ControllerTask::loop()
 {
-    bool printSerialStats = (millis() - mLastStatisticsUpdate) >= 5000;
+    const bool printSerialStats = (millis() - mLastStatisticsUpdate) >= 5000;
 
     vTaskDelay(pdMS_TO_TICKS(5));
     while (Serial2.available())
     {
-        int valRead = Serial2.read();
+        const int valRead = Serial2.read();
 
-        switch (mState)
-        {
-            case ControllerTaskState::AWAITING_67:
-                if (mBuffer.pushByte(valRead) == message::ENERGY_MESSAGE_IDENTIFIER)
-                {
-                    mState = ControllerTaskState::AWAITING_193;
-                }
-                break;
-            case ControllerTaskState::AWAITING_193:
-            {
-                int processedMessageId = mBuffer.pushByte(valRead);
-                if (processedMessageId == message::MAIN_MESSAGE_IDENTIFIER)
-                {
-                    mState = ControllerTaskState::CHECK_FOR_HMI_TRIGGER;
-                }
-                else if (processedMessageId != 0)
-                {
-                    mState = ControllerTaskState::AWAITING_67;
-                }
-                break;
+        if (valRead == 194) {
+            // legacy/next sequence  67 -> 193 -> (74) -> 194
+            // operator[] is safe to call even it is not properly filled, yet
+            if (mSequence[0] == 67 && mSequence[1] == 193 || mSequence[0] == 193 && mSequence[1] == 74) {
+                sendMessage194();
+                flushReadBuffer();
+                mSequence.clear();
+                continue;
             }
-            case ControllerTaskState::CHECK_FOR_HMI_TRIGGER:
-                if (valRead == message::ERROR_MESSAGE_IDENTIFIER)
-                {
-                    mBuffer.pushByte(valRead);
-                    mState = ControllerTaskState::AWAITING_74;
-                    continue;
-                }
 
-                if (valRead == message::HMI_MESSAGE_IDENTIFIER)
-                {
-                    sendMessage194();
-                    flushReadBuffer();
-                }
-
-                mState = ControllerTaskState::AWAITING_67;
-                break;
-            case ControllerTaskState::AWAITING_74:
-            {
-                int processedMessageId = mBuffer.pushByte(valRead);
-                if (processedMessageId == message::ERROR_MESSAGE_IDENTIFIER)
-                {
-                    mState = ControllerTaskState::CHECK_FOR_HMI_TRIGGER;
-                }
-                else if (processedMessageId != 0)
-                {
-                    mState = ControllerTaskState::AWAITING_67;
-                }
-                break;
+            // odyssee sequence 67 -> 217 -> 193 -> 194 -> 74
+            if (mSequence[0] == 217 && mSequence[1] == 193) {
+                sendMessage194();
+                flushReadBuffer();
+                mSequence.clear();
+                continue;
             }
+
         }
-    }
 
-    DHWState::getInstance().updateFrameBufferStatistics(
-            2,
-            BufferStatistics{ mBuffer.getHandledCount(),
-                              mBuffer.getUnhandledCount(),
-                              mBuffer.getCRCFailedCount(),
-                              mBuffer.getDroppedCount(),
-                              mMessagesSent });
+        if (const int result = mBuffer.pushByte(valRead); result > 0) {
+            mSequence.pushOverwrite(result);
+        }
+
+    }
 
     if (printSerialStats)
     {
+        DHWState::getInstance().updateFrameBufferStatistics(
+                message::FrameBufferChannel::CH_MAIN,
+                BufferStatistics{ mBuffer.getHandledCount(),
+                                  mBuffer.getUnhandledCount(),
+                                  mBuffer.getCRCFailedCount(),
+                                  mBuffer.getDroppedCount(),
+                                  mMessagesSent });
+
         Serial.print("[main]: handled=");
         Serial.print(mBuffer.getHandledCount());
         Serial.print(", unhandled=");
@@ -174,5 +143,4 @@ void ControllerTask::sendMessage194()
     Serial2.flush();
     mMessagesSent++;
 }
-
 }  // namespace aquamqtt

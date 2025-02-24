@@ -6,12 +6,12 @@
 namespace aquamqtt
 {
 
-class ListenerTask
+class ListenerTask final
 {
 public:
     ListenerTask();
 
-    virtual ~ListenerTask() = default;
+    ~ListenerTask() = default;
 
     void spawn();
 
@@ -22,7 +22,6 @@ private:
 
     void loop();
 
-private:
     FrameBuffer mBuffer;
 
     unsigned long mLastStatisticsUpdate;

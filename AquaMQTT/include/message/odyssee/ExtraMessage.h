@@ -17,10 +17,16 @@ public:
     uint8_t getLength() override;
 
     uint16_t getAttr(EXTRA_ATTR_U16 attr) override;
+    uint32_t getAttr(EXTRA_ATTR_U32 attr) override;
+    float    getAttr(EXTRA_ATTR_FLOAT attr) override;
 
     bool hasAttr(EXTRA_ATTR_U16 attr) const override;
+    bool hasAttr(EXTRA_ATTR_U32 attr) const override;
+    bool hasAttr(EXTRA_ATTR_FLOAT attr) const override;
 
     bool hasChanged(EXTRA_ATTR_U16 attr) const override;
+    bool hasChanged(EXTRA_ATTR_U32 attr) const override;
+    bool hasChanged(EXTRA_ATTR_FLOAT attr) const override;
 
 private:
     void compareWith(const uint8_t* data);
@@ -28,7 +34,9 @@ private:
     bool     mCreatedWithoutPrevious;
     uint8_t* mData;
 
-    std::set<EXTRA_ATTR_U16> mHasChangedU16;
+    std::set<EXTRA_ATTR_U16>   mHasChangedU16;
+    std::set<EXTRA_ATTR_U32>   mHasChangedU32;
+    std::set<EXTRA_ATTR_FLOAT> mHasChangedFloat;
 };
 
 }  // namespace aquamqtt::message::odyssee

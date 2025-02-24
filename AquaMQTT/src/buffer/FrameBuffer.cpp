@@ -1,5 +1,7 @@
 #include "buffer/FrameBuffer.h"
 
+#include <config/Configuration.h>
+
 #include "state/DHWState.h"
 
 #define FRAME_ID_LEN_BYTES 1
@@ -7,33 +9,58 @@
 using namespace aquamqtt;
 using namespace aquamqtt::message;
 
-FrameBuffer::FrameBuffer(const bool handle194, const bool handle193,
-        const bool handle67,
-        const bool handle74,
-        const bool handle217)
+FrameBuffer::FrameBuffer(const FrameBufferChannel channel)
     : mLockedProtocol(PROTOCOL_UNKNOWN)
     , mLockedChecksum(CHECKSUM_TYPE_UNKNOWN)
-    , mTransferBuffer{ 0 }
-    , mHandle194(handle194)
-    , mHandle193(handle193)
-    , mHandle67(handle67)
-    , mHandle74(handle74)
-    , mHandle217(handle217)
+    , mTransferBuffer{}
+    , mChannel(channel)
     , mDroppedCount(0)
     , mCRCFailCount(0)
     , mUnhandledCount(0)
     , mHandledCount(0)
     , mPreviousFrameId(0)
+    , mLastValidFrameTimestamp(0)
 {
+    if (channel == FrameBufferChannel::CH_LISTENER)
+    {
+        mHandle194 = true;
+        mHandle193 = true;
+        mHandle67  = true;
+        mHandle74  = true;
+        mHandle217 = true;
+    }
+    else if (channel == FrameBufferChannel::CH_HMI)
+    {
+        mHandle194 = true;
+        mHandle193 = false;
+        mHandle67  = false;
+        mHandle74  = false;
+        mHandle217 = false;
+    }
+    else
+    {
+        mHandle194 = false;
+        mHandle193 = true;
+        mHandle67  = true;
+        mHandle74  = true;
+        mHandle217 = true;
+    }
 }
 
-int FrameBuffer::pushByte(int val)
+int FrameBuffer::pushByte(const int val)
 {
     // if buffer is full, we drop elements from the beginning
     if (mBuffer.isFull())
     {
         int retVal;
         mBuffer.pop(retVal);
+
+        // allow debuggability if we unexceptionally drop something from the ringbuffer
+        if (config::DEBUG_PUBLISH_DROPPED_MESSAGES)
+        {
+            DHWState::getInstance().debugAddToDropBuffer(mChannel, retVal);
+        }
+
         mDroppedCount++;
     }
 
@@ -41,9 +68,7 @@ int FrameBuffer::pushByte(int val)
     mBuffer.push(val);
 
     // see if ring buffer contains a full element
-    int result = handleFrame();
-
-    return result;
+    return handleFrame();
 }
 
 int FrameBuffer::handleFrame()
@@ -58,7 +83,7 @@ int FrameBuffer::handleFrame()
     if (isSync())
     {
         // access expected payload length
-        int payloadLength = mBuffer[1];
+        const int payloadLength = mBuffer[1];
 
         // determine the checksum size, if we do not ḱnow yet, await two bytes
         uint8_t crcLen;
@@ -67,6 +92,7 @@ int FrameBuffer::handleFrame()
             case CHECKSUM_TYPE_XOR:
                 crcLen = 1;
                 break;
+            default:
             case CHECKSUM_TYPE_CRC16:
             case CHECKSUM_TYPE_UNKNOWN:
                 crcLen = 2;
@@ -176,12 +202,16 @@ int FrameBuffer::handleFrame()
         // completed and valid frame, move complete frame and ownership to frame handler
         if (crcResult)
         {
-            // determine protocol frequencies without signal analyzer
-            if (mPreviousFrameId != 0) {
-                DHWState::getInstance().saveTiming(mPreviousFrameId, frameId, millis() - mLastValidFrameTimestamp);
+            if (mChannel == FrameBufferChannel::CH_LISTENER && config::DEBUG_PUBLISH_FRAME_TIMING_IN_LISTENER_MODE)
+            {
+                // determine protocol frequencies without signal analyzer
+                if (mPreviousFrameId != 0)
+                {
+                    DHWState::getInstance().debugSaveFrameTiming(mPreviousFrameId, frameId, millis() - mLastValidFrameTimestamp);
+                }
+                mPreviousFrameId         = frameId;
+                mLastValidFrameTimestamp = millis();
             }
-            mPreviousFrameId = frameId;
-            mLastValidFrameTimestamp = millis();
 
             // lock the protocol version, since we found a valid message and checksum is good
             if (mLockedProtocol != protocolVersion)
