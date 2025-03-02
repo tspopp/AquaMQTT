@@ -35,10 +35,7 @@ bool WifiHandler::setup()
 
     // begin a single wifi session
     // WiFi.begin(aquamqtt::config::ssid, aquamqtt::config::psk); //FIXME to be removed
-    Serial.println("****** SSID is");
-    Serial.println(String(wifiSettings.ssid));  // FIXME Not correctly formatted...
-    // WiFi.begin(wifiSettings.ssid, wifiSettings.password);
-    WiFi.begin("Livebox-8CAE", "julie0807");  // FiXME chagng with the previous line.
+    WiFi.begin(wifiSettings.ssid, wifiSettings.password);
     // perform the next wifi check in config::WIFI_RECONNECT_CYCLE_S
     mLastCheck = millis();
     return true;
@@ -55,10 +52,6 @@ void WifiHandler::loop()
         if (!mConnectedToWifiWithValidIpAddress)
         {
             Serial.println("[wifi] attempting reconnect");
-            // Serial.println("SSID");
-            // Serial.println(wifiSettings.ssid);
-            // Serial.println("Pwd");
-            // Serial.println(wifiSettings.password);
             WiFi.disconnect();
             WiFi.reconnect();
         }
@@ -85,10 +78,8 @@ void WifiHandler::wifiCallback(WiFiEvent_t event)
             mConnectedToWifiWithValidIpAddress = true;
             break;
         case ARDUINO_EVENT_WIFI_AP_START:
-            Serial.println("WiFi access point started");
-            break;
-        case ARDUINO_EVENT_WIFI_AP_STAIPASSIGNED:
-            Serial.println("Assigned IP address to client");
+            // Debug Access point startup
+            Serial.println("[wifi] WiFi access point started");
             break;
         default:
             break;

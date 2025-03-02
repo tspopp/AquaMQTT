@@ -5,8 +5,8 @@
 
 #include "Arduino.h"
 
-aquamqtt::WifiConfigStruct     wifiSettings;
-aquamqtt::ConfigSettingsStruct configSettings;
+aquamqtt::WifiConfigStruct  wifiSettings;
+aquamqtt::MqttSettingStruct mqttSettings;
 
 IPAddress aquamqtt::parse_ip_address(const char* str)
 {
@@ -52,20 +52,14 @@ bool aquamqtt::loadWifiConfig()
 
     JsonDocument doc;
     deserializeJson(doc, wifiConfig);
-    Serial.println(wifiConfig);
     if (doc.isNull())
     {
         Serial.println("[error] Can't deserialize json doc for wifi");
         return false;
     }
 
-    wifiSettings.ssid     = doc["ssid"]; //Compile error
-    wifiSettings.password = doc["password"];
-
-    Serial.println("Read SSID is");
-    Serial.println(wifiSettings.ssid);
-    Serial.println("Read PWD is");
-    Serial.println(wifiSettings.password);
+    wifiSettings.ssid     = doc["ssid"].as<String>();
+    wifiSettings.password = doc["password"].as<String>();
 
     wifiConfig.close();
     return true;
@@ -119,48 +113,35 @@ bool aquamqtt::loadConfig()
     return true;
 }
 
-//   File panelFile = SPIFFS.open("/config/config.json", "r+");
-//   if (!panelFile) {
-//     return false;
-//   }
+bool aquamqtt::loadMqttConfig()
+{
+    File mqttConfig = LittleFS.open("/config/mqtt.json", "r+");
+    if (!mqttConfig)
+    {
+        Serial.println("[error] Can't open Mqtt Configuration file");
+        return false;
+    }
+    size_t size = mqttConfig.size();
+    if (size > 1024)
+    {
+        Serial.println("[error] mqtt file size too big");
+        return false;
+    }
 
-//   size_t size = panelFile.size();
-//   if (size > 1024) {
-//     return false;
-//   }
+    JsonDocument doc;
+    deserializeJson(doc, mqttConfig);
+    if (doc.isNull())
+    {
+        Serial.println("[error] Can't deserialize json doc for mqtt");
+        return false;
+    }
 
-//   // Allocate a buffer to store contents of the file.
-//   std::unique_ptr<char[]> buf(new char[size]);
-
-//   panelFile.readBytes(buf.get(), size);
-
-//   DynamicJsonDocument doc(1024);
-//   deserializeJson(doc, buf.get());
-
-//   if (doc.isNull()) {
-//     return false;
-//   }
-
-//   char txt_[512];
-//   strcpy(txt_, doc["text"]);
-//   cfgPanel.text = String(txt_);
-//   char sz_[2];
-//   strcpy(sz_, doc["sizeText"]);
-//   cfgPanel.sizeText = String(sz_);
-//   char scroll_[2];
-//   strcpy(scroll_, doc["scrollText"]);
-//   cfgPanel.scrollText = String(scroll_);
-//   char x_[2];
-//   strcpy(x_, doc["xText"]);
-//   cfgPanel.xText = String(x_);
-//   char y_[2];
-//   strcpy(y_, doc["yText"]);
-//   cfgPanel.yText = String(y_);
-//   char light_[6];
-//   strcpy(light_, doc["light"]);
-//   cfgPanel.light = String(light_);
-
-//     panelFile.close();
-
-//     return true;
-// }
+    mqttSettings.mqtt_server       = doc["mqtt_server"].as<String>();
+    mqttSettings.mqtt_port         = doc["mqtt_port"].as<String>();
+    mqttSettings.mqtt_user         = doc["mqtt_user"].as<String>();
+    mqttSettings.mqtt_password     = doc["mqtt_password"].as<String>();
+    mqttSettings.enableDiscovery   = doc["ssid"].as<String>();
+    mqttSettings.haDiscoveryPrefix = doc["haDiscoveryPrefix"].as<String>();
+    mqttConfig.close();
+    return true;
+}

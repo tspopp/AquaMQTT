@@ -85,8 +85,7 @@ void setup()
         wifiHandler.setupAP();
         // modeWiFi = "AP";
     }
-    // wifiHandler.setupAP();
-
+ 
     // initialize watchdog
     esp_task_wdt_deinit();
     esp_task_wdt_init(&twdt_config);
@@ -101,6 +100,8 @@ void setup()
     // setup webserver
     webHandler.setup();
 
+    //Load Mqtt config
+    loadMqttConfig();
     // if listener mode is set in configuration, just read the DHW traffic from a single One-Wire USART instance
     if (OPERATION_MODE == LISTENER)
     {
