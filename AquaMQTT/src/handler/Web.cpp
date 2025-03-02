@@ -5,10 +5,10 @@
 #include <WebServer.h>
 
 #include "LittleFS.h"
-
-// #include "config/Configuration.h"
-extern struct aquamqtt::ConfigSettingsStruct configSettings;
-extern struct aquamqtt::WifiConfigStruct     wifiSettings;
+#include "config/Configuration.h"
+#include "config/config.h"
+extern aquamqtt::MqttSettingStruct mqttSettings;
+extern aquamqtt::WifiConfigStruct  wifiSettings;
 
 namespace aquamqtt
 {
@@ -42,79 +42,76 @@ const char HTTP_HEADER[] PROGMEM =
         "<a class='nav-link' href='/MQTT'>MQTT</a>"
         "</li>"
         "<li class='nav-item'>"
-        "<a class='nav-link' href='/apiweb'>WEB API</a>"
-        "</li>"
-        "<li class='nav-item'>"
         "<a class='nav-link' href='/tools'>Tools</a>"
-        "</li>"
-        "<li class='nav-item'>"
-        "<a class='nav-link' href='#'>Help</a>"
         "</li>"
         "</ul></div>"
         "</nav>";
 
-const char HTTP_ROOT[] PROGMEM =
+const char HTTP_WIFI[] PROGMEM =
         "<h1>Config WiFi</h1>"
         "<div class='row justify-content-md-center' >"
-        "<div class='col-sm-6'><form method='POST' action='save'>"
-        "<div class='form-group'>"
+        "<div class='col-sm-6'><form method='POST' action='savewifi'>"
+        "<div class='form-group mb-3'>"
         "<label for='ssid'>SSID</label>"
         "<input class='form-control' id='ssid' type='text' name='WIFISSID' value='{{ssid}}'>"
         "</div>"
-        "<div class='form-group'>"
+        "<div class='form-group mb-3'>"
         "<label for='pass'>Password</label>"
         "<input class='form-control' id='pass' type='password' name='WIFIpassword' value='{{wifipw}}'>"
         "</div>"
-        "<div class='form-group'>"
+        "<div class='form-group mb-3'>"
         "<label for='ip'>IP Adress</label>"
         "<input class='form-control' id='ip' type='text' name='ipAddress' value='{{ip}}'>"
         "</div>"
-        "<div class='form-group'>"
+        "<div class='form-group mb-3'>"
         "<label for='mask'>Mask Adress</label>"
         "<input class='form-control' id='mask' type='text' name='ipMask' value='{{mask}}'>"
         "</div>"
-        "<div class='form-group'>"
+        "<div class='form-group mb-3'>"
         "<label for='gateway'>Gateway Adress</label>"
         "<input type='text' class='form-control' id='gateway' name='ipGW' value='{{gw}}'>"
         "</div>"
-        "<button type='submit' class='btn btn-primary mb-2'name='save'>Save</button>"
+        " <div class='form-group mb-3'>"
+        "<button type='submit' class='btn btn-primary mb-3' name='save'>Save</button>"
+        "</div>"
         "</form>";
+
 const char HTTP_MQTT[] PROGMEM =
         "<h1>Config MQTT</h1>"
         "<div class='row justify-content-md-center'>"
         "<div class='col-sm-6'>"
-        "<form method='POST' action='save'>"
-        "<div class='form-group'>"
+        "<form method='POST' action='savemqtt'>"
+        "<div class='form-group mb-3'>"
         "<label for='mqtt_server'>Server MQTT</label>"
         "<input class='form-control' id='mqtt_server' type='text' name='MQTT Server' value='{{mqtt_server}}'>"
         "</div>"
-        "<div class='form-group'>"
+        "<div class='form-group mb-3'>"
         "<label for='mqtt_port'>MQTT server Port</label>"
         "<input class='form-control' id='mqtt_port' type='numeric' name='MQTT Server Port' value='{{mqtt_port}}'>"
         "</div>"
-        "<div class='form-group'>"
+        "<div class='form-group mb-3'>"
         "<label for='mqtt_user'>UserName</label>"
         "<input class='form-control' id='mqtt_user' type='text' name='MQTT UserName' value='{{mqtt_user}}'>"
         "</div>"
-        "<div class='form-group'>"
+        "<div class='form-group mb-3'>"
         "<label for='mqtt_password'>Password</label>"
         "<input class='form-control' id='mqtt_password' type='password' name='MQTT Password' "
         "value='{{mqtt_password}}'>"
-        "< / div >"
-        "<div class='form-group'>"
-        "<div class='form-group'>"
-        "<label class='form-check-label' for='enableDiscovery'>Enable HomeAssistant Discovery</label>"
-        "<input class='form-check-input' id='enableDiscovery' type='checkbox' name='enableDiscovery' "
+        "</div>"
+        "<div class='form-group form-switch mb-3'>"
+        "<input class='form-check-input' id='enableDiscovery' type='checkbox' name='enableDiscovery'"
         "{{discoveryenabled}}>"
+        "<label class='form-check-label' for='enableDiscovery'>Enable HomeAssistant Discovery</label>"
         "</div>"
-        "</div>"
-        " <div class='form-group'>"
+        " <div class='form-group mb-3'>"
         "<label for='haDiscoveryPrefix'>Discovery prefix</label>"
         "<input class='form-control' id='haDiscoveryPrefix' type='text' name='Mqtt prefix' "
         "value={{haDiscoveryPrefix}}>"
         "</div>"
-        "<button type='submit' class='btn btn-primary mb-2' name='save'>Save</button>"
-        " </form>";
+        " <div class='form-group mb-3'>"
+        "<button type='submit' class='btn btn-primary mb-3' name='save'>Save</button>"
+        "</div>"
+        "</form>";
 
 const char HTTP_APIWEB[] PROGMEM =
         "<h1>API Web</h1>"
@@ -168,12 +165,14 @@ void WebHandler::setup()
     // serverWeb.serveStatic("/web/img/wait.gif", LittleFS, "/web/img/wait.gif");
     // serverWeb.serveStatic("/web/img/", LittleFS, "/web/img/");
     serverWeb.on("/", handleRoot);
-    serverWeb.on("/save", HTTP_POST, handleSaveConfig);
+    serverWeb.on("/savewifi", HTTP_POST, handleSaveWifiConfig);
+    serverWeb.on("/savemqtt", HTTP_POST, handleSaveMQTTConfig);
+    serverWeb.on("/saveothers", HTTP_POST, handleSaveOtherConfig);
     serverWeb.on("/savepanel", HTTP_POST, handleSavePanel);
     serverWeb.on("/api", HTTP_GET, handleAPI);
     serverWeb.on("/apiweb", handleAPIWeb);
     serverWeb.on("/tools", handleTools);
-    serverWeb.on("/mqtt", handleMQTT);
+    serverWeb.on("/MQTT", handleMQTT);
     serverWeb.on("/reboot", handleReboot);
     serverWeb.on("/fsbrowser", handleFSbrowser);
     serverWeb.on("/readFile", handleReadfile);
@@ -186,33 +185,8 @@ void WebHandler::loop()
     serverWeb.handleClient();
 }
 
-// void WebHandler::initWebServer()
-// {
-//     serverWeb.serveStatic("/web/js/jquery-min.js", LittleFS, "/web/js/jquery-min.js");
-//     serverWeb.serveStatic("/web/js/functions.js", LittleFS, "/web/js/functions.js");
-//     serverWeb.serveStatic("/web/js/bootstrap.min.js", LittleFS, "/web/js/bootstrap.min.js");
-//     serverWeb.serveStatic("/web/js/bootstrap.min.js.map", LittleFS, "/web/js/bootstrap.min.js.map");
-//     serverWeb.serveStatic("/web/css/bootstrap.min.css", LittleFS, "/web/css/bootstrap.min.css");
-//     serverWeb.serveStatic("/web/css/style.css", LittleFS, "/web/css/style.css");
-//     serverWeb.serveStatic("/web/img/logo.png", LittleFS, "/web/img/logo.png");
-//     serverWeb.serveStatic("/web/img/wait.gif", LittleFS, "/web/img/wait.gif");
-//     serverWeb.serveStatic("/web/img/", LittleFS, "/web/img/");
-//     serverWeb.on("/", handleRoot());
-//     serverWeb.on("/save", HTTP_POST, handleSaveConfig);
-//     serverWeb.on("/savepanel", HTTP_POST, handleSavePanel);
-//     serverWeb.on("/api", HTTP_GET, handleAPI);
-//     serverWeb.on("/apiweb", handleAPIWeb);
-//     serverWeb.on("/tools", handleTools);
-//     serverWeb.on("/reboot", handleReboot);
-//     serverWeb.on("/fsbrowser", handleFSbrowser);
-//     serverWeb.on("/readFile", handleReadfile);
-//     serverWeb.onNotFound(handleNotFound);
-//     serverWeb.begin();
-// }
-
 void WebHandler::handleNotFound()
 {
-
     String message = F("File Not Found\n\n");
     message += F("URI: ");
     message += serverWeb.uri();
@@ -221,12 +195,10 @@ void WebHandler::handleNotFound()
     message += F("\nArguments: ");
     message += serverWeb.args();
     message += F("\n");
-
     for (uint8_t i = 0; i < serverWeb.args(); i++)
     {
         message += " " + serverWeb.argName(i) + ": " + serverWeb.arg(i) + "\n";
     }
-
     serverWeb.send(404, F("text/plain"), message);
 }
 
@@ -239,11 +211,13 @@ void WebHandler::handleMQTT()
     result += F("</html>");
 
     result.replace("{{version}}", "VERSION");
-    result.replace("{{mqtt_server}}", configSettings.mqtt_server);
-    result.replace("{{mqtt_port}}", configSettings.mqtt_port);
-    result.replace("{{mqtt_user}}", configSettings.mqtt_user);
-    result.replace("{{mqtt_password}}", configSettings.mqtt_password);
-    if (configSettings.enableDiscovery)
+    result.replace("{{mqtt_server}}", mqttSettings.mqtt_server);
+    result.replace("{{mqtt_port}}", mqttSettings.mqtt_port);
+    result.replace("{{mqtt_user}}", mqttSettings.mqtt_user);
+    result.replace("{{mqtt_password}}", mqttSettings.mqtt_password);
+    bool enable = (mqttSettings.enableDiscovery.toInt() != 0);
+
+    if (enable)
     {
         result.replace("{{discoveryenabled}}", "selected");
     }
@@ -251,82 +225,10 @@ void WebHandler::handleMQTT()
     {
         result.replace("{{discoveryenabled}}", "");
     }
-    result.replace("{{haDiscoveryPrefix}}", configSettings.haDiscoveryPrefix);
+
+    result.replace("{{haDiscoveryPrefix}}", mqttSettings.haDiscoveryPrefix);
+
     serverWeb.send(200, F("text/html"), result);
-}
-
-void WebHandler::handleAPI()
-{
-
-    // if (!serverWeb.hasArg("text"))
-    // {
-    //     serverWeb.send(500, "text/plain", "BAD ARGS");
-    //     return;
-    // }
-
-    // text       = serverWeb.arg("text");
-    // sizeText   = serverWeb.arg("size").toInt();
-    // scrollText = serverWeb.arg("scroll").toInt();
-    // xText      = serverWeb.arg("x").toInt();
-    // yText      = serverWeb.arg("y").toInt();
-    // light      = serverWeb.arg("light").toInt();
-
-    // String configPanel;
-    // configPanel = "{\"text\":\"" + text + "\",\"sizeText\":\"" + sizeText + "\",\"scrollText\":\"" + scrollText
-    //               + "\",\"xText\":\"" + xText + "\",\"yText\":\"" + yText + "\",\"light\":\"" + light + "\"}";
-    // StaticJsonDocument<512> jsonBuffer;
-    // DynamicJsonDocument     doc(1024);
-    // deserializeJson(doc, configPanel);
-
-    // File panelFile = LittleFS.open("/config/panel.json", "w");
-    // if (!panelFile)
-    // {
-    // }
-    // else
-    // {
-    //     serializeJson(doc, panelFile);
-    // }
-
-    // serverWeb.send(200, F("text/html"), "OK");
-}
-
-void WebHandler::handleAPIWeb()
-{
-
-    // String result;
-    // result += F("<html>");
-    // result += FPSTR(HTTP_HEADER);
-    // result += FPSTR(HTTP_APIWEB);
-    // result += F("</html>");
-    // loadConfigPanel();
-
-    // result.replace("{{text}}", cfgPanel.text);
-    // if (cfgPanel.sizeText == "1")
-    // {
-    //     result.replace("{{selMin}}", "Selected");
-    //     result.replace("{{selMax}}", "");
-    // }
-    // else if (cfgPanel.sizeText == "2")
-    // {
-    //     result.replace("{{selMin}}", "");
-    //     result.replace("{{selMax}}", "Selected");
-    // }
-    // if (cfgPanel.scrollText == "1")
-    // {
-    //     result.replace("{{scrollOui}}", "Selected");
-    //     result.replace("{{scrollNon}}", "");
-    // }
-    // else if (cfgPanel.scrollText == "0")
-    // {
-    //     result.replace("{{scrollOui}}", "");
-    //     result.replace("{{scrollNon}}", "Selected");
-    // }
-    // result.replace("{{scrollText}}", cfgPanel.scrollText);
-    // result.replace("{{xText}}", cfgPanel.xText);
-    // result.replace("{{yText}}", cfgPanel.yText);
-    // result.replace("{{light}}", cfgPanel.light);
-
-    // serverWeb.send(200, F("text/html"), result);
 }
 
 void WebHandler::handleRoot()
@@ -334,16 +236,10 @@ void WebHandler::handleRoot()
     String result;
     result += F("<html>");
     result += FPSTR(HTTP_HEADER);
-    result += FPSTR(HTTP_ROOT);
+    result += FPSTR(HTTP_WIFI);
     result += F("</html>");
-    // String ssid(wifiSettings.ssid);
-    // String pwd(wifiSettings.password);
     result.replace("{{version}}", "VERSION");
-    Serial.println ("########### Read ssid is ");
-    Serial.println (wifiSettings.ssid);
-    Serial.println ("########Read ssid is converted as string");
-    Serial.println (String(wifiSettings.ssid));
-    result.replace("{{ssid}}", String(wifiSettings.ssid));  // FIXME FAIL HERE Show strange value...
+    result.replace("{{ssid}}", String(wifiSettings.ssid));
     result.replace("{{wifipw}}", wifiSettings.password);
     // result.replace("{{ip}}", wifiSettings.ipAddress);
     // result.replace("{{mask}}", wifiSettings.ipMask);
@@ -387,7 +283,7 @@ void WebHandler::handleSavePanel()
     // serverWeb.send(303);
 }
 
-void WebHandler::handleSaveConfig()
+void WebHandler::handleSaveWifiConfig()
 {
     if (!serverWeb.hasArg("WIFISSID"))
     {
@@ -401,6 +297,36 @@ void WebHandler::handleSaveConfig()
     doc["ipAddress"] = serverWeb.arg("ipAddress");
     doc["ip"]        = serverWeb.arg("ipMask");
     doc["ipGW"]      = serverWeb.arg("ipGW");
+
+    File configFile = LittleFS.open("/config/wifi.json", "w");
+    if (!configFile)
+    {
+    }
+    else
+    {
+        serializeJson(doc, configFile);
+    }
+    serverWeb.send(
+            200,
+            "text/html",
+            "Save config OK ! <br><form method='GET' action='reboot'><input type='submit' name='reboot' "
+            "value='Reboot'></form>");
+}
+
+void WebHandler::handleSaveMQTTConfig()
+{
+    // if (!serverWeb.hasArg("WIFISSID"))
+    // {
+    //     serverWeb.send(500, "text/plain", "BAD ARGS");
+    //     return;
+    // }
+    JsonDocument doc;
+    doc["mqtt_server"]       = serverWeb.arg("WIFISSID");
+    doc["mqtt_port"]         = serverWeb.arg("WIFIpassword");
+    doc["mqtt_user"]         = serverWeb.arg("ipAddress");
+    doc["mqtt_password"]     = serverWeb.arg("ipMask");
+    doc["enableDiscovery"]   = serverWeb.arg("ipGW");
+    doc["haDiscoveryPrefix"] = serverWzeb.arg("");
 
     File configFile = LittleFS.open("/config/wifi.json", "w");
     if (!configFile)

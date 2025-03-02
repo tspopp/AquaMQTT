@@ -42,65 +42,41 @@
             </ul>
         </div>
     </nav>
-    <h1>Config WiFi</h1>
-    <div class='row justify-content-md-center'>
-        <div class='col-sm-6'>
-            <form method='POST' action='save'>
-                <div class='form-group'>
-                    <label for='ssid'>SSID</label>
-                    <input class='form-control' id='ssid' type='text' name='WIFISSID' value='{{ssid}}'>
-                </div>
-                <div class='form-group'>
-                    <label for='pass'>Password</label>
-                    <input class='form-control' id='pass' type='password' name='WIFIpassword' value=''>
-                </div>
-                <div class='form-group'>
-                    <label for='ip'>@IP</label>
-                    <input class='form-control' id='ip' type='text' name='ipAddress' value='{{ip}}'>
-                </div>
-                <div class='form-group'>
-                    <label for='mask'>@Mask</label>
-                    <input class='form-control' id='mask' type='text' name='ipMask' value='{{mask}}'>
-                </div>
-                <div class='form-group'>
-                    <label for='gateway'>@Gateway</label>
-                    <input type='text' class='form-control' id='gateway' name='ipGW' value='{{gw}}'>
-                </div>
-                Server Port : <br>{{port}}<br><br>
-                <button type='submit' class='btn btn-primary mb-2' name='save'>Save</button>
-            </form>
-        </div>
-    </div>
-
     <h1>Config MQTT</h1>
     <div class='row justify-content-md-center'>
         <div class='col-sm-6'>
             <form method='POST' action='save'>
-                <div class='form-group'>
+                <div class='form-group mb-3'>
                     <label for='mqtt_server'>Server MQTT</label>
                     <input class='form-control' id='mqtt_server' type='text' name='MQTT Server' value='{{mqtt_server}}'>
                 </div>
-                <div class='form-group'>
+                <div class='form-group mb-3'>
                     <label for='mqtt_port'>MQTT server Port</label>
-                    <input class='form-control' id='mqtt_port' type='numeric' name='MQTT Server Port' value='1883'>
+                    <input class='form-control' id='mqtt_port' type='numeric' name='MQTT Server Port'
+                        value='{{mqtt_port}}'>
                 </div>
-                <div class='form-group'>
+                <div class='form-group mb-3'>
                     <label for='mqtt_user'>UserName</label>
-                    <input class='form-control' id='mqtt_user' type='text' name='MQTT UserName' value=''>
+                    <input class='form-control' id='mqtt_user' type='text' name='MQTT UserName' value='{{mqtt_user}}'>
                 </div>
-                <div class='form-group'>
+                <div class='form-group mb-3'>
                     <label for='mqtt_password'>Password</label>
-                    <input class='form-control' id='mqtt_password' type='password' name='MQTT Password' value=''>
+                    <input class='form-control' id='mqtt_password' type='password' name='MQTT Password'
+                        value='{{mqtt_password}}'>
                 </div>
-                <div class='form-group'>
+                <div class='form-group form-switch mb-3'>
+                    <input class='form-check-input' id='enableDiscovery' type='checkbox' name='enableDiscovery'
+                    {{discoveryenabled}}>
                     <label class='form-check-label' for='enableDiscovery'>Enable HomeAssistant Discovery</label>
-                    <input class='form-check-input' id='enableDiscovery' type='checkbox' name='enableDiscovery' {{enableDiscovery}}>         
                 </div>
-                <div class='form-group'>
+                <div class='form-group mb-3'>
                     <label for='haDiscoveryPrefix'>Discovery prefix</label>
-                    <input class='form-control' id='haDiscoveryPrefix' type='text' name='Mqtt prefix' value='aquamqtt'>
+                    <input class='form-control' id='haDiscoveryPrefix' type='text' name='Mqtt prefix'
+                        value={{haDiscoveryPrefix}}>
                 </div>
-                <button type='submit' class='btn btn-primary mb-2' name='save'>Save</button>
-            </form>;
+                <div class='mb-5'>
+                    <button type='submit' class='btn btn-primary' name='save'>Save</button>
+                </div>
+            </form>
 
 </body>
