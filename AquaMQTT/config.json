@@ -1,0 +1,12 @@
+{
+    "enable_homeassistant_discovery": false,
+    "haDiscoveryPrefix": "aquamqtt",
+    "mqtt_server":"",
+    "mqtt_port":1883,
+    "mqtt_ClientId":"aquamqtt",
+    "mqtt_user":"",
+    "mqtt_password":"",
+    "mqtt_prefix":"",
+    "heatPumpModelName":"Atlantic Explorer v4"
+}
+

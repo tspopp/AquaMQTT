@@ -1,9 +1,12 @@
 #include <Arduino.h>
 #include <esp_task_wdt.h>
 
+#include "FS.h"
 #include "config/Configuration.h"
+#include "config/config.h"
 #include "handler/OTA.h"
 #include "handler/RTC.h"
+#include "handler/Web.h"
 #include "handler/Wifi.h"
 #include "task/ControllerTask.h"
 #include "task/HMITask.h"
@@ -20,19 +23,22 @@ MQTTTask       mqttTask;
 OTAHandler     otaHandler;
 RTCHandler     rtcHandler;
 WifiHandler    wifiHandler;
+WebHandler     webHandler;
 
 esp_task_wdt_config_t twdt_config = {
     .timeout_ms     = WATCHDOG_TIMEOUT_MS,
     .idle_core_mask = (1 << configNUM_CORES) - 1,
     .trigger_panic  = true,
 };
+bool configOK = false;
 
 void loop()
 {
     // watchdog
     esp_task_wdt_reset();
     delay(1);
-
+    // if (configOK)
+    // {
     // handle wifi events
     wifiHandler.loop();
 
@@ -41,6 +47,9 @@ void loop()
 
     // handle real-time-clock module in main thread
     rtcHandler.loop();
+
+    webHandler.loop();
+    // }
 }
 
 void setup()
@@ -48,20 +57,49 @@ void setup()
     // limited serial output for debuggability
     Serial.begin(9600);
     Serial.println("REBOOT");
+    if (!LittleFS.begin())
+    {
+        Serial.println("Cannot open FileSystem");
+        return;
+    }
+    // // Try to load config
+    if (!loadWifiConfig())
+    {
+        Serial.println("Wifi conf not loaded ....");
+    }
+    else
+    {
+        configOK = true;
+    }
+
+    if (configOK)
+    {
+        if (!wifiHandler.setup())
+        {
+            wifiHandler.setupAP();
+        }
+    }
+    else
+    {
+        Serial.println("Conf KO set AP");
+        wifiHandler.setupAP();
+        // modeWiFi = "AP";
+    }
+    // wifiHandler.setupAP();
 
     // initialize watchdog
     esp_task_wdt_deinit();
     esp_task_wdt_init(&twdt_config);
     esp_task_wdt_add(nullptr);
 
-    // setup wifi
-    wifiHandler.setup();
-
     // setup rtc module
     rtcHandler.setup();
 
     // setup ota module
     otaHandler.setup();
+
+    // setup webserver
+    webHandler.setup();
 
     // if listener mode is set in configuration, just read the DHW traffic from a single One-Wire USART instance
     if (OPERATION_MODE == LISTENER)

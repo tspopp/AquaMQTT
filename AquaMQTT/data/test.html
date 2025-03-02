@@ -1,0 +1,106 @@
+<head>
+
+    <script type='text/javascript' src='web/js/jquery-min.js'></script>
+
+    <script type='text/javascript' src='web/js/bootstrap.min.js'></script>
+
+    <script type='text/javascript' src='web/js/functions.js'></script>
+
+    <link href='web/css/bootstrap.min.css' rel='stylesheet' type='text/css' />
+
+    <link href='web/css/style.css' rel='stylesheet' type='text/css' />
+
+</head>
+
+
+<body>
+    <nav class='navbar navbar-expand-lg navbar-light bg-light rounded'><a class='navbar-brand' href='/'><img
+                src='web/img/logo.png' /> <strong>AquaMQTTConfig </strong>
+            VERSION
+        </a>
+        <button class='navbar-toggler' type='button' data-toggle='collapse' data-target='#navbarNavDropdown'
+            aria-controls='navbarNavDropdown' aria-expanded='false' aria-label='Toggle navigation'>
+            <span class='navbar-toggler-icon'></span>
+        </button>
+        <div id='navbarNavDropdown' class='collapse navbar-collapse justify-content-md-center'>
+            <ul class='navbar-nav'>
+                <li class='nav-item'>
+                    <a class='nav-link' href='/'>WiFi</a>
+                </li>
+                <li class='nav-item'>
+                    <a class='nav-link' href='/mqtt'>MQTT</a>
+                </li>
+                <li class='nav-item'>
+                    <a class='nav-link' href='/apiweb'>WEB API</a>
+                </li>
+                <li class='nav-item'>
+                    <a class='nav-link' href='/tools'>Tools</a>
+                </li>
+                <li class='nav-item'>
+                    <a class='nav-link' href='#'>Help</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <h1>Config WiFi</h1>
+    <div class='row justify-content-md-center'>
+        <div class='col-sm-6'>
+            <form method='POST' action='save'>
+                <div class='form-group'>
+                    <label for='ssid'>SSID</label>
+                    <input class='form-control' id='ssid' type='text' name='WIFISSID' value='{{ssid}}'>
+                </div>
+                <div class='form-group'>
+                    <label for='pass'>Password</label>
+                    <input class='form-control' id='pass' type='password' name='WIFIpassword' value=''>
+                </div>
+                <div class='form-group'>
+                    <label for='ip'>@IP</label>
+                    <input class='form-control' id='ip' type='text' name='ipAddress' value='{{ip}}'>
+                </div>
+                <div class='form-group'>
+                    <label for='mask'>@Mask</label>
+                    <input class='form-control' id='mask' type='text' name='ipMask' value='{{mask}}'>
+                </div>
+                <div class='form-group'>
+                    <label for='gateway'>@Gateway</label>
+                    <input type='text' class='form-control' id='gateway' name='ipGW' value='{{gw}}'>
+                </div>
+                Server Port : <br>{{port}}<br><br>
+                <button type='submit' class='btn btn-primary mb-2' name='save'>Save</button>
+            </form>
+        </div>
+    </div>
+
+    <h1>Config MQTT</h1>
+    <div class='row justify-content-md-center'>
+        <div class='col-sm-6'>
+            <form method='POST' action='save'>
+                <div class='form-group'>
+                    <label for='mqtt_server'>Server MQTT</label>
+                    <input class='form-control' id='mqtt_server' type='text' name='MQTT Server' value='{{mqtt_server}}'>
+                </div>
+                <div class='form-group'>
+                    <label for='mqtt_port'>MQTT server Port</label>
+                    <input class='form-control' id='mqtt_port' type='numeric' name='MQTT Server Port' value='1883'>
+                </div>
+                <div class='form-group'>
+                    <label for='mqtt_user'>UserName</label>
+                    <input class='form-control' id='mqtt_user' type='text' name='MQTT UserName' value=''>
+                </div>
+                <div class='form-group'>
+                    <label for='mqtt_password'>Password</label>
+                    <input class='form-control' id='mqtt_password' type='password' name='MQTT Password' value=''>
+                </div>
+                <div class='form-group'>
+                    <label class='form-check-label' for='enableDiscovery'>Enable HomeAssistant Discovery</label>
+                    <input class='form-check-input' id='enableDiscovery' type='checkbox' name='enableDiscovery' {{enableDiscovery}}>         
+                </div>
+                <div class='form-group'>
+                    <label for='haDiscoveryPrefix'>Discovery prefix</label>
+                    <input class='form-control' id='haDiscoveryPrefix' type='text' name='Mqtt prefix' value='aquamqtt'>
+                </div>
+                <button type='submit' class='btn btn-primary mb-2' name='save'>Save</button>
+            </form>;
+
+</body>
