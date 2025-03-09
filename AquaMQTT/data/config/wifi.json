@@ -1,7 +1,5 @@
 {
-  "ssid": "Livebox-8CAE",
-  "password": "julie0807",
-  "ipAddress": "",
-  "ipMask": "",
-  "ipGW": ""
+  "ssid": "",
+  "password": "",
+  "networkName":"aquamqtt"
 }

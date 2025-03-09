@@ -10,7 +10,7 @@ enum EOperationMode
      * - Reads traffic from the HMI and MAIN Controller
      * - Parses and publishes DHW messages to MQTT
      */
-    LISTENER,
+    LISTENER = 0,
 
     /**
      * AquaMqtt is acting as Man-In-The-Middle and is connected to two physical one-wire USART instances:
@@ -19,7 +19,7 @@ enum EOperationMode
      * - Possibility to overwrite dedicated fields in the messages from HMI to Main Controller
      * - Parses and publishes DHW messages to MQTT, Allows modification via MQTT
      */
-    MITM,
+    MITM = 1,
 };
 }
 

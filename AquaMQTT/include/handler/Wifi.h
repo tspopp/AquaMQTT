@@ -2,7 +2,9 @@
 #define AQUAMQTT_WIFI_H
 
 #include <WiFi.h>
+
 #include "config/config.h"
+
 namespace aquamqtt
 {
 class WifiHandler

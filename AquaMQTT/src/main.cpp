@@ -12,6 +12,7 @@
 #include "task/HMITask.h"
 #include "task/ListenerTask.h"
 #include "task/MQTTTask.h"
+#include "config/Modes.h"
 
 using namespace aquamqtt;
 using namespace aquamqtt::config;
@@ -30,16 +31,15 @@ esp_task_wdt_config_t twdt_config = {
     .idle_core_mask = (1 << configNUM_CORES) - 1,
     .trigger_panic  = true,
 };
-bool configOK = false;
+bool                                   configOK = false;
+extern struct aquamqtt::AquaMqttStruct aquamqttSettings;
 
 void loop()
 {
     // watchdog
     esp_task_wdt_reset();
     delay(1);
-    // if (configOK)
-    // {
-    // handle wifi events
+
     wifiHandler.loop();
 
     // handle over-the-air module in main thread
@@ -49,7 +49,6 @@ void loop()
     rtcHandler.loop();
 
     webHandler.loop();
-    // }
 }
 
 void setup()
@@ -81,11 +80,10 @@ void setup()
     }
     else
     {
-        Serial.println("Conf KO set AP");
+        Serial.println("Wifi set to Access Point Mode");
         wifiHandler.setupAP();
-        // modeWiFi = "AP";
     }
- 
+
     // initialize watchdog
     esp_task_wdt_deinit();
     esp_task_wdt_init(&twdt_config);
@@ -100,10 +98,14 @@ void setup()
     // setup webserver
     webHandler.setup();
 
-    //Load Mqtt config
+    // Load Mqtt config
     loadMqttConfig();
+
+    // Load AquaMqtt Config
+    loadAquaMqttConfig();
+
     // if listener mode is set in configuration, just read the DHW traffic from a single One-Wire USART instance
-    if (OPERATION_MODE == LISTENER)
+    if (aquamqttSettings.operationMode == EOperationMode::LISTENER)
     {
         // reads 194, 193, 67 and 74 message and notifies the mqtt task
         listenerTask.spawn();
