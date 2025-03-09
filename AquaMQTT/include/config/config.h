@@ -10,24 +10,30 @@ struct WifiConfigStruct
 {
     String ssid;
     String password;
-    String ipAddress;
-    String ipMask;
-    String ipGW;
+    String networkName;
 };
 
 struct MqttSettingStruct
 {
     String mqtt_server;
-    String mqtt_port;
+    int    mqtt_port;
     String mqtt_user;
     String mqtt_password;
-    String enableDiscovery;
+    int    enableDiscovery;
     String haDiscoveryPrefix;
+    String brokerClientId;
+};
+
+struct AquaMqttStruct
+{
+    String heatpumpModelName;
+    int    operationMode;
 };
 
 IPAddress parse_ip_address(const char* str);
 bool      loadConfig();
 bool      loadWifiConfig();
 bool      loadMqttConfig();
+bool      loadAquaMqttConfig();
 }  // namespace aquamqtt
 #endif  // AQUAMQTT_CONFIG2_H

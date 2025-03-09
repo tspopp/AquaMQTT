@@ -3,7 +3,7 @@
 #include "config/Configuration.h"
 #include "config/config.h"
 
-extern struct aquamqtt::WifiConfigStruct wifiSettings;
+extern aquamqtt::WifiConfigStruct wifiSettings;
 
 namespace aquamqtt
 
@@ -19,8 +19,11 @@ void WifiHandler::setupAP()
 {
     WiFiClass::mode(WIFI_AP);
     WiFi.disconnect();
-    char AP_Name[] = "aquamqtt";
-    WiFi.softAP(AP_Name);
+    WiFi.begin();
+    String macAddress = WiFi.softAPmacAddress();
+    macAddress.replace(":", "");
+    String AP_Name = "aquamqtt-" + macAddress.substring(0, 4);
+    WiFi.softAP(AP_Name.c_str());
 }
 
 bool WifiHandler::setup()
@@ -34,7 +37,6 @@ bool WifiHandler::setup()
     WiFi.onEvent(wifiCallback);
 
     // begin a single wifi session
-    // WiFi.begin(aquamqtt::config::ssid, aquamqtt::config::psk); //FIXME to be removed
     WiFi.begin(wifiSettings.ssid, wifiSettings.password);
     // perform the next wifi check in config::WIFI_RECONNECT_CYCLE_S
     mLastCheck = millis();

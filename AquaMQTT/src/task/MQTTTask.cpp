@@ -6,6 +6,7 @@
 
 #include "FastCRC.h"
 #include "config/Configuration.h"
+#include "config/config.h"
 #include "message/IEnergyMessage.h"
 #include "message/IErrorMessage.h"
 #include "message/IHMIMessage.h"
@@ -21,6 +22,9 @@
 #include "mqtt/MQTTDiscovery.h"
 #include "state/HMIStateProxy.h"
 #include "state/MainStateProxy.h"
+
+extern aquamqtt::MqttSettingStruct mqttSettings;
+extern aquamqtt::AquaMqttStruct    aquamqttSettings;
 
 namespace aquamqtt
 {
@@ -288,10 +292,10 @@ void MQTTTask::spawn()
 
 void MQTTTask::setup()
 {
-    mMQTTClient.begin(aquamqtt::config::brokerAddr, aquamqtt::config::brokerPort, mWiFiClient);
+    mMQTTClient.begin(mqttSettings.mqtt_server.c_str(), mqttSettings.mqtt_port, mWiFiClient);
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
             "%s%s%s%s",
-            config::mqttPrefix,
+            mqttSettings.haDiscoveryPrefix.c_str(),
             BASE_TOPIC,
             STATS_SUBTOPIC,
             STATS_AQUAMQTT_LAST_WILL);
@@ -311,9 +315,9 @@ void MQTTTask::check_mqtt_connection()
     Serial.println("[mqtt] is disconnected... trying to connect to mqtt broker");
 
     while (!mMQTTClient.connect(
-            config::brokerClientId,
-            strlen(config::brokerUser) == 0 ? nullptr : config::brokerUser,
-            strlen(config::brokerPassword) == 0 ? nullptr : config::brokerPassword))
+            mqttSettings.brokerClientId.c_str(),
+            strlen(mqttSettings.mqtt_user.c_str()) == 0 ? nullptr : mqttSettings.mqtt_user.c_str(),
+            strlen(mqttSettings.mqtt_password.c_str()) == 0 ? nullptr : mqttSettings.mqtt_password.c_str()))
     {
         vTaskDelay(pdMS_TO_TICKS(1000));
         esp_task_wdt_reset();
@@ -322,7 +326,7 @@ void MQTTTask::check_mqtt_connection()
 
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
             "%s%s%s%s",
-            config::mqttPrefix,
+            mqttSettings.haDiscoveryPrefix.c_str(),
             BASE_TOPIC,
             STATS_SUBTOPIC,
             STATS_AQUAMQTT_LAST_WILL);
@@ -330,7 +334,7 @@ void MQTTTask::check_mqtt_connection()
     sprintf(reinterpret_cast<char*>(mPayloadBuffer), "%s", ENUM_LAST_WILL_ONLINE);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), true, 0);
 
-    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%s", config::mqttPrefix, CONTROL_TOPIC);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%s", mqttSettings.haDiscoveryPrefix.c_str(), CONTROL_TOPIC);
     mMQTTClient.subscribe(reinterpret_cast<char*>(mTopicBuffer));
 
     if (strlen(optionalSubscribeTopicSetPvHeatPumpFlag) != 0)
@@ -453,8 +457,8 @@ void MQTTTask::updateStats()
     publishString(
             STATS_SUBTOPIC,
             STATS_AQUAMQTT_MODE,
-            config::OPERATION_MODE == config::EOperationMode::LISTENER ? ENUM_AQUAMQTT_MODE_LISTENER
-                                                                       : ENUM_AQUAMQTT_MODE_MITM);
+            aquamqttSettings.operationMode == config::EOperationMode::LISTENER ? ENUM_AQUAMQTT_MODE_LISTENER
+                                                                               : ENUM_AQUAMQTT_MODE_MITM);
 
     publishString(STATS_SUBTOPIC, STATS_AQUAMQTT_ADDR, WiFi.localIP().toString().c_str());
 
@@ -462,7 +466,7 @@ void MQTTTask::updateStats()
 
     publishString(STATS_SUBTOPIC, STATS_AQUAMQTT_PROTOCOL, protocolVersionStr(DHWState::getInstance().getVersion()));
 
-    if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+    if (aquamqttSettings.operationMode == config::EOperationMode::LISTENER)
     {
         if (config::MQTT_PUBLISH_SERIAL_STATISTICS)
         {
@@ -504,7 +508,7 @@ void MQTTTask::updateStats()
         overrideJson[HMI_FAN_EXHAUST_CONFIG]      = overrides.exhaustFanMode ? "1" : "0";
         overrideJson[HMI_AIR_DUCT_CONFIG]         = overrides.airductConfig ? "1" : "0";
         overrideJson[HMI_TIME_AND_DATE]           = (aquamqtt::config::OVERRIDE_TIME_AND_DATE_IN_MITM
-                                           && aquamqtt::config::OPERATION_MODE
+                                           && aquamqttSettings.operationMode
                                                       != aquamqtt::config::EOperationMode::LISTENER)
                                                             ? "1"
                                                             : "0";
@@ -512,7 +516,7 @@ void MQTTTask::updateStats()
 
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%s",
-                config::mqttPrefix,
+                mqttSettings.haDiscoveryPrefix.c_str(),
                 BASE_TOPIC,
                 STATS_SUBTOPIC,
                 STATS_ACTIVE_OVERRIDES);
@@ -527,7 +531,7 @@ void MQTTTask::updateStats()
 
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%s",
-                config::mqttPrefix,
+                mqttSettings.haDiscoveryPrefix.c_str(),
                 BASE_TOPIC,
                 STATS_SUBTOPIC,
                 STATS_ACTIVE_OVERRIDES_MAIN);
@@ -811,7 +815,7 @@ void MQTTTask::updateMainStatus(bool fullUpdate, message::ProtocolVersion& versi
     {
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%s",
-                config::mqttPrefix,
+                mqttSettings.haDiscoveryPrefix.c_str(),
                 BASE_TOPIC,
                 MAIN_SUBTOPIC,
                 DEBUG);
@@ -884,7 +888,7 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
                         message->getAttr(HMI_ATTR_U8::TIME_SECONDS));
                 sprintf(reinterpret_cast<char*>(mTopicBuffer),
                         "%s%s%s%s",
-                        config::mqttPrefix,
+                        mqttSettings.haDiscoveryPrefix.c_str(),
                         BASE_TOPIC,
                         HMI_SUBTOPIC,
                         HMI_TIME);
@@ -905,7 +909,7 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
                         message->getAttr(HMI_ATTR_U16::DATE_YEAR));
                 sprintf(reinterpret_cast<char*>(mTopicBuffer),
                         "%s%s%s%s",
-                        config::mqttPrefix,
+                        mqttSettings.haDiscoveryPrefix.c_str(),
                         BASE_TOPIC,
                         HMI_SUBTOPIC,
                         HMI_DATE);
@@ -1011,7 +1015,7 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
         {
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     HMI_SUBTOPIC,
                     HMI_TIMER_WINDOW_A);
@@ -1026,7 +1030,7 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
         {
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     HMI_SUBTOPIC,
                     HMI_TIMER_WINDOW_B);
@@ -1043,7 +1047,7 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
         {
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
                     message->getAttr(HMI_ATTR_U8::HMI_ERROR_ID_REQUESTED),
@@ -1057,7 +1061,7 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, message::ProtocolVersion& versio
     {
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%s",
-                config::mqttPrefix,
+                mqttSettings.haDiscoveryPrefix.c_str(),
                 BASE_TOPIC,
                 HMI_SUBTOPIC,
                 DEBUG);
@@ -1261,7 +1265,7 @@ void MQTTTask::updateEnergyStats(bool fullUpdate, message::ProtocolVersion& vers
     {
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%s",
-                config::mqttPrefix,
+                mqttSettings.haDiscoveryPrefix.c_str(),
                 BASE_TOPIC,
                 ENERGY_SUBTOPIC,
                 DEBUG);
@@ -1293,7 +1297,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
     {
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%u/%s",
-                config::mqttPrefix,
+                mqttSettings.haDiscoveryPrefix.c_str(),
                 BASE_TOPIC,
                 ERROR_SUBTOPIC,
                 message->getAttr(ERROR_ATTR_U8::ERROR_REQUEST_ID),
@@ -1316,7 +1320,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     message->getAttr(message::ERROR_ATTR_U8::ERROR_DATE_YEAR));
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
                     message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
@@ -1333,7 +1337,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     message->getAttr(message::ERROR_ATTR_U8::ERROR_TIME_MINUTES));
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
                     message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
@@ -1349,7 +1353,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     reinterpret_cast<char*>(mPayloadBuffer));
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
                     message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
@@ -1365,7 +1369,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     reinterpret_cast<char*>(mPayloadBuffer));
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
                     message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
@@ -1381,7 +1385,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     reinterpret_cast<char*>(mPayloadBuffer));
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
                     message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
@@ -1397,7 +1401,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     reinterpret_cast<char*>(mPayloadBuffer));
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
                     message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
@@ -1413,7 +1417,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                     reinterpret_cast<char*>(mPayloadBuffer));
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
                     message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
@@ -1428,7 +1432,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                   10);
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
                     message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
@@ -1443,7 +1447,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
                   10);
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s%s%u/%s",
-                    config::mqttPrefix,
+                    mqttSettings.haDiscoveryPrefix.c_str(),
                     BASE_TOPIC,
                     ERROR_SUBTOPIC,
                     message->getAttr(message::ERROR_ATTR_U8::ERROR_REQUEST_ID),
@@ -1456,7 +1460,7 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
     {
         sprintf(reinterpret_cast<char*>(mTopicBuffer),
                 "%s%s%s%s",
-                config::mqttPrefix,
+                mqttSettings.haDiscoveryPrefix.c_str(),
                 BASE_TOPIC,
                 ERROR_SUBTOPIC,
                 DEBUG);
@@ -1469,27 +1473,47 @@ void MQTTTask::updateErrorStatus(message::ProtocolVersion& version)
 void MQTTTask::publishFloat(const char* subtopic, const char* topic, float value, bool retained)
 {
     dtostrf(value, 3, 1, reinterpret_cast<char*>(mPayloadBuffer));
-    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%s%s%s", config::mqttPrefix, BASE_TOPIC, subtopic, topic);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%s%s%s",
+            mqttSettings.haDiscoveryPrefix.c_str(),
+            BASE_TOPIC,
+            subtopic,
+            topic);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), retained, 0);
 }
 
 void MQTTTask::publishString(const char* subtopic, const char* topic, const char* value, bool retained)
 {
-    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%s%s%s", config::mqttPrefix, BASE_TOPIC, subtopic, topic);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%s%s%s",
+            mqttSettings.haDiscoveryPrefix.c_str(),
+            BASE_TOPIC,
+            subtopic,
+            topic);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), value, retained, 0);
 }
 
 void MQTTTask::publishi(const char* subtopic, const char* topic, int value, bool retained)
 {
     itoa(value, reinterpret_cast<char*>(mPayloadBuffer), 10);
-    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%s%s%s", config::mqttPrefix, BASE_TOPIC, subtopic, topic);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%s%s%s",
+            mqttSettings.haDiscoveryPrefix.c_str(),
+            BASE_TOPIC,
+            subtopic,
+            topic);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), retained, 0);
 }
 
 void MQTTTask::publishul(const char* subtopic, const char* topic, unsigned long value, bool retained)
 {
     ultoa(value, reinterpret_cast<char*>(mPayloadBuffer), 10);
-    sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%s%s%s", config::mqttPrefix, BASE_TOPIC, subtopic, topic);
+    sprintf(reinterpret_cast<char*>(mTopicBuffer),
+            "%s%s%s%s",
+            mqttSettings.haDiscoveryPrefix.c_str(),
+            BASE_TOPIC,
+            subtopic,
+            topic);
     mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer), retained, 0);
 }
 
@@ -1503,7 +1527,7 @@ void MQTTTask::publishul(
     ultoa(value, reinterpret_cast<char*>(mPayloadBuffer), 10);
     sprintf(reinterpret_cast<char*>(mTopicBuffer),
             "%s%s%s%s%s",
-            config::mqttPrefix,
+            mqttSettings.haDiscoveryPrefix.c_str(),
             BASE_TOPIC,
             subtopic_1,
             subtopic_2,
@@ -1513,7 +1537,7 @@ void MQTTTask::publishul(
 
 void MQTTTask::sendHomeassistantDiscovery()
 {
-    if (!config::ENABLE_HOMEASSISTANT_DISCOVERY_MODE || mPublishedDiscovery)
+    if (!(mqttSettings.enableDiscovery == 1) || mPublishedDiscovery)
     {
         return;
     }
@@ -1549,7 +1573,7 @@ void MQTTTask::publishDiscovery(uint16_t identifier, ProtocolVersion protocolVer
         {
             sprintf(reinterpret_cast<char*>(mTopicBuffer),
                     "%s%s/aquamqtt_%u/%u/config",
-                    config::haDiscoveryPrefix,
+                    mqttSettings.enableDiscovery,
                     haCategory,
                     identifier,
                     item);

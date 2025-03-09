@@ -4,7 +4,9 @@
 #include "message/IHMIMessage.h"
 #include "message/legacy/HMIMessage.h"
 #include "message/next/HMIMessage.h"
+#include "config/config.h"
 
+extern struct aquamqtt::AquaMqttStruct aquamqttSettings;
 namespace aquamqtt
 {
 
@@ -173,7 +175,7 @@ size_t HMIStateProxy::copyFrame(
     }
 
     size_t hmiMessageLength = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version, type);
-    if (hmiMessageLength > 0 && aquamqtt::config::OPERATION_MODE == config::EOperationMode::MITM)
+    if (hmiMessageLength > 0 && aquamqttSettings.operationMode == config::EOperationMode::MITM)
     {
         applyHMIOverrides(buffer, version);
     }

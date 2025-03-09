@@ -5,7 +5,11 @@
 
 #include "MQTTDefinitions.h"
 #include "Version.h"
+#include "config/config.h"
 #include "message/MessageConstants.h"
+
+extern aquamqtt::MqttSettingStruct mqttSettings;
+extern aquamqtt::AquaMqttStruct    aquamqttSettings;
 
 namespace aquamqtt
 {
@@ -149,13 +153,13 @@ static JsonDocument createFromDefault(uint16_t identifier)
     // lazy init
     if (defaultJson.size() == 0)
     {
-        char baseTopic[strlen(config::mqttPrefix) + 10];
-        sprintf(baseTopic, "%saquamqtt", config::mqttPrefix);
+        char baseTopic[strlen(mqttSettings.haDiscoveryPrefix.c_str()) + 10];
+        sprintf(baseTopic, "%saquamqtt", mqttSettings.haDiscoveryPrefix);
         defaultJson["~"]           = baseTopic;
         defaultJson["dev"]["ids"]  = identifier;
         defaultJson["dev"]["mf"]   = "Groupe Atlantic";
         defaultJson["dev"]["name"] = "AquaMQTT DHW Heat Pump";
-        defaultJson["dev"]["mdl"]  = config::heatpumpModelName;
+        defaultJson["dev"]["mdl"]  = aquamqttSettings.heatpumpModelName;
         defaultJson["o"]["name"]   = "AquaMQTT";
         defaultJson["o"]["sw"]     = aquamqtt::VERSION;
         defaultJson["o"]["url"]    = "https://github.com/tspopp/AquaMQTT";
@@ -350,7 +354,8 @@ static bool buildConfiguration(
             doc["uniq_id"]      = make_unique(temp, identifier, "energy_total_wp");
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_HANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -361,7 +366,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_UNHANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -372,7 +378,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_SENT:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -383,7 +390,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_CRC_NOK:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -394,7 +402,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_DROPPED_BYTES:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -405,7 +414,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_HANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -416,7 +426,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_UNHANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -427,7 +438,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_SENT:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -438,7 +450,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_CRC_NOK:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -449,7 +462,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_DROPPED_BYTES:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -460,7 +474,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_MSG_HANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::LISTENER
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -471,7 +486,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_MSG_UNHANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::LISTENER
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -482,7 +498,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_MSG_CRC_NOK:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::LISTENER
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -493,7 +510,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_DROPPED_BYTES:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::LISTENER
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -677,10 +695,10 @@ static bool buildConfiguration(
             {
                 return false;
             }
-            doc["name"]    = "Air Temperature Observed Max";
-            doc["stat_t"]  = "~/energy/diagAirTempMax";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_at_max");
+            doc["name"]         = "Air Temperature Observed Max";
+            doc["stat_t"]       = "~/energy/diagAirTempMax";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_at_max");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_AIR_TEMP_MIN:
@@ -688,10 +706,10 @@ static bool buildConfiguration(
             {
                 return false;
             }
-            doc["name"]    = "Air Temperature Observed Min";
-            doc["stat_t"]  = "~/energy/diagAirTempMin";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_at_min");
+            doc["name"]         = "Air Temperature Observed Min";
+            doc["stat_t"]       = "~/energy/diagAirTempMin";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_at_min");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_EVA_UPPER_AIR_TEMP_MAX:
@@ -699,10 +717,10 @@ static bool buildConfiguration(
             {
                 return false;
             }
-            doc["name"]    = "Upper Evaporator Temperature Observed Max";
-            doc["stat_t"]  = "~/energy/diagEvaUpperMax";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_ue_max");
+            doc["name"]         = "Upper Evaporator Temperature Observed Max";
+            doc["stat_t"]       = "~/energy/diagEvaUpperMax";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_ue_max");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_EVA_UPPER_AIR_TEMP_MIN:
@@ -710,10 +728,10 @@ static bool buildConfiguration(
             {
                 return false;
             }
-            doc["name"]    = "Upper Evaporator Temperature Observed Min";
-            doc["stat_t"]  = "~/energy/diagEvaUpperMin";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_ue_min");
+            doc["name"]         = "Upper Evaporator Temperature Observed Min";
+            doc["stat_t"]       = "~/energy/diagEvaUpperMin";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_ue_min");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_EVA_LOWER_AIR_TEMP_MAX:
@@ -721,10 +739,10 @@ static bool buildConfiguration(
             {
                 return false;
             }
-            doc["name"]    = "Lower Evaporator Temperature Observed Max";
-            doc["stat_t"]  = "~/energy/diagEvaLowerMax";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_le_max");
+            doc["name"]         = "Lower Evaporator Temperature Observed Max";
+            doc["stat_t"]       = "~/energy/diagEvaLowerMax";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_le_max");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_EVA_LOWER_AIR_TEMP_MIN:
@@ -732,10 +750,10 @@ static bool buildConfiguration(
             {
                 return false;
             }
-            doc["name"]    = "Lower Evaporator Temperature Observed Min";
-            doc["stat_t"]  = "~/energy/diagEvaLowerMin";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_le_min");
+            doc["name"]         = "Lower Evaporator Temperature Observed Min";
+            doc["stat_t"]       = "~/energy/diagEvaLowerMin";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_le_min");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_COMPRESSOR_TEMP_MAX:
@@ -743,10 +761,10 @@ static bool buildConfiguration(
             {
                 return false;
             }
-            doc["name"]    = "Compressor Temperature Observed Max";
-            doc["stat_t"]  = "~/energy/diagCompressorMax";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_c_max");
+            doc["name"]         = "Compressor Temperature Observed Max";
+            doc["stat_t"]       = "~/energy/diagCompressorMax";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_c_max");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_COMPRESSOR_TEMP_MIN:
@@ -754,10 +772,10 @@ static bool buildConfiguration(
             {
                 return false;
             }
-            doc["name"]    = "Compressor Temperature Observed Min";
-            doc["stat_t"]  = "~/energy/diagCompressorMin";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_c_min");
+            doc["name"]         = "Compressor Temperature Observed Min";
+            doc["stat_t"]       = "~/energy/diagCompressorMin";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_c_min");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_WATER_TEMP_MAX:
@@ -765,10 +783,10 @@ static bool buildConfiguration(
             {
                 return false;
             }
-            doc["name"]    = "Water Temperature Observed Max";
-            doc["stat_t"]  = "~/energy/diagWaterTempMax";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_w_max");
+            doc["name"]         = "Water Temperature Observed Max";
+            doc["stat_t"]       = "~/energy/diagWaterTempMax";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_w_max");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_DIAG_WATER_TEMP_MIN:
@@ -776,10 +794,10 @@ static bool buildConfiguration(
             {
                 return false;
             }
-            doc["name"]    = "Water Temperature Observed Min";
-            doc["stat_t"]  = "~/energy/diagWaterTempMin";
-            doc["ent_cat"] = "diagnostic";
-            doc["uniq_id"] = make_unique(temp, identifier, "energy_d_w_min");
+            doc["name"]         = "Water Temperature Observed Min";
+            doc["stat_t"]       = "~/energy/diagWaterTempMin";
+            doc["ent_cat"]      = "diagnostic";
+            doc["uniq_id"]      = make_unique(temp, identifier, "energy_d_w_min");
             doc["unit_of_meas"] = "°C";
             break;
         case MQTT_ITEM_SENSOR::RESERVED_COUNT:
@@ -1246,7 +1264,7 @@ static bool buildConfiguration(
     switch (item)
     {
         case MQTT_ITEM_WATER_HEATER::WATER_HEATER_CUSTOM:
-            doc["name"]             = config::heatpumpModelName;
+            doc["name"]             = aquamqttSettings.heatpumpModelName;
             doc["ent_cat"]          = "config";
             doc["uniq_id"]          = make_unique(temp, identifier, "water_heater");
             doc["ic"]               = "mdi:water";
