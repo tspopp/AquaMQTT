@@ -4,12 +4,7 @@
 
 namespace aquamqtt::message::next
 {
-
-HMIMessage::HMIMessage(uint8_t* data, const uint8_t* previous)
-    : mHasChangedU8()
-    , mHasChangedBool()
-    , mHasChangedFloat()
-    , mData(data)
+HMIMessage::HMIMessage(uint8_t* data, const uint8_t* previous) : mData(data)
 {
     mCreatedWithoutPrevious = previous == nullptr;
     compareWith(previous);
@@ -22,7 +17,7 @@ void HMIMessage::compareWith(const uint8_t* data)
         return;
     }
 
-    uint8_t diffIndices[HMI_MESSAGE_LENGTH_NEXT] = { };
+    uint8_t diffIndices[HMI_MESSAGE_LENGTH_NEXT] = {};
     size_t  numDiffs                             = 0;
     compareBuffers(mData, data, HMI_MESSAGE_LENGTH_NEXT, diffIndices, &numDiffs);
 
@@ -395,11 +390,11 @@ void HMIMessage::setAttr(const HMI_ATTR_U8 attr, uint8_t value)
             else if (operationType == OT_ALWAYS_ON)
             {
                 mData[3] = (mData[3] & ~(1 << 6)) | (false << 6);
-            } // operation type off-peak hours is unsupported
+            }  // operation type off-peak hours is unsupported
         }
         break;
         case HMI_ATTR_U8::DATE_MONTH:
-            // use custom method for setting month and year
+        // use custom method for setting month and year
         case HMI_ATTR_U8::HMI_ERROR_ID_REQUESTED:
         case HMI_ATTR_U8::HMI_ERROR_NO_REQUESTED:
         case HMI_ATTR_U8::STATE_SETUP:
@@ -461,7 +456,7 @@ void HMIMessage::setAttr(const HMI_ATTR_U16 attr, uint16_t value)
         case HMI_ATTR_U16::TIMER_A_LENGTH:
         case HMI_ATTR_U16::TIMER_B_START:
         case HMI_ATTR_U16::TIMER_B_LENGTH:
-            // TODO: implement this if needed
+        // TODO: implement this if needed
         case HMI_ATTR_U16::DATE_YEAR:
             // use custom method for setting month and year
             break;
@@ -581,5 +576,4 @@ void HMIMessage::setDateMonthAndYear(const uint8_t month, const uint16_t year) c
     const int monthValue       = (pastJuly ? month_off_by_one - 8 : month_off_by_one) << 5;
     mData[17]                  = (mData[17] & 0x1F) | (monthValue & 0xE0);
 }
-
 }  // namespace aquamqtt::message::next

@@ -63,6 +63,64 @@ void HMIMessage::compareWith(const uint8_t* data)
     }
 }
 
+int HMIMessage::getValueByOperationModeAndType(
+        const HMIOperationMode operationMode,
+        const HMIOperationType operationType)
+{
+    switch (operationType)
+    {
+        case OT_ALWAYS_ON:
+            switch (operationMode)
+            {
+                case OM_ABSENCE:
+                    return 68;
+                case OM_ECO_ACTIVE:
+                    return 65;
+                case OM_ECO_INACTIVE:
+                    return 66;
+                case OM_BOOST:
+                    return 72;
+                case OM_AUTO:
+                    return 64;
+                default:
+                    return 0;
+            }
+        case OT_TIMER:
+            switch (operationMode)
+            {
+                case OM_ABSENCE:
+                    return 20;
+                case OM_ECO_ACTIVE:
+                    return 17;
+                case OM_ECO_INACTIVE:
+                    return 18;
+                case OM_BOOST:
+                    return 24;
+                case OM_AUTO:
+                    return 16;
+                default:
+                    return 0;
+            }
+        case OT_OFF_PEAK_HOURS:
+            switch (operationMode)
+            {
+                case OM_ABSENCE:
+                    return 6;
+                case OM_ECO_ACTIVE:
+                    return 1;
+                case OM_ECO_INACTIVE:
+                    return 2;
+                case OM_BOOST:
+                    return 10;
+                case OM_AUTO:
+                default:
+                    return 0;
+            }
+        default:
+            return 0;
+    }
+}
+
 uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
 {
     switch (attr)
@@ -112,11 +170,8 @@ uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
             switch (mData[2])
             {
                 case 10:
-                    // off-peak
                 case 72:
-                    // always on
                 case 24:
-                    // timer
                     return OM_BOOST;
                 case 2:
                 case 66:
@@ -178,12 +233,76 @@ void HMIMessage::getAttr(HMI_ATTR_STR attr, char* buffer)
 {
 }
 
-void HMIMessage::setAttr(HMI_ATTR_U8 attr, uint8_t value)
+void HMIMessage::setAttr(const HMI_ATTR_U8 attr, uint8_t value)
 {
+    switch (attr)
+    {
+        case HMI_ATTR_U8::TIME_MINUTES:
+            mData[19] = value;
+            break;
+        case HMI_ATTR_U8::TIME_HOURS:
+            mData[20] = value;
+            break;
+        case HMI_ATTR_U8::DATE_DAY:
+            mData[17] = (mData[17] & 0xE0) | (value & 0x1F);
+            break;
+        case HMI_ATTR_U8::CONFIG_AIRDUCT:
+        {
+            const auto config = static_cast<HMIAirDuctConfig>(value);
+            if (config == AD_UNKNOWN)
+            {
+                return;
+            }
+            // clear bit 5 and 6 (INT/INT)
+            mData[4] &= 0b11001111;
+            if (config == AD_INT_EXT)
+            {
+                mData[4] |= 0b00010000;
+            }
+            else if (config == AD_EXT_EXT)
+            {
+                mData[4] |= 0b00100000;
+            }
+        }
+        break;
+        case HMI_ATTR_U8::OPERATION_MODE:
+        {
+            // changing operation mode might have an influence on operation type
+            mData[3] = getValueByOperationModeAndType(
+                    static_cast<HMIOperationMode>(value), static_cast<HMIOperationType>(getAttr(HMI_ATTR_U8::OPERATION_TYPE)));
+        }
+        break;
+        case HMI_ATTR_U8::OPERATION_TYPE:
+        {
+            // changing operation type might have an influence on operation type
+            mData[3] = getValueByOperationModeAndType(
+                    static_cast<HMIOperationMode>(getAttr(HMI_ATTR_U8::OPERATION_MODE)), static_cast<HMIOperationType>(value));
+        }
+        break;
+        case HMI_ATTR_U8::DATE_MONTH:
+            // use custom method for setting month and year
+        default:
+            break;
+    }
 }
 
-void HMIMessage::setAttr(HMI_ATTR_BOOL attr, bool value)
+void HMIMessage::setAttr(const HMI_ATTR_BOOL attr, const bool value)
 {
+    switch (attr)
+    {
+        case HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED:
+            if (value)
+            {
+                mData[5] |= 0x01;
+            }
+            else
+            {
+                mData[5] &= ~0x01;
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 void HMIMessage::setAttr(const HMI_ATTR_FLOAT attr, const float value)
@@ -197,8 +316,15 @@ void HMIMessage::setAttr(const HMI_ATTR_FLOAT attr, const float value)
     }
 }
 
-void HMIMessage::setAttr(HMI_ATTR_U16 attr, uint16_t value)
+void HMIMessage::setAttr(const HMI_ATTR_U16 attr, uint16_t value)
 {
+    switch (attr)
+    {
+        case HMI_ATTR_U16::DATE_YEAR:
+            // use custom method for setting month and year
+        default:
+            break;
+    }
 }
 
 bool HMIMessage::hasAttr(const HMI_ATTR_U8 attr) const
@@ -221,7 +347,7 @@ bool HMIMessage::hasAttr(const HMI_ATTR_U8 attr) const
     }
 }
 
-bool HMIMessage::hasAttr(HMI_ATTR_BOOL attr) const
+bool HMIMessage::hasAttr(const HMI_ATTR_BOOL attr) const
 {
     switch (attr)
     {
@@ -288,7 +414,13 @@ uint8_t HMIMessage::getLength()
     return HMI_MESSAGE_LENGTH_ODYSSEE;
 }
 
-void HMIMessage::setDateMonthAndYear(uint8_t month, uint16_t year) const
+void HMIMessage::setDateMonthAndYear(const uint8_t month, const uint16_t year) const
 {
+    const int pastJuly = month > 7 ? 1 : 0;
+    mData[18]          = ((year - 2000) * 2) + pastJuly;
+
+    const int month_off_by_one = month - 1;
+    const int monthValue       = (pastJuly ? month_off_by_one - 8 : month_off_by_one) << 5;
+    mData[17]                  = (mData[17] & 0x1F) | (monthValue & 0xE0);
 }
 }  // namespace aquamqtt::message::odyssee
