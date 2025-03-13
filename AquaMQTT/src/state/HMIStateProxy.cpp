@@ -56,7 +56,14 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, const message::ProtocolVe
         case AM_MODE_PV_HP_ONLY:
             message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, message::HMIInstallation::INST_HP_ONLY);
             message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::OT_ALWAYS_ON);
-            message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_INACTIVE);
+            if (version == message::PROTOCOL_ODYSSEE) {
+                // Odyssee does not have the option to disable the heat element. Therefore, we enter operation mode
+                // ECO ACTIVE (which forbids usage of heat element) and set the target temperature to maximum temperature
+                // This configuration is not allowed in the HMI controller, but we hope the Main controller accepts it :)
+                message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_ACTIVE);
+            } else {
+                message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_INACTIVE);
+            }
             message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             // do not use heat element
             message->setAttr(message::HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED, false);

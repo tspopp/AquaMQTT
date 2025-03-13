@@ -45,6 +45,8 @@ public:
 private:
     void compareWith(const uint8_t* data);
 
+    static int getValueByOperationModeAndType(HMIOperationMode operationMode, HMIOperationType operationType);
+
     bool                     mCreatedWithoutPrevious;
     std::set<HMI_ATTR_U8>    mHasChangedU8;
     std::set<HMI_ATTR_U16>   mHasChangedU16;
