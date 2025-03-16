@@ -4,6 +4,8 @@
 #include <esp_task_wdt.h>
 
 #include "config/Configuration.h"
+#include "config/config.h"
+extern struct aquamqtt::WifiConfigStruct wifiSettings;
 
 namespace aquamqtt
 {
@@ -14,7 +16,7 @@ void OTAHandler::setup()  // NOLINT(*-convert-member-functions-to-static)
     // ArduinoOTA.setPort(3232);
 
     // Hostname defaults to esp3232-[MAC]
-    ArduinoOTA.setHostname(config::networkName);
+    ArduinoOTA.setHostname(wifiSettings.networkName.c_str());
 
     // No authentication by default
     // ArduinoOTA.setPassword("admin");

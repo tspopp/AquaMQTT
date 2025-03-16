@@ -1,8 +1,12 @@
 #include "handler/Wifi.h"
 
 #include "config/Configuration.h"
+#include "config/config.h"
+
+extern aquamqtt::WifiConfigStruct wifiSettings;
 
 namespace aquamqtt
+
 {
 
 bool WifiHandler::mConnectedToWifiWithValidIpAddress = false;
@@ -11,7 +15,18 @@ WifiHandler::WifiHandler() : mLastCheck(0)
 {
 }
 
-void WifiHandler::setup()
+void WifiHandler::setupAP()
+{
+    WiFiClass::mode(WIFI_AP);
+    WiFi.disconnect();
+    WiFi.begin();
+    String macAddress = WiFi.softAPmacAddress();
+    macAddress.replace(":", "");
+    String AP_Name = "aquamqtt-" + macAddress.substring(0, 4);
+    WiFi.softAP(AP_Name.c_str());
+}
+
+bool WifiHandler::setup()
 {
     WiFiClass::mode(WIFI_STA);
 
@@ -22,10 +37,10 @@ void WifiHandler::setup()
     WiFi.onEvent(wifiCallback);
 
     // begin a single wifi session
-    WiFi.begin(aquamqtt::config::ssid, aquamqtt::config::psk);
-
+    WiFi.begin(wifiSettings.ssid, wifiSettings.password);
     // perform the next wifi check in config::WIFI_RECONNECT_CYCLE_S
     mLastCheck = millis();
+    return true;
 }
 
 void WifiHandler::loop()
@@ -33,7 +48,8 @@ void WifiHandler::loop()
     if ((millis() - mLastCheck) >= (config::WIFI_RECONNECT_CYCLE_S * 1000))
     {
         mLastCheck = millis();
-
+        Serial.println("Wifi RSSI is :");
+        Serial.println(WiFi.RSSI());
         // we don't trust WiFi.isConnected() or WiFi.status() == WL_CONNECTED, since it is suspected to be unreliable
         if (!mConnectedToWifiWithValidIpAddress)
         {
@@ -62,6 +78,10 @@ void WifiHandler::wifiCallback(WiFiEvent_t event)
             Serial.print("[wifi] ip address: ");
             Serial.println(WiFi.localIP().toString().c_str());
             mConnectedToWifiWithValidIpAddress = true;
+            break;
+        case ARDUINO_EVENT_WIFI_AP_START:
+            // Debug Access point startup
+            Serial.println("[wifi] WiFi access point started");
             break;
         default:
             break;
