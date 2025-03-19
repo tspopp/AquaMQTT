@@ -70,10 +70,16 @@ void HMITask::loop()
         case HMITaskState::REQUEST_194:
             mState           = HMITaskState::SLEEP_194;
             mLastMessageSent = millis();
+            noInterrupts();
             digitalWrite(config::GPIO_ENABLE_TX_HMI, HIGH);
             Serial1.write(message::HMI_MESSAGE_IDENTIFIER);
             Serial1.flush();
             digitalWrite(config::GPIO_ENABLE_TX_HMI, LOW);
+            interrupts();
+            // in rev1.0 our read buffer may contain now hmi message identifier (loopback), drop that!
+            flushReadBuffer();
+            // make sure that we have the message identifier 194 in our buffer, prior receiving actual data
+            mBuffer.pushByte(message::HMI_MESSAGE_IDENTIFIER);
             break;
         case HMITaskState::SLEEP_194:
             if (mVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
