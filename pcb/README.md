@@ -23,11 +23,13 @@ project.
 
 <img src="./../img/board_v2_back.png" width=40% height=40%>
 
+***Note*: Revision 2.0 needs AquaMQTT v1.7.0 or later for MITM mode**
+
 This revision fixes an issue, where [certain heatpumps](https://github.com/tspopp/AquaMQTT/issues/67) were not able to communicate due to a very sensitive serial link and changes of impedance. The Logic-Level-Converter and the one-wire USART circuit have been replaced by two [SN74LVC2T45](https://www.ti.com/lit/ds/symlink/sn74lvc2t45.pdf?ts=1740403453841&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252Fde-de%252FSN74LVC2T45). Thanks to [@Arrnooo](https://github.com/Arrnooo) for debugging, verifying and providing a new design proposal.
 
 Additionally, this revision adds optional RAST sockets. Thanks to [@tukutt](https://github.com/tukutt) for providing the design and custom adapters, originally used with revision 1.0 of the AquaMQTT board (see below).
 
-### Ordering / Self Soldering
+### Buy Pre-Assembled
 
 This board uses tiny SMD SSOP parts (SN74LVC2T45) so self-soldering is most probably an issue. This revision is meant to be bought pre-assembled from [JLCPCB](https://jlcpcb.com/)
 
