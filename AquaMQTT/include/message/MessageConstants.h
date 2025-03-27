@@ -7,7 +7,6 @@
 
 namespace aquamqtt::message
 {
-class IHMIMessage;
 constexpr uint8_t HEATPUMP_MAX_FRAME_LENGTH = 70;
 
 constexpr uint8_t MESSAGE_PERIOD_MS = 100;
