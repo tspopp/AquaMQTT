@@ -57,7 +57,7 @@ constexpr bool OVERRIDE_TIME_AND_DATE_IN_MITM = true;
 /**
  * Choose to publish raw messages represented as hex-string on debug mqtt topics
  */
-constexpr bool DEBUG_RAW_SERIAL_MESSAGES = true;
+constexpr bool DEBUG_RAW_SERIAL_MESSAGES = false;
 
 /**
  * Choose to collect the message sequence and frequencies in LISTENER mode.
@@ -80,7 +80,7 @@ constexpr bool DEBUG_PUBLISH_DROPPED_MESSAGES = false;
  * topics "msgHandled, msgUnhandled, msgCRCNOK and msgSent" topics for each serial
  * channel (hmi/main or listener),
  */
-constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = true;
+constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = false;
 
 /**
  * Choose to publish time and date used by the heatpump. This is mainly for debugging
@@ -88,7 +88,7 @@ constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = true;
  * enable this, if you are customizing the NTP timezone or server or even trying to
  * use the RTC module from the AquaMQTT board.
  */
-constexpr bool MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE = true;
+constexpr bool MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE = false;
 
 /**
  * Change the time interval where all known attributes are re-published to the MQTT broker.
@@ -105,7 +105,7 @@ constexpr uint16_t MQTT_STATS_UPDATE_MS = 5000;
  * Note: Filters are only applied within the MQTT channel, the communication between HMI and Controller
  * are still using raw temperature values and is not altered.
  */
-constexpr bool MQTT_FILTER_TEMPERATURE_NOISE = false;
+constexpr bool MQTT_FILTER_TEMPERATURE_NOISE = true;
 
 /**
  * Parametrize kalman filter for reading temperature values
