@@ -19,7 +19,7 @@ struct MqttSettingStruct
     int    mqtt_port;
     String mqtt_user;
     String mqtt_password;
-    int    enableDiscovery;
+    bool   enableDiscovery;
     String haDiscoveryPrefix;
     String brokerClientId;
 };
