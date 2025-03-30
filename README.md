@@ -1,6 +1,6 @@
 # AquaMQTT
 
-[![PlatformIO CI](https://github.com/tspopp/AquaMQTT/actions/workflows/main.yml/badge.svg)](https://github.com/tspopp/AquaMQTT/actions/workflows/main.yml)
+[![PlatformIO CI](https://github.com/tspopp/AquaMQTT/actions/workflows/main.yml/badge.svg)](https://github.com/tspopp/AquaMQTT/actions/workflows/main.yml) [![Community & PCB Trading](https://img.shields.io/badge/Community%20%26%20PCB%20Trading-7289DA?logo=discord&logoColor=white)]([https://discord.gg/your_invite_code](https://discord.gg/dYV2CPGs))
 
 AquaMQTT is a project designed to monitor and control your DHW heat pump locally using MQTT.
 
@@ -77,4 +77,6 @@ Unfortunately, I had no success pairing those solutions with my Windhager brande
 - 🇫🇷 https://forum.hacf.fr/t/integration-dun-chauffe-eau-atlantic-explorer-en-mqtt/40493/6
 - 🇳🇱 https://gathering.tweakers.net/forum/list_messages/2116816/78
 - 🇩🇪 https://forum.iobroker.net/topic/61801/skript-atlantic-w%C3%A4rmepumpe-%C3%BCber-cozytouch-abfragen/74
+
+
 
