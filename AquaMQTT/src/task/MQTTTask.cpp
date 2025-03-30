@@ -1730,7 +1730,7 @@ void MQTTTask::publishul(
 
 void MQTTTask::sendHomeassistantDiscovery()
 {
-    if (!(mqttSettings.enableDiscovery == 1) || mPublishedDiscovery)
+    if (!(mqttSettings.enableDiscovery) || mPublishedDiscovery)
     {
         return;
     }

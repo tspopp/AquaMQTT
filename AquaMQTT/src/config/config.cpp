@@ -141,12 +141,12 @@ bool aquamqtt::loadMqttConfig()
     }
 
     mqttSettings.mqtt_server       = doc["mqtt_server"].as<String>();
-    mqttSettings.mqtt_port         = doc["mqtt_port"];
+    mqttSettings.mqtt_port         = doc["mqtt_port"].as<int>();
     mqttSettings.mqtt_user         = doc["mqtt_user"].as<String>();
     mqttSettings.mqtt_password     = doc["mqtt_password"].as<String>();
-    mqttSettings.enableDiscovery   = doc["enableDiscovery"];
+    mqttSettings.enableDiscovery   = doc["enableDiscovery"].as<bool>();
     mqttSettings.haDiscoveryPrefix = doc["haDiscoveryPrefix"].as<String>();
-    mqttSettings.brokerClientId    = doc["brokerClientId"].as<String>();
+    mqttSettings.brokerClientId    = doc["brokerClientId"].as<String>();  
     mqttConfig.close();
 
     return true;
@@ -176,7 +176,7 @@ bool aquamqtt::loadAquaMqttConfig()
     }
 
     aquamqttSettings.heatpumpModelName = doc["heatpumpModelName"].as<String>();
-    aquamqttSettings.operationMode     = doc["operationMode"];
+    aquamqttSettings.operationMode     = doc["operationMode"].as<int>();
 
     aquamqttConfig.close();
 

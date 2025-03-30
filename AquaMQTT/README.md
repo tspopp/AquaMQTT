@@ -47,13 +47,18 @@ Listener" and "Man-in-the-Middle."
    pio run -e arduino_nano_esp32
    ```
 
-3. Connect the Arduino and upload the project filesystem to your microcontroller via USB
+4. Build the filesystem
+
+   ```bash
+   pio run -t buildfs -e arduino_nano_esp32
+   ```
+5. Connect the Arduino and upload the project filesystem to your microcontroller via USB
 
    ```bash
    pio run -t uploadfs -e arduino_nano_esp32
    ```
 
-4. Connect the Arduino and upload the project to your microcontroller via USB
+6. Connect the Arduino and upload the project to your microcontroller via USB
 
    ```bash
    pio run -t upload -e arduino_nano_esp32
