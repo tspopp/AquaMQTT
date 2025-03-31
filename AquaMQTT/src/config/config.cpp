@@ -9,32 +9,6 @@ aquamqtt::WifiConfigStruct  wifiSettings;
 aquamqtt::MqttSettingStruct mqttSettings;
 aquamqtt::AquaMqttStruct    aquamqttSettings;
 
-IPAddress aquamqtt::parse_ip_address(const char* str)
-{
-    IPAddress result;
-    int       index = 0;
-
-    result[0] = 0;
-    while (*str)
-    {
-        if (isdigit((unsigned char) *str))
-        {
-            result[index] *= 10;
-            result[index] += *str - '0';
-        }
-        else
-        {
-            index++;
-            if (index < 4)
-            {
-                result[index] = 0;
-            }
-        }
-        str++;
-    }
-
-    return result;
-}
 
 bool aquamqtt::loadWifiConfig()
 {
@@ -66,54 +40,6 @@ bool aquamqtt::loadWifiConfig()
     wifiSettings.ssid     = doc["ssid"].as<String>();
     wifiSettings.password = doc["password"].as<String>();
     wifiConfig.close();
-    return true;
-}
-
-bool aquamqtt::loadConfig()
-{
-    File configFile = LittleFS.open("/config/config.json", "r+");
-    if (!configFile)
-    {
-        return false;
-    }
-
-    size_t size = configFile.size();
-    if (size > 1024)
-    {
-        return false;
-    }
-
-    // Allocate a buffer to store contents of the file.
-    std::unique_ptr<char[]> buf(new char[size]);
-
-    configFile.readBytes(buf.get(), size);
-
-    // StaticJsonDocument<512> jsonBuffer;
-    JsonDocument doc;
-    deserializeJson(doc, buf.get());
-
-    if (doc.isNull())
-    {
-        return false;
-    }
-    const char* ssid = doc["ssid"];
-    // double tmp = doc["tmp"];
-    // ConfigSettings.ssid = ssid;
-    // char pass_[30];
-    // // strcpy(pass_, doc["pass"]);
-    // ConfigSettings.password = doc["pass"];
-    // // char ip_[30];
-    // // strcpy(ip_, doc["pass");
-    // ConfigSettings.ipAddress = doc["ip"];
-    // // char mask_[30];
-    // // strcpy(mask_, doc["mask"]);
-    // ConfigSettings.ipMask = doc["mask"];
-    // // char gw_[30];
-    // // strcpy(gw_, doc["gw"]);
-    // ConfigSettings.ipGW = doc["gw"];
-
-    configFile.close();
-
     return true;
 }
 

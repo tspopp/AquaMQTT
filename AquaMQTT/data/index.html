@@ -1,5 +1,5 @@
 <head>
-    <script type='text/javascript' src='web/js/jquery-min.js'></script>
+    <!-- <script type='text/javascript' src='web/js/jquery-min.js'></script> -->
     <script type='text/javascript' src='web/js/bootstrap.min.js'></script>
     <link href='web/css/bootstrap.min.css' rel='stylesheet' type='text/css' />
     <link href='web/css/style.css' rel='stylesheet' type='text/css' />
@@ -38,15 +38,15 @@
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="wifi-tab" data-bs-toggle="tab" data-bs-target="#wifi"
+                    <button class="nav-link active" id="wifi-button" data-bs-toggle="tab" data-bs-target="#wifi-tab"
                         type="button" role="tab" aria-controls="wifi" aria-selected="true">Wifi</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="mqtt-tab" data-bs-toggle="tab" data-bs-target="#mqtt" type="button"
+                    <button class="nav-link" id="mqtt-button" data-bs-toggle="tab" data-bs-target="#mqtt-tab" type="button"
                         role="tab" aria-controls="mqtt" aria-selected="false">MQTT</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="aqua-tab" data-bs-toggle="tab" data-bs-target="#aqua" type="button"
+                    <button class="nav-link" id="aqua-button" data-bs-toggle="tab" data-bs-target="#aqua-tab" type="button"
                         role="tab" aria-controls="aqua" aria-selected="false">AquaMQTT</button>
                 </li>
             </ul>
@@ -60,7 +60,7 @@
                 <div class="col"></div>
             </div>
         </div>
-        <div class="tab-pane fade show active" id="wifi" role="tabpanel" aria-labelledby="wifi-tab">
+        <div class="tab-pane fade show active" id="wifi-tab" role="tabpanel" aria-labelledby="wifi-tab">
             <div class='row justify-content-md-center'>
                 <div class='col-sm-6'>
                     <h1>Wifi Configuration</h1>
@@ -71,7 +71,7 @@
                             <div class="input-group has-validation">
                                 <input class='form-control' id='ssid' type='text' name='ssid' required>
                                 <div class="invalid-feedback">
-                                    Please choose a username.
+                                    Please enter a valid SSID.
                                 </div>
                             </div>
                         </div>
@@ -79,7 +79,10 @@
                             <label for='password'>Password</label>
                             <input class='form-control' id='password' type='password' name='password'>
                         </div>
-                        <!-- <input type='hidden' id='reboot' name='reboot' value='0'> -->
+                        <div class='form-group mb-3'>
+                            <label for='networkname'>Network name</label>
+                            <input class='form-control' id='networkname' type='text' name='networkname'>
+                        </div>
                     </form>
                     <div class='form-group mb-3'>
                         <button type='submit' class='btn btn-primary mb-3' data-bs-toggle='modal'
@@ -88,21 +91,21 @@
                 </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="mqtt" role="tabpanel" aria-labelledby="mqtt-tab">
+        <div class="tab-pane fade" id="mqtt-tab" role="tabpanel" aria-labelledby="mqtt-tab">
             <div class='row justify-content-md-center'>
                 <div class='col-sm-6'>
                     <h1>MQTT Configuration</h1>
                     <form id='mqtt' method='POST' action='/api/mqtt'>
                         <div class='form-group mb-3'>
-                            <label for='mqtt_server'>Server MQTT</label>
+                            <label for='mqtt_server'>Server Address</label>
                             <input class='form-control' id='mqtt_server' type='text' name='MQTT_Server'>
                         </div>
                         <div class='form-group mb-3'>
-                            <label for='mqtt_port'>MQTT server Port</label>
+                            <label for='mqtt_port'>Server Port</label>
                             <input class='form-control' id='mqtt_port' type='number' name='MQTT_ServerPort'>
                         </div>
                         <div class='form-group mb-3'>
-                            <label for='mqtt_user'>UserName</label>
+                            <label for='mqtt_user'>User</label>
                             <input class='form-control' id='mqtt_user' type='text' name='MQTT_UserName'>
                         </div>
                         <div class='form-group mb-3'>
@@ -114,14 +117,15 @@
                             <input class='form-control' id='brokerClientId' type='text' name='MQTT_BrokerID'>
                         </div>
                         <div class='form-group form-switch mb-3'>
-                            <input class='form-check-input' id='enableDiscovery' type='checkbox' name='enableDiscovery'>
+                            <!-- form-control -->
+                            <input class='form-check-input' id='enableDiscovery' type='checkbox'
+                                name='enableDiscovery' role="switch">
                             <label class='form-check-label' for='enableDiscovery'>Enable HomeAssistant Discovery</label>
                         </div>
                         <div class='form-group mb-3'>
                             <label for='haDiscoveryPrefix'>Discovery prefix</label>
                             <input class='form-control' id='haDiscoveryPrefix' type='text' name='MQTT_Prefix'>
                         </div>
-                        <!-- <input type='hidden' id='reboot' name='reboot' value='0'> -->
                     </form>
                     <div class='form-group mb-3'>
                         <button type='submit' class='btn btn-primary mb-3' data-bs-toggle='modal'
@@ -130,7 +134,7 @@
                 </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="aqua" role="tabpanel" aria-labelledby="aquamqtt-tab">
+        <div class="tab-pane fade" id="aqua-tab" role="tabpanel" aria-labelledby="aquamqtt-tab">
             <div class='row justify-content-md-center'>
                 <div class='col-sm-6'>
                     <h1>AquaMQTT Configuration</h1>
@@ -147,7 +151,6 @@
                                 <option value=1>MITM</option>
                             </select>
                         </div>
-                        <!-- <input type='hidden' id='reboot' name='reboot' value='0'> -->
                     </form>
                     <div class='form-group mb-3'>
                         <button type='submit' class='btn btn-primary mb-3' data-bs-toggle='modal'
