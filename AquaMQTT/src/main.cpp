@@ -65,24 +65,17 @@ void setup()
     if (!loadWifiConfig())
     {
         Serial.println("Wifi conf not loaded ....");
+         Serial.println("Wifi set to Access Point Mode");
+        wifiHandler.setupAP();
     }
     else
-    {
-        configOK = true;
-    }
-
-    if (configOK)
     {
         if (!wifiHandler.setup())
         {
             wifiHandler.setupAP();
         }
     }
-    else
-    {
-        Serial.println("Wifi set to Access Point Mode");
-        wifiHandler.setupAP();
-    }
+
 
     // initialize watchdog
     esp_task_wdt_deinit();
