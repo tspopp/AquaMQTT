@@ -30,7 +30,6 @@ struct AquaMqttStruct
     int    operationMode;
 };
 
-IPAddress parse_ip_address(const char* str);
 bool      loadConfig();
 bool      loadWifiConfig();
 bool      loadMqttConfig();
