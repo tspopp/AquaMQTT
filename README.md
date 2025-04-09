@@ -1,6 +1,6 @@
 # AquaMQTT
 
-[![PlatformIO CI](https://github.com/tspopp/AquaMQTT/actions/workflows/main.yml/badge.svg)](https://github.com/tspopp/AquaMQTT/actions/workflows/main.yml) [![Community & PCB Trading](https://img.shields.io/badge/Community%20%26%20PCB%20Trading-7289DA?logo=discord&logoColor=white)](https://discord.gg/dYV2CPGs)
+[![PlatformIO CI](https://github.com/tspopp/AquaMQTT/actions/workflows/main.yml/badge.svg)](https://github.com/tspopp/AquaMQTT/actions/workflows/main.yml) [![Community & PCB Trading](https://img.shields.io/badge/Community%20%26%20PCB%20Trading-7289DA?logo=discord&logoColor=white)](https://discord.gg/Ednx4E9JuA)
 
 AquaMQTT is a project designed to monitor and control your DHW heat pump locally using MQTT.
 
