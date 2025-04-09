@@ -217,7 +217,7 @@ bool HMIMessage::getAttr(const HMI_ATTR_BOOL attr)
         case HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED:
             return mData[5] & 0x01;
         case HMI_ATTR_BOOL::HEATING_ELEMENT_ALLOWED:
-            return mData[8] & 0x04;
+            return !(mData[8] & 0x04);
         case HMI_ATTR_BOOL::PV_INPUT_ALLOWED:
             return mData[8] & 0x02;
     }
@@ -423,12 +423,12 @@ void HMIMessage::setAttr(const HMI_ATTR_BOOL attr, const bool value)
         case HMI_ATTR_BOOL::HEATING_ELEMENT_ALLOWED:
             if (value)
             {
-                mData[8] |= 0x04;
+                mData[8] &= ~0x04;
             }
             // Sanity: You cannot disable heating element if emergency mode is activated
             else if (!getAttr(HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED))
             {
-                mData[8] &= ~0x04;
+                mData[8] |= 0x04;
             }
             break;
         case HMI_ATTR_BOOL::PV_INPUT_ALLOWED:
