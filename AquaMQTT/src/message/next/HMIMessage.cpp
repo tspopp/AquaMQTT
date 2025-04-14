@@ -30,8 +30,6 @@ void HMIMessage::compareWith(const uint8_t* data)
                 break;
             case 2:
                 mHasChangedU8.insert(HMI_ATTR_U8::OPERATION_MODE);
-                break;
-            case 3:
                 mHasChangedU8.insert(HMI_ATTR_U8::OPERATION_TYPE);
                 break;
             case 4:
@@ -180,11 +178,15 @@ uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
                     return OM_UNKNOWN;
             }
         case HMI_ATTR_U8::OPERATION_TYPE:
-            if (mData[3] & 0x40)
+            switch (mData[2] & 0xF0)
             {
-                return OT_ALWAYS_ON;
+                case 0x10:
+                    return OT_TIMER;
+                case 0x40:
+                    return OT_ALWAYS_ON;
+                default:
+                    return OT_UNKNOWN;
             }
-            return OT_TIMER;
         case HMI_ATTR_U8::STATE_SETUP:
         case HMI_ATTR_U8::STATE_TEST:
             break;
@@ -385,11 +387,13 @@ void HMIMessage::setAttr(const HMI_ATTR_U8 attr, uint8_t value)
             auto operationType = static_cast<HMIOperationType>(value);
             if (operationType == OT_TIMER)
             {
-                mData[3] = (mData[3] & ~(1 << 6)) | (true << 6);
+                // clears upper nibble and sets the timer bit
+                mData[2] = (mData[2] & 0x0F) | 0x10;
             }
             else if (operationType == OT_ALWAYS_ON)
             {
-                mData[3] = (mData[3] & ~(1 << 6)) | (false << 6);
+                // clears upper nibble and sets the always on bit
+                mData[2] = (mData[2] & 0x0F) | 0x40;
             }  // operation type off-peak hours is unsupported
         }
         break;
