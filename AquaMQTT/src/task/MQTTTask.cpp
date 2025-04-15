@@ -862,7 +862,7 @@ void MQTTTask::updateMainStatus(bool fullUpdate, ProtocolVersion& version)
             publishString(
                     MAIN_SUBTOPIC,
                     MAIN_SETTING_BOILER_BRAND,
-                    brandStr(static_cast<MAINBrands>(message->getAttr(MAIN_ATTR_U16::SETTING_BOILER_CAPACITY))));
+                    brandStr(static_cast<MAINBrands>(message->getAttr(MAIN_ATTR_U8::SETTING_BRAND))));
         }
     }
 
