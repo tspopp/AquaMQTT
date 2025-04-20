@@ -69,7 +69,7 @@ int HMIMessage::getValueByOperationModeAndType(
 {
     switch (operationType)
     {
-        case OT_ALWAYS_ON:
+    case OT_ALWAYS_ON:
             switch (operationMode)
             {
                 case OM_ABSENCE:
@@ -268,14 +268,14 @@ void HMIMessage::setAttr(const HMI_ATTR_U8 attr, uint8_t value)
         case HMI_ATTR_U8::OPERATION_MODE:
         {
             // changing operation mode might have an influence on operation type
-            mData[3] = getValueByOperationModeAndType(
-                    static_cast<HMIOperationMode>(value), static_cast<HMIOperationType>(getAttr(HMI_ATTR_U8::OPERATION_TYPE)));
+            mData[2] = getValueByOperationModeAndType(static_cast<HMIOperationMode>(value), static_cast<HMIOperationType>(getAttr(HMI_ATTR_U8::OPERATION_TYPE)));
         }
         break;
         case HMI_ATTR_U8::OPERATION_TYPE:
         {
+
             // changing operation type might have an influence on operation type
-            mData[3] = getValueByOperationModeAndType(
+            mData[2] = getValueByOperationModeAndType(
                     static_cast<HMIOperationMode>(getAttr(HMI_ATTR_U8::OPERATION_MODE)), static_cast<HMIOperationType>(value));
         }
         break;
