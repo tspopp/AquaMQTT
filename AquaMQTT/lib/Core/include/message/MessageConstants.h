@@ -2,6 +2,7 @@
 #define AQUAMQTT_MESSAGECONSTANTS_H
 
 #include <cstdio>
+#include <cstdint>
 
 #include "mqtt/MQTTDefinitions.h"
 
@@ -245,12 +246,13 @@ static const char* operationModeStr(HMIOperationMode mode)
     }
 }
 
-enum HMIOperationType
+enum HMIOperationType : int
 {
-    OT_UNKNOWN,
-    OT_ALWAYS_ON,
-    OT_TIMER,
-    OT_OFF_PEAK_HOURS
+    OT_UNKNOWN = -1,
+    OT_OFF_PEAK_HOURS = 0,
+    OT_ALWAYS_ON = 1,
+    OT_TIMER = 2,
+
 };
 
 static const char* operationTypeStr(const HMIOperationType type)
