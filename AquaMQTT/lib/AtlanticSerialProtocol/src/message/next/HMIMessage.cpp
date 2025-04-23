@@ -110,6 +110,7 @@ uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
         case HMI_ATTR_U8::DATE_DAY:
             return mData[17] & 0x1F;
         case HMI_ATTR_U8::DATE_MONTH:
+            // always +1 and +8  in case we are pastAugust
             return 1 + (mData[17] >> 5) + ((mData[18] % 2) * 8);
         case HMI_ATTR_U8::STATE_INSTALLATION_MODE:
             if (mData[6] & 0x02)
@@ -573,11 +574,13 @@ uint8_t HMIMessage::getLength()
 
 void HMIMessage::setDateMonthAndYear(const uint8_t month, const uint16_t year) const
 {
-    const int pastJuly = month > 7 ? 1 : 0;
-    mData[18]          = ((year - 2000) * 2) + pastJuly;
+    const int pastAugust= month > 8 ? 1 : 0;
+    mData[18]          = ((year - 2000) * 2) + pastAugust;
 
-    const int month_off_by_one = month - 1;
-    const int monthValue       = (pastJuly ? month_off_by_one - 8 : month_off_by_one) << 5;
+    // we always need to reduce by one, since a value of zero is january or september
+    const int off_by_one = month - 1;
+    // substract -8 in case we are pastAugust
+    const int monthValue = (pastAugust ? (off_by_one - 8) : off_by_one) << 5;
     mData[17]                  = (mData[17] & 0x1F) | (monthValue & 0xE0);
 }
 }  // namespace aquamqtt::message::next
