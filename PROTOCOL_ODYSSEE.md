@@ -77,7 +77,7 @@ Paste hex here: https://www.scadacore.com/tools/programming-calculators/online-c
 | 23          | 0             |                                     |                                                                 |
 | 24          | 0             |                                     |                                                                 |
 | 25          | 65            |                                     |                                                                 |
-| 26          | 66            |                                     |                                                                 |
+| 26          | 66            | HMI Software Version                | Interpreted as ASCII, 66 == 'B'                                 |
 | 27          | 0             | Error Number Requested              |                                                                 |
 | 28          | 0             | Error Request Id                    |                                                                 |
 
@@ -88,37 +88,37 @@ Paste hex here: https://www.scadacore.com/tools/programming-calculators/online-c
 
 ### Main Message (193)
 
-| Byte Number | Example (dec) | Purpose/Function              | Other Information |
-|-------------|---------------|-------------------------------|-------------------|
-| 0           | 29            | Length Field                  |                   |
-| 1           | 53            | Water Temperature             |                   |
-| 2           | 0             |                               |                   |
-| 3           | 31            | Compressor Outlet Temperature |                   |
-| 4           | 0             |                               |                   |
-| 5           | 14            | Upper Evaporator Temperature  |                   |
-| 6           | 0             |                               |                   |
-| 7           | 14            | Lower Evaporator Temperature  |                   |
-| 8           | 0             |                               |                   |
-| 9           | 18            | Input Air Temperature         |                   |
-| 10          | 0             |                               |                   |
-| 11          | 0             |                               |                   |
-| 12          | 0             |                               |                   |
-| 13          | 53            | Upper Water Temperature       |                   |
-| 14          | 0             |                               |                   |
-| 15          | 47            | Lower Water Temperature       |                   |
-| 16          | 0             |                               |                   |
-| 17          | 0             | Picture Bitmask / States      |                   |
-| 18          | 0             | Fan Speed PWM 0-100%          |                   |
-| 19          | 0             |                               |                   |
-| 20          | 0             |                               |                   |
-| 21          | 0             |                               |                   |
-| 22          | 2             |                               |                   |
-| 23          | 0             |                               |                   |
-| 24          | 0             |                               |                   |
-| 25          | 0             |                               |                   |
-| 26          | 0             |                               |                   |
-| 27          | 82            |                               |                   |
-| 28          | 66            |                               |                   |
+| Byte Number | Example (dec) | Purpose/Function              | Other Information               |
+|-------------|---------------|-------------------------------|---------------------------------|
+| 0           | 29            | Length Field                  |                                 |
+| 1           | 53            | Water Temperature             |                                 |
+| 2           | 0             |                               |                                 |
+| 3           | 31            | Compressor Outlet Temperature |                                 |
+| 4           | 0             |                               |                                 |
+| 5           | 14            | Upper Evaporator Temperature  |                                 |
+| 6           | 0             |                               |                                 |
+| 7           | 14            | Lower Evaporator Temperature  |                                 |
+| 8           | 0             |                               |                                 |
+| 9           | 18            | Input Air Temperature         |                                 |
+| 10          | 0             |                               |                                 |
+| 11          | 0             |                               |                                 |
+| 12          | 0             |                               |                                 |
+| 13          | 53            | Upper Water Temperature       |                                 |
+| 14          | 0             |                               |                                 |
+| 15          | 47            | Lower Water Temperature       |                                 |
+| 16          | 0             |                               |                                 |
+| 17          | 0             | Picture Bitmask / States      |                                 |
+| 18          | 0             | Fan Speed PWM 0-100%          |                                 |
+| 19          | 0             |                               |                                 |
+| 20          | 0             |                               |                                 |
+| 21          | 0             |                               |                                 |
+| 22          | 2             |                               |                                 |
+| 23          | 0             |                               |                                 |
+| 24          | 0             |                               |                                 |
+| 25          | 0             |                               |                                 |
+| 26          | 0             |                               |                                 |
+| 27          | 82            |                               |                                 |
+| 28          | 66            | Controller Software Version   | Interpreted as ASCII, 66 == 'B' |
 
 ##### Byte No 17: Picture Bitmask
 

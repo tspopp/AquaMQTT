@@ -67,6 +67,9 @@ void MainStatusMessage::compareWith(const uint8_t* data)
             case 23:
                 mHasChangedU8.insert(MAIN_ATTR_U8::ERROR_CODE);
                 break;
+            case 28:
+                mHasChangedU8.insert(MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII);
+                break;
             case 32:
                 mHasChangedU16.insert(MAIN_ATTR_U16::SETTING_HEAT_ELEMENT_WATTAGE);
                 break;
@@ -90,12 +93,7 @@ void MainStatusMessage::compareWith(const uint8_t* data)
     }
 }
 
-MainStatusMessage::MainStatusMessage(uint8_t* data, const uint8_t* previous)
-    : mData(data)
-    , mHasChangedFloat()
-    , mHasChangedBool()
-    , mHasChangedU8()
-    , mHasChangedU16()
+MainStatusMessage::MainStatusMessage(uint8_t* data, const uint8_t* previous) : mData(data)
 {
     mCreatedWithoutPrevious = previous == nullptr;
     compareWith(previous);
@@ -191,6 +189,8 @@ uint8_t MainStatusMessage::getAttr(const MAIN_ATTR_U8 attr)
                 default:
                     return BR_UNKNOWN;
             }
+        case MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII:
+            return mData[28];
     }
     return 0;
 }
@@ -337,6 +337,7 @@ bool MainStatusMessage::hasAttr(const MAIN_ATTR_U8 attr) const
         case MAIN_ATTR_U8::SETTING_MIN_TARGET_WATER_TEMPERATURE:
         case MAIN_ATTR_U8::SETTING_LEGIONELLA_TARGET_WATER_TEMPERATURE:
         case MAIN_ATTR_U8::SETTING_BRAND:
+        case MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII:
             return true;
     }
     return false;

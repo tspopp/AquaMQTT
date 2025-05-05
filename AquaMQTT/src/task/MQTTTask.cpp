@@ -866,6 +866,15 @@ void MQTTTask::updateMainStatus(bool fullUpdate, ProtocolVersion& version)
         }
     }
 
+    if (message->hasAttr(MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII))
+    {
+        if (fullUpdate || message->hasChanged(MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII))
+        {
+            const std::string str(1, static_cast<char>(message->getAttr(MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII)));
+            publishString(MAIN_SUBTOPIC, MAIN_VERSION, str.c_str());
+        }
+    }
+
     if (message->hasAttr(MAIN_ATTR_BOOL::CAPABILITY_HAS_ANTI_DRY_HEATING))
     {
         if (fullUpdate || message->hasChanged(MAIN_ATTR_BOOL::CAPABILITY_HAS_ANTI_DRY_HEATING))
@@ -1044,6 +1053,15 @@ void MQTTTask::updateHMIStatus(bool fullUpdate, ProtocolVersion& version)
                         HMI_DATE);
                 mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
             }
+        }
+    }
+
+    if (message->hasAttr(HMI_ATTR_U8::VERSION_HMI_ASCII))
+    {
+        if (fullUpdate || message->hasChanged(HMI_ATTR_U8::VERSION_HMI_ASCII))
+        {
+            const std::string str(1, static_cast<char>(message->getAttr(HMI_ATTR_U8::VERSION_HMI_ASCII)));
+            publishString(HMI_SUBTOPIC, HMI_VERSION, str.c_str());
         }
     }
 
