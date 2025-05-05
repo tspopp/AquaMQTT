@@ -54,6 +54,9 @@ void MainStatusMessage::compareWith(const uint8_t* data)
             case 18:
                 mHasChangedFloat.insert(MAIN_ATTR_FLOAT::FAN_SPEED_PWM);
                 break;
+            case 28:
+                mHasChangedU8.insert(MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII);
+                break;
             default:
                 break;
         }
@@ -85,7 +88,7 @@ float MainStatusMessage::getAttr(const MAIN_ATTR_FLOAT attr)
     }
 }
 
-bool MainStatusMessage::getAttr(MAIN_ATTR_BOOL attr)
+bool MainStatusMessage::getAttr(const MAIN_ATTR_BOOL attr)
 {
     switch (attr)
     {
@@ -104,9 +107,15 @@ bool MainStatusMessage::getAttr(MAIN_ATTR_BOOL attr)
     }
 }
 
-uint8_t MainStatusMessage::getAttr(MAIN_ATTR_U8 attr)
+uint8_t MainStatusMessage::getAttr(const MAIN_ATTR_U8 attr)
 {
-    return 0;
+    switch (attr)
+    {
+        case MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII:
+            return mData[28];
+        default:
+            return 0;
+    }
 }
 
 uint16_t MainStatusMessage::getAttr(MAIN_ATTR_U16 attr)
@@ -165,7 +174,13 @@ bool MainStatusMessage::hasAttr(const MAIN_ATTR_BOOL attr) const
 
 bool MainStatusMessage::hasAttr(const MAIN_ATTR_U8 attr) const
 {
-    return false;
+    switch (attr)
+    {
+        case MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII:
+            return true;
+        default:
+            return false;
+    }
 }
 
 bool MainStatusMessage::hasAttr(const MAIN_ATTR_U16 attr) const

@@ -3,11 +3,7 @@
 namespace aquamqtt::message::next
 {
 
-MainStatusMessage::MainStatusMessage(uint8_t* data, const uint8_t* previous)
-    : mData(data)
-    , mHasChangedFloat()
-    , mHasChangedBool()
-    , mHasChangedU8()
+MainStatusMessage::MainStatusMessage(uint8_t* data, const uint8_t* previous) : mData(data)
 {
     mCreatedWithoutPrevious = previous == nullptr;
     compareWith(previous);
@@ -56,6 +52,9 @@ void MainStatusMessage::compareWith(const uint8_t* data)
             case 22:
                 mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_PV);
                 mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_SOLAR);
+                break;
+            case 28:
+                mHasChangedU8.insert(MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII);
                 break;
             default:
                 break;
@@ -107,9 +106,14 @@ bool MainStatusMessage::getAttr(const MAIN_ATTR_BOOL attr)
     }
 }
 
-uint8_t MainStatusMessage::getAttr(MAIN_ATTR_U8 attr)
+uint8_t MainStatusMessage::getAttr(const MAIN_ATTR_U8 attr)
 {
-    return 0;
+    switch (attr) {
+        case MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII:
+            return mData[28];
+        default:
+            return 0;
+    }
 }
 
 uint16_t MainStatusMessage::getAttr(MAIN_ATTR_U16 attr)
@@ -200,9 +204,14 @@ bool MainStatusMessage::hasAttr(const MAIN_ATTR_BOOL attr) const
     }
 }
 
-bool MainStatusMessage::hasAttr(MAIN_ATTR_U8 attr) const
+bool MainStatusMessage::hasAttr(const MAIN_ATTR_U8 attr) const
 {
-    return false;
+    switch (attr) {
+        case MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII:
+            return true;
+        default:
+            return false;
+    }
 }
 
 bool MainStatusMessage::hasAttr(MAIN_ATTR_U16 attr) const

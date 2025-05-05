@@ -70,7 +70,7 @@ static uint8_t generateNextChecksum(const uint8_t* buffer, uint8_t length){
 | 23          | 0             | ?                                   |                                                                                                                                                             |
 | 24          | 0             | ?                                   |                                                                                                                                                             |
 | 25          | 78            | ?                                   |                                                                                                                                                             |
-| 26          | 69            | ?                                   |                                                                                                                                                             |
+| 26          | 69            | HMI Software Version                | Interpreted as ASCII, 69 == 'E'                                                                                                                             |
 | 27          | 0             | Error Number Requested              |                                                                                                                                                             |
 | 28          | 0             | Error Request Id                    |                                                                                                                                                             |
 | 29          | 60            | Timer Mode: Window 2 Start          | Byte 1/2 --> See table below                                                                                                                                |
@@ -108,43 +108,43 @@ Setting limitations:
 
 ### Main Message (193)
 
-| Byte Number | Example (dec) | Purpose/Function          | Other Information                                        |
-|-------------|---------------|---------------------------|----------------------------------------------------------|
-| 0           | 35            | Length Field              |                                                          |
-| 1           | 46            | Hot Water Temp            |                                                          |
-| 2           | 0             | ?                         |                                                          |
-| 3           | 35            | Compressor Outlet Temp    |                                                          |
-| 4           | 0             | ?                         |                                                          |
-| 5           | 24            | Upper Evaporator Temp     |                                                          |
-| 6           | 0             | ?                         |                                                          |
-| 7           | 24            | Lower Evaporator Temp     |                                                          |
-| 8           | 0             | ?                         |                                                          |
-| 9           | 21            | Input Air Temp            |                                                          |
-| 10          | 0             | ?                         |                                                          |
-| 11          | 0             | ?                         |                                                          |
-| 12          | 0             | ?                         |                                                          |
-| 13          | 0             | ?                         |                                                          |
-| 14          | 0             | ?                         |                                                          |
-| 15          | 0             | ?                         |                                                          |
-| 16          | 0             | ?                         |                                                          |
-| 17          | 0             | Picture Bitmask           | See table below                                          |
-| 18          | 50            | Fan-Speed                 | 50 == low, 100 == high                                   |
-| 19          | 0             | ?                         |                                                          |
-| 20          | 0             | ?                         |                                                          |
-| 21          | 0             | ?                         |                                                          |
-| 22          | 20            | State: PV and Solar Input | 20 == PV Enabled and Active, ?? == Solar Input Triggered |
-| 23          | 0             | ?                         |                                                          |
-| 24          | 0             | ?                         |                                                          |
-| 25          | 0             | ?                         |                                                          |
-| 26          | 0             | ?                         |                                                          |
-| 27          | 69            | ?                         |                                                          |
-| 28          | 69            | ?                         |                                                          |
-| 29          | 40            | ?                         |                                                          |
-| 30          | 203           | ?                         |                                                          |
-| 31          | 0             | ?                         |                                                          |
-| 32          | 14            | ?                         |                                                          |
-| 33          | 1             | ?                         |                                                          |
-| 34          | 17            | ?                         |                                                          |
+| Byte Number | Example (dec) | Purpose/Function                | Other Information                                                            |
+|-------------|---------------|---------------------------------|------------------------------------------------------------------------------|
+| 0           | 35            | Length Field                    |                                                                              |
+| 1           | 46            | Hot Water Temp                  |                                                                              |
+| 2           | 0             | ?                               |                                                                              |
+| 3           | 35            | Compressor Outlet Temp          |                                                                              |
+| 4           | 0             | ?                               |                                                                              |
+| 5           | 24            | Upper Evaporator Temp           |                                                                              |
+| 6           | 0             | ?                               |                                                                              |
+| 7           | 24            | Lower Evaporator Temp           |                                                                              |
+| 8           | 0             | ?                               |                                                                              |
+| 9           | 21            | Input Air Temp                  |                                                                              |
+| 10          | 0             | ?                               |                                                                              |
+| 11          | 0             | ?                               |                                                                              |
+| 12          | 0             | ?                               |                                                                              |
+| 13          | 0             | ?                               |                                                                              |
+| 14          | 0             | ?                               |                                                                              |
+| 15          | 0             | ?                               |                                                                              |
+| 16          | 0             | ?                               |                                                                              |
+| 17          | 0             | Picture Bitmask                 | See table below                                                              |
+| 18          | 50            | Fan-Speed                       | 50 == low, 100 == high                                                       |
+| 19          | 0             | ?                               |                                                                              |
+| 20          | 0             | ?                               |                                                                              |
+| 21          | 0             | ?                               |                                                                              |
+| 22          | 20            | State: PV and Solar Input       | 20 == PV Enabled and Active, ?? == Solar Input Triggered                     |
+| 23          | 0             | ?                               |                                                                              |
+| 24          | 0             | ?                               |                                                                              |
+| 25          | 0             | ?                               |                                                                              |
+| 26          | 0             | ?                               |                                                                              |
+| 27          | 69            | Controller Software Version (?) | Interpreted as ASCII, 69 == 'E'                                              |
+| 28          | 69            | Controller Software Version (?) | Interpreted as ASCII, 69 == 'E'. AquaMQTT currently uses this byte position. |
+| 29          | 40            | ?                               |                                                                              |
+| 30          | 203           | ?                               |                                                                              |
+| 31          | 0             | ?                               |                                                                              |
+| 32          | 14            | ?                               |                                                                              |
+| 33          | 1             | ?                               |                                                                              |
+| 34          | 17            | ?                               |                                                                              |
 
 ##### Byte No 17: Picture Bitmask
 

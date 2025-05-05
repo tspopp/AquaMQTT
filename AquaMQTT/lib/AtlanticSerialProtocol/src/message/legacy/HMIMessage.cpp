@@ -5,8 +5,7 @@
 namespace aquamqtt::message::legacy
 {
 
-HMIMessage::HMIMessage(uint8_t* data, const uint8_t* previous)
-    : mData(data)
+HMIMessage::HMIMessage(uint8_t* data, const uint8_t* previous) : mData(data)
 {
     mCreatedWithoutPrevious = previous == nullptr;
     compareWith(previous);
@@ -94,6 +93,9 @@ void HMIMessage::compareWith(const uint8_t* data)
                 break;
             case 22:
                 mHasChangedU8.insert(HMI_ATTR_U8::STATE_TEST);
+                break;
+            case 27:
+                mHasChangedU8.insert(HMI_ATTR_U8::VERSION_HMI_ASCII);
                 break;
             case 28:
                 mHasChangedU8.insert(HMI_ATTR_U8::HMI_ERROR_NO_REQUESTED);
@@ -233,6 +235,8 @@ uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
                 return OT_TIMER;
             }
             return OT_ALWAYS_ON;
+        case HMI_ATTR_U8::VERSION_HMI_ASCII:
+            return mData[27];
         default:
             return 0;
     }
@@ -442,7 +446,7 @@ void HMIMessage::setAttr(const HMI_ATTR_U8 attr, uint8_t value)
             else if (operationType == OT_ALWAYS_ON)
             {
                 mData[3] = (mData[3] & ~(1 << 6)) | (false << 6);
-            } // operation type off-peak hours is unsupported
+            }  // operation type off-peak hours is unsupported
         }
         break;
         case HMI_ATTR_U8::DATE_MONTH:
@@ -452,6 +456,7 @@ void HMIMessage::setAttr(const HMI_ATTR_U8 attr, uint8_t value)
         case HMI_ATTR_U8::HMI_ERROR_ID_REQUESTED:
         case HMI_ATTR_U8::HMI_ERROR_NO_REQUESTED:
         case HMI_ATTR_U8::ANTI_LEGIONELLA_CYCLES:
+        case HMI_ATTR_U8::VERSION_HMI_ASCII:
             // TODO: implement this is needed
             break;
     }
@@ -538,6 +543,7 @@ bool HMIMessage::hasAttr(const HMI_ATTR_U8 attr) const
         case HMI_ATTR_U8::HMI_ERROR_NO_REQUESTED:
         case HMI_ATTR_U8::OPERATION_MODE:
         case HMI_ATTR_U8::OPERATION_TYPE:
+        case HMI_ATTR_U8::VERSION_HMI_ASCII:
             return true;
         default:
             return false;

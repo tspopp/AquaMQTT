@@ -1,9 +1,7 @@
 #ifndef AQUAMQTT_MQTTDEFINITIONS_H
 #define AQUAMQTT_MQTTDEFINITIONS_H
 
-namespace aquamqtt
-{
-namespace mqtt
+namespace aquamqtt::mqtt
 {
 // Base Topics
 constexpr char BASE_TOPIC[]    = { "aquamqtt/" };
@@ -108,6 +106,7 @@ constexpr char MAIN_CAPABILITY_CIRCULATION[]      = { "capabilityCirculation" };
 constexpr char MAIN_CAPABILITY_PV_INPUT[]         = { "capabilityPVInput" };
 constexpr char MAIN_CAPABILITY_EXT_COMM[]         = { "capabilityCommunication" };
 constexpr char MAIN_CAPABILITY_DRY_HEATING[]      = { "capabilityAntiDryHeating" };
+constexpr char MAIN_VERSION[]                     = { "versionMain" };
 
 constexpr char HMI_HOT_WATER_TEMP_TARGET[]   = { "waterTempTarget" };
 constexpr char HMI_OPERATION_MODE[]          = { "operationMode" };
@@ -125,6 +124,7 @@ constexpr char HMI_FAN_EXHAUST_CONFIG[]      = { "configFanExhaust" };
 constexpr char HMI_INSTALLATION_CONFIG[]     = { "configInstallation" };
 constexpr char HMI_TEST_MODE[]               = { "testModeStatus" };
 constexpr char HMI_SETUP_STATE[]             = { "setupState" };
+constexpr char HMI_VERSION[]                 = { "versionHMI" };
 constexpr char HMM_PV_INPUT_ACTIVATED[]      = { "pvInputActivated" };
 
 constexpr char ENERGY_TOTAL_HEATING_ELEM_HOURS[] = { "totalHeatingElemHours" };
@@ -174,7 +174,6 @@ constexpr char DROPPED[] = { "droppedBuffer" };
 // CTRL
 constexpr char AQUAMQTT_RESET_OVERRIDES[] = { "reset" };
 
-}  // namespace mqtt
-}  // namespace aquamqtt
+}  // namespace aquamqtt::mqtt
 
 #endif  // AQUAMQTT_MQTTDEFINITIONS_H
