@@ -13,33 +13,31 @@ using namespace aquamqtt;
 using namespace aquamqtt::config;
 using namespace aquamqtt::mqtt;
 
-constexpr uint16_t BUFFER_SIZE = 40;
+constexpr uint16_t BUFFER_SIZE_BYTES = 256;
+constexpr uint16_t BUFFER_SIZE_STR   = BUFFER_SIZE_BYTES * 2 + 1;
 
-WiFiClient                mWiFiClient;
-MQTTClient                mMQTTClient(256);
-RingBuf<int, BUFFER_SIZE> mBuffer;
-OTAHandler                otaHandler;
-WifiHandler               wifiHandler;
-uint8_t                   mTopicBuffer[config::MQTT_MAX_TOPIC_SIZE];
-uint8_t                   mPayloadBuffer[MQTT_MAX_PAYLOAD_SIZE];
-uint8_t                   mTempBuffer[BUFFER_SIZE];
-esp_task_wdt_config_t twdt_config = {
-    .timeout_ms     = WATCHDOG_TIMEOUT_MS,
-    .idle_core_mask = (1 << configNUM_CORES) - 1,
-    .trigger_panic  = true,
+WiFiClient                      mWiFiClient;
+MQTTClient                      mMQTTClient(BUFFER_SIZE_STR);
+RingBuf<int, BUFFER_SIZE_BYTES> mBuffer;
+OTAHandler                      otaHandler;
+WifiHandler                     wifiHandler;
+uint8_t                         mTopicBufferStr[80];
+uint8_t                         mPayloadBufferStr[BUFFER_SIZE_STR];
+uint8_t                         mTempBuffer[BUFFER_SIZE_BYTES];
+esp_task_wdt_config_t           twdt_config = {
+              .timeout_ms     = WATCHDOG_TIMEOUT_MS,
+              .idle_core_mask = (1 << configNUM_CORES) - 1,
+              .trigger_panic  = true,
 };
 
-void toHexStr(uint8_t* data, uint8_t data_len, char* buffer)
+void toHexStr(uint8_t* data, char* buffer)
 {
-    const size_t num_bytes = data_len / sizeof(uint8_t);
-    // char         hex_str[num_bytes * 2 + 1];
-    for (size_t i = 0; i < num_bytes; i++)
+    for (size_t i = 0; i < BUFFER_SIZE_BYTES; i++)
     {
         sprintf(&buffer[i * 2], "%02X", data[i]);
     }
-    buffer[num_bytes * 2] = '\0';
+    buffer[BUFFER_SIZE_BYTES * 2] = '\0';
 }
-
 
 void loop()
 {
@@ -57,9 +55,9 @@ void loop()
     if (!mMQTTClient.connected())
     {
         mMQTTClient.connect(
-                aquamqtt::config::brokerClientId,
-                strlen(aquamqtt::config::brokerUser) == 0 ? nullptr : aquamqtt::config::brokerUser,
-                strlen(aquamqtt::config::brokerPassword) == 0 ? nullptr : aquamqtt::config::brokerPassword);
+                brokerClientId,
+                strlen(brokerUser) == 0 ? nullptr : brokerUser,
+                strlen(brokerPassword) == 0 ? nullptr : brokerPassword);
     }
     else
     {
@@ -75,15 +73,15 @@ void loop()
         // if buffer is full, we emit everything to mqtt and clear the buffer
         if (mBuffer.isFull())
         {
-            for (int i = 0; i < BUFFER_SIZE; i++)
+            for (int i = 0; i < BUFFER_SIZE_BYTES; i++)
             {
                 int retVal;
                 mBuffer.pop(retVal);
                 mTempBuffer[i] = retVal;
             }
-            sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%s%s", config::mqttPrefix, BASE_TOPIC, DEBUG);
-            toHexStr(mTempBuffer, BUFFER_SIZE, reinterpret_cast<char*>(mPayloadBuffer));
-            mMQTTClient.publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
+            sprintf(reinterpret_cast<char*>(mTopicBufferStr), "%s%s%s", mqttPrefix, BASE_TOPIC, DEBUG);
+            toHexStr(mTempBuffer, reinterpret_cast<char*>(mPayloadBufferStr));
+            mMQTTClient.publish(reinterpret_cast<char*>(mTopicBufferStr), reinterpret_cast<char*>(mPayloadBufferStr));
         }
     }
 }
@@ -99,7 +97,6 @@ void setup()
     esp_task_wdt_init(&twdt_config);
     esp_task_wdt_add(nullptr);
 
-
     // setup wifi
     wifiHandler.setup();
 
@@ -107,8 +104,8 @@ void setup()
     otaHandler.setup();
 
     // setup mqtt client
-    mMQTTClient.begin(aquamqtt::config::brokerAddr, aquamqtt::config::brokerPort, mWiFiClient);
+    mMQTTClient.begin(brokerAddr, brokerPort, mWiFiClient);
 
     // setup serial port
-    Serial2.begin(9550, SERIAL_8N2, aquamqtt::config::GPIO_MAIN_RX, aquamqtt::config::GPIO_MAIN_TX);
+    Serial2.begin(9550, SERIAL_8N2, GPIO_MAIN_RX, GPIO_MAIN_TX);
 }
