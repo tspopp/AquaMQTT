@@ -76,6 +76,8 @@ enum class MQTT_ITEM_SENSOR
     MAIN_LOWER_HOT_WATER_TEMP,
     ENERGY_VOLTAGE_GRID,
     ENERGY_AMPERAGE,
+    HMI_SOFTWARE_VERSION,
+    MAIN_SOFTWARE_VERSION,
     RESERVED_COUNT
 };
 
@@ -713,6 +715,18 @@ static bool buildConfiguration(
             doc["stat_t"]  = "~/main/settingBoilerBrand";
             doc["uniq_id"] = make_unique(temp, identifier, "main_setting_brand");
             doc["ic"]      = "mdi:factory";
+            break;
+        case MQTT_ITEM_SENSOR::HMI_SOFTWARE_VERSION:
+            doc["name"]    = "HMI Software Version";
+            doc["stat_t"]  = "~/hmi/versionHMI";
+            doc["uniq_id"] = make_unique(temp, identifier, "hmi_software_version");
+            doc["ic"]      = "mdi:information";
+            break;
+        case MQTT_ITEM_SENSOR::MAIN_SOFTWARE_VERSION:
+            doc["name"]    = "Controller Software Version";
+            doc["stat_t"]  = "~/main/versionMain";
+            doc["uniq_id"] = make_unique(temp, identifier, "main_software_version");
+            doc["ic"]      = "mdi:information";
             break;
         case MQTT_ITEM_SENSOR::HMI_TEST_MODE:
             if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)

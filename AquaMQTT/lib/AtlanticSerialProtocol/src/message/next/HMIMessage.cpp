@@ -84,6 +84,9 @@ void HMIMessage::compareWith(const uint8_t* data)
                 mHasChangedU8.insert(HMI_ATTR_U8::DATE_MONTH);
                 mHasChangedU16.insert(HMI_ATTR_U16::DATE_YEAR);
                 break;
+            case 26:
+                mHasChangedU8.insert(HMI_ATTR_U8::VERSION_HMI_ASCII);
+                break;
             case 27:
                 mHasChangedU8.insert(HMI_ATTR_U8::HMI_ERROR_NO_REQUESTED);
                 break;
@@ -188,6 +191,8 @@ uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
                 default:
                     return OT_UNKNOWN;
             }
+        case HMI_ATTR_U8::VERSION_HMI_ASCII:
+            return mData[26];
         case HMI_ATTR_U8::STATE_SETUP:
         case HMI_ATTR_U8::STATE_TEST:
             break;
@@ -405,6 +410,7 @@ void HMIMessage::setAttr(const HMI_ATTR_U8 attr, uint8_t value)
         case HMI_ATTR_U8::STATE_SETUP:
         case HMI_ATTR_U8::STATE_TEST:
         case HMI_ATTR_U8::ANTI_LEGIONELLA_CYCLES:
+        case HMI_ATTR_U8::VERSION_HMI_ASCII:
             // TODO: implement this if needed
             break;
     }
@@ -485,6 +491,7 @@ bool HMIMessage::hasAttr(const HMI_ATTR_U8 attr) const
         case HMI_ATTR_U8::HMI_ERROR_NO_REQUESTED:
         case HMI_ATTR_U8::OPERATION_MODE:
         case HMI_ATTR_U8::OPERATION_TYPE:
+        case HMI_ATTR_U8::VERSION_HMI_ASCII:
             return true;
         default:
             return false;
@@ -574,13 +581,13 @@ uint8_t HMIMessage::getLength()
 
 void HMIMessage::setDateMonthAndYear(const uint8_t month, const uint16_t year) const
 {
-    const int pastAugust= month > 8 ? 1 : 0;
-    mData[18]          = ((year - 2000) * 2) + pastAugust;
+    const int pastAugust = month > 8 ? 1 : 0;
+    mData[18]            = ((year - 2000) * 2) + pastAugust;
 
     // we always need to reduce by one, since a value of zero is january or september
     const int off_by_one = month - 1;
     // substract -8 in case we are pastAugust
     const int monthValue = (pastAugust ? (off_by_one - 8) : off_by_one) << 5;
-    mData[17]                  = (mData[17] & 0x1F) | (monthValue & 0xE0);
+    mData[17]            = (mData[17] & 0x1F) | (monthValue & 0xE0);
 }
 }  // namespace aquamqtt::message::next
