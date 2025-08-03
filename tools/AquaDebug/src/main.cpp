@@ -110,5 +110,5 @@ void setup()
     mMQTTClient.begin(aquamqtt::config::brokerAddr, aquamqtt::config::brokerPort, mWiFiClient);
 
     // setup serial port
-    Serial2.begin(9550, SERIAL_8N2, aquamqtt::config::GPIO_MAIN_RX, aquamqtt::config::GPIO_MAIN_TX);
+    Serial2.begin(aquamqtt::config::DEFAULT_SERIAL_BAUD, aquamqtt::config::DEFAULT_SERIAL_CONFIGURATION, aquamqtt::config::GPIO_MAIN_RX, aquamqtt::config::GPIO_MAIN_TX);
 }

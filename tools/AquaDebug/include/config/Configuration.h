@@ -30,6 +30,18 @@ constexpr uint8_t  MQTT_MAX_TOPIC_SIZE   = 80;
 constexpr uint8_t  MQTT_MAX_PAYLOAD_SIZE = 255;
 
 /**
+ * Default serial configuration uses two stop bits SERIAL_8N2, but there are heatpumps
+ * such as the Thermor Aeromax 5 (E/H) #80 which require SERIAL_8N1 here. Else messages
+ * are most of the time not complete.
+ */
+constexpr auto DEFAULT_SERIAL_CONFIGURATION = SERIAL_8N2;
+
+/**
+ * Default serial configuration uses baud rate of 9550 / determined using logic analyzer
+ */
+constexpr unsigned long DEFAULT_SERIAL_BAUD = 9550;
+
+/**
  * Pin assignments for AquaMQTT Board Rev 1.0
  * There are different GPIO ports depending on the hardware.
  * The ENV_DEVKIT_ESP32 macro is set by the platformio environment.

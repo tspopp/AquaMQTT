@@ -60,6 +60,18 @@ constexpr bool OVERRIDE_TIME_AND_DATE_IN_MITM = true;
 constexpr bool DEBUG_RAW_SERIAL_MESSAGES = false;
 
 /**
+ * Default serial configuration uses two stop bits SERIAL_8N2, but there are heatpumps
+ * such as the Thermor Aeromax 5 (E/H) #80 which require SERIAL_8N1 here. Else messages
+ * are most of the time not complete, causing missing attributes in MQTT.
+ */
+constexpr auto DEFAULT_SERIAL_CONFIGURATION = SERIAL_8N2;
+
+/**
+ * Default serial configuration uses baud rate of 9550 / determined using logic analyzer
+ */
+constexpr unsigned long DEFAULT_SERIAL_BAUD = 9550;
+
+/**
  * Choose to collect the message sequence and frequencies in LISTENER mode.
  * Will provide timings to /stats/timing on topics such as "67-217": 100ms
  * Time it took after processing valid 67 message to receiving and processing

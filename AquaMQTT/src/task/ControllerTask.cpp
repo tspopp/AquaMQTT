@@ -41,7 +41,7 @@ void ControllerTask::spawn()
 
 void ControllerTask::setup()  // NOLINT(*-convert-member-functions-to-static)
 {
-    Serial2.begin(9550, SERIAL_8N2, config::GPIO_MAIN_RX, config::GPIO_MAIN_TX);
+    Serial2.begin(config::DEFAULT_SERIAL_BAUD, config::DEFAULT_SERIAL_CONFIGURATION, config::GPIO_MAIN_RX, config::GPIO_MAIN_TX);
     pinMode(config::GPIO_ENABLE_TX_MAIN, OUTPUT);
 }
 
