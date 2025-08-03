@@ -46,7 +46,7 @@ void HMITask::spawn()
 
 void HMITask::setup()  // NOLINT(*-convert-member-functions-to-static)
 {
-    Serial1.begin(9550, SERIAL_8N2, config::GPIO_HMI_RX, config::GPIO_HMI_TX);
+    Serial1.begin(config::DEFAULT_SERIAL_BAUD, config::DEFAULT_SERIAL_CONFIGURATION, config::GPIO_HMI_RX, config::GPIO_HMI_TX);
     pinMode(config::GPIO_ENABLE_TX_HMI, OUTPUT);
 }
 
