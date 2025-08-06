@@ -15,3 +15,67 @@ If all these conditions are fullfilled, you will find the AquaMQTT device at `Se
 If you need full control over the entities read from AquaMQTT, you may directly edit the `configuration.yaml` file of your homeassistant installation. There is a file [./aquamqtt.yaml](./aquamqtt.yaml) within this repository, which acts as template for you to edit and included in your configuration file. 
 
 Please note, that there might be more attributes not implemented by this example. For a full catalogue of MQTT topics and payloads inspect [./MQTT.md](./MQTT.md) or inspect the MQTT traffic produced by AquaMQTT.
+
+#### Climate Entity for Manual Configuration
+
+For users who prefer manual configuration and want more comprehensive climate control through Home Assistant climate cards, a `climate` entity can be added. This allows for dedicated climate control cards and integration for `solar optimization scripts` (e.g.:[PV_Excess_Control by HenrikW](https://github.com/InventoCasa/ha-advanced-blueprints/tree/main/PV_Excess_Control))
+
+To integrate this, add the following entry to your `mqtt.yaml` file (assuming you have `mqtt.yaml` included in your `configuration.yaml` like this: `mqtt: !include mqtt.yaml`):
+
+```yaml
+- climate:
+    name: "aquamqtt_climate"
+    unique_id: "aquamqtt_climate"
+    temperature_unit: C
+    min_temp: 43
+    max_temp: 60
+    temp_step: 1
+
+    # Current water temperature
+    current_temperature_topic: "aquamqtt/main/waterTemp"
+    current_temperature_template: "{{ value | float }}"
+
+    # Target temperature (read)
+    temperature_state_topic: "aquamqtt/hmi/waterTempTarget"
+    temperature_state_template: "{{ value | float }}"
+
+    # Target temperature (set)
+    temperature_command_topic: "aquamqtt/ctrl/waterTempTarget"
+    temperature_command_template: "{{ value | float }}"
+
+    # Only use standard HVAC modes
+    mode_state_topic: "aquamqtt/hmi/operationMode"
+    mode_state_template: >
+      {% set map = {
+        'MAN ECO OFF': 'off',
+        'AUTO': 'auto',
+        'MAN ECO ON': 'heat'
+      } %}
+      {{ map.get(value, 'auto') }}
+
+    mode_command_topic: "aquamqtt/ctrl/operationMode"
+    mode_command_template: >
+      {% set map = {
+        'off': 'MAN ECO OFF',
+        'auto': 'AUTO',
+        'heat': 'MAN ECO ON'
+      } %}
+      {{ map.get(value, 'AUTO') }}
+
+    modes:
+      - "off"
+      - "auto"
+      - "heat"
+
+    # Preset modes (must match device payloads exactly)
+    preset_mode_state_topic: "aquamqtt/hmi/operationMode"
+    preset_mode_command_topic: "aquamqtt/ctrl/operationMode"
+    preset_modes:
+      - "BOOST"
+      - "ABSENCE"
+
+    # Availability
+    availability_topic: "aquamqtt/stats/lwlState"
+    payload_available: "ONLINE"
+    payload_not_available: "OFFLINE"
+```
