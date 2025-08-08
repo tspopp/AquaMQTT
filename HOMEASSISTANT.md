@@ -20,6 +20,9 @@ Please note, that there might be more attributes not implemented by this example
 
 For users who prefer manual configuration and want more comprehensive climate control through Home Assistant climate cards, a `climate` entity can be added. This allows for dedicated climate control cards and integration for `solar optimization scripts` (e.g.:[PV_Excess_Control by HenrikW](https://github.com/InventoCasa/ha-advanced-blueprints/tree/main/PV_Excess_Control))
 
+<img src="img/Wärmepumpe_Heat.png" width=50% height=100%><img src="img/Wärmepumpe_Auto.png" width=50% height=100%>
+<img src="img/Wärmepumpe_Profille_select.png" width=25% height=50%>
+
 To integrate this, add the following entry to your `mqtt.yaml` file (assuming you have `mqtt.yaml` included in your `configuration.yaml` like this: `mqtt: !include mqtt.yaml`):
 
 ```yaml
