@@ -1,4 +1,4 @@
 namespace aquamqtt
 {
-constexpr char VERSION[] = "v1.7.3";
+constexpr char VERSION[] = "v1.8.0";
 }
