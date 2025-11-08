@@ -36,7 +36,7 @@ Listener" and "Man-in-the-Middle."
 
 2. Configure WiFi and MQTT Settings:
 
-   Open the `config/ExampleConfiguration.h` file and update the following parameters to match your WiFi and MQTT broker
+   Open the `include/config/ExampleConfiguration.h` [file](include/config/ExampleConfiguration.h) and update the following parameters to match your WiFi and MQTT broker
    settings:
 
    ```c++
@@ -59,7 +59,7 @@ Listener" and "Man-in-the-Middle."
 
    Ensure that the WiFi SSID, password, MQTT broker address, and other parameters are correctly set.
 
-   Additionally, set the operation mode within `config/Configuration.h` to either LISTENER or MITM, depending of your [Wiring Configuration](../WIRING.md).
+   Additionally, set the operation mode within `include/config/Configuration.h` to either LISTENER or MITM, depending of your [Wiring Configuration](../WIRING.md).
 
    ```c++
    constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
@@ -84,6 +84,8 @@ Listener" and "Man-in-the-Middle."
    ```
 
 **Note:** If you are using the cheaper esp32 [esp32-s3-devkit-c1](https://github.com/tspopp/AquaMQTT/issues/56) instead of the Arduino Nano ESP32, use the environment `esp32-s3-devkitc-1` instead of `arduino_nano_esp32`
+
+**Hint:** If you have issues flashing Arduino Nano ESP32, just press the RST button multiple times quickly, until it starts blinking green. It shouldn't be needed, but if the esp is in some strange condition, it can be helpful. See Arduino Bootloader Mode in the official docs: https://docs.arduino.cc/tutorials/nano-esp32/cheat-sheet/
 
 ### Over-The-Air Update
 

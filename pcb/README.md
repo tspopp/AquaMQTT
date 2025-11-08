@@ -40,6 +40,8 @@ This board uses tiny SMD SSOP parts (SN74LVC2T45) so self-soldering is most prob
 5. Verify matched parts (should be good out of the box)
 6. Verify component placement (should be good out of the box)
 
+If there are any issues during production, [you may reference a successful previous order](https://github.com/tspopp/AquaMQTT/issues/96).
+
 ### Parts
 
 | Item                                                                                                                                                                                     | Count | Estimated Cost |
