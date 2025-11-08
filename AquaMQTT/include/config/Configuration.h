@@ -153,12 +153,21 @@ constexpr float MAX_WATER_TEMPERATURE = 62.0;
 constexpr float ABSENCE_WATER_TEMPERATURE = 20.0;
 
 /**
+*  Enable more comprehensive climate control through Home Assistant climate cards, provided by user @Gwaboo
+*  See https://github.com/tspopp/AquaMQTT/blob/main/HOMEASSISTANT.md
+*/
+constexpr bool ENABLE_HOMEASSISTANT_CLIMATE_CARD = true;
+constexpr float CLIMATE_CARD_MIN_TEMPERATURE = 43.0;
+constexpr float CLIMATE_CARD_MAX_TEMPERATURE = 61.0;
+constexpr float CLIMATE_CARD_STEP_TEMPERATURE = 1.0;
+
+/**
  * Self-explanatory internal settings: most probably you don't want to change them.
  */
 constexpr uint32_t WATCHDOG_TIMEOUT_MS    = 60000;
 constexpr uint16_t WIFI_RECONNECT_CYCLE_S = 10;
 constexpr uint16_t MQTT_MAX_TOPIC_SIZE    = 255;
-constexpr uint16_t MQTT_MAX_PAYLOAD_SIZE  = 1024;
+constexpr uint16_t MQTT_MAX_PAYLOAD_SIZE  = 1536;
 
 /**
  * Pin assignments for AquaMQTT Board Rev 1.0

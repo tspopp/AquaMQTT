@@ -146,6 +146,12 @@ enum class MQTT_ITEM_WATER_HEATER
     RESERVED_COUNT
 };
 
+enum class MQTT_ITEM_CLIMATE
+{
+    CLIMATE_CUSTOM,
+    RESERVED_COUNT
+};
+
 static JsonDocument defaultJson;
 
 static JsonDocument createFromDefault(const uint16_t identifier)
@@ -155,14 +161,17 @@ static JsonDocument createFromDefault(const uint16_t identifier)
     {
         char baseTopic[strlen(config::mqttPrefix) + 10];
         sprintf(baseTopic, "%saquamqtt", config::mqttPrefix);
-        defaultJson["~"]           = baseTopic;
-        defaultJson["dev"]["ids"]  = identifier;
-        defaultJson["dev"]["mf"]   = "Groupe Atlantic";
-        defaultJson["dev"]["name"] = "AquaMQTT DHW Heat Pump";
-        defaultJson["dev"]["mdl"]  = config::heatpumpModelName;
-        defaultJson["o"]["name"]   = "AquaMQTT";
-        defaultJson["o"]["sw"]     = VERSION;
-        defaultJson["o"]["url"]    = "https://github.com/tspopp/AquaMQTT";
+        defaultJson["~"]            = baseTopic;
+        defaultJson["dev"]["ids"]   = identifier;
+        defaultJson["dev"]["mf"]    = "Groupe Atlantic";
+        defaultJson["dev"]["name"]  = "AquaMQTT DHW Heat Pump";
+        defaultJson["dev"]["mdl"]   = config::heatpumpModelName;
+        defaultJson["o"]["name"]    = "AquaMQTT";
+        defaultJson["o"]["sw"]      = VERSION;
+        defaultJson["o"]["url"]     = "https://github.com/tspopp/AquaMQTT";
+        defaultJson["avty_t"]       = "~/stats/lwlState";
+        defaultJson["pl_not_avail"] = mqtt::ENUM_LAST_WILL_OFFLINE;
+        defaultJson["pl_avail"]     = mqtt::ENUM_LAST_WILL_ONLINE;
     }
 
     return { defaultJson };
@@ -1364,6 +1373,64 @@ static bool buildConfiguration(
             doc["curr_temp_t"]      = "~/main/waterTemp";
             doc["precision"]        = 1.0f;
             doc["temperature_unit"] = "C";
+            break;
+        default:
+            return false;
+    }
+
+    serializeJson(doc, buffer, config::MQTT_MAX_PAYLOAD_SIZE);
+    return true;
+}
+
+static bool buildConfiguration(
+        uint8_t*                       buffer,
+        const message::ProtocolVersion protocolVersion,
+        const uint16_t                 identifier,
+        const MQTT_ITEM_CLIMATE        item)
+{
+    JsonDocument doc = createFromDefault(identifier);
+    char         temp[100];
+    switch (item)
+    {
+        case MQTT_ITEM_CLIMATE::CLIMATE_CUSTOM:
+            if (!config::ENABLE_HOMEASSISTANT_CLIMATE_CARD)
+            {
+                return false;
+            }
+            // This has been provided by @Gwaboo
+            doc["name"]             = config::heatpumpModelName;
+            doc["ent_cat"]          = "config";
+            doc["uniq_id"]          = make_unique(temp, identifier, "climate");
+            doc["temperature_unit"] = "C";
+            doc["min_temp"]         = config::CLIMATE_CARD_MIN_TEMPERATURE;
+            doc["max_temp"]         = config::CLIMATE_CARD_MAX_TEMPERATURE;
+            doc["temp_step"]        = config::CLIMATE_CARD_STEP_TEMPERATURE;
+            // Current water temperature
+            doc["curr_temp_t"]   = "~/main/waterTemp";
+            doc["curr_temp_tpl"] = "{{ value | float }}";
+            // Target temperature (read)
+            doc["temp_stat_t"]   = "~/hmi/waterTempTarget";
+            doc["temp_stat_tpl"] = "{{ value | float }}";
+            // Target temperature (set)
+            doc["temp_cmd_t"]   = "~/ctrl/waterTempTarget";
+            doc["temp_cmd_tpl"] = "{{ value | float }}";
+            // Only use standard HVAC modes
+            doc["mode_stat_t"]   = "~/hmi/operationMode";
+            doc["mode_stat_tpl"] = "{% set map = {'MAN ECO OFF': 'off', 'AUTO': 'auto', 'MAN ECO ON': 'heat'} %} "
+                                   "{{ map.get(value, 'auto') }}";
+            doc["mode_cmd_t"]    = "~/ctrl/operationMode";
+            doc["mode_cmd_tpl"]  = "{% set map = {'off': 'MAN ECO OFF', 'auto': 'AUTO', 'heat': 'MAN ECO ON'} %} "
+                                   "{{ map.get(value, 'AUTO') }}";
+
+            doc["modes"][0] = "off";
+            doc["modes"][1] = "auto";
+            doc["modes"][2] = "heat";
+
+            // Preset modes (must match device payloads exactly)
+            doc["pr_mode_stat_t"] = "~/hmi/operationMode";
+            doc["pr_mode_cmd_t"]  = "~/ctrl/operationMode";
+            doc["pr_modes"][0]    = mqtt::ENUM_OPERATION_MODE_BOOST;
+            doc["pr_modes"][1]    = mqtt::ENUM_OPERATION_MODE_ABSENCE;
             break;
         default:
             return false;

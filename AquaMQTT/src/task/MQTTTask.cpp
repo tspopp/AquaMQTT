@@ -1728,6 +1728,8 @@ void MQTTTask::sendHomeassistantDiscovery()
     publishDiscovery(identifier, protocolVersion, "switch", discovery::MQTT_ITEM_SWITCH::RESERVED_COUNT);
     publishDiscovery(identifier, protocolVersion, "select", discovery::MQTT_ITEM_SELECT::RESERVED_COUNT);
     publishDiscovery(identifier, protocolVersion, "water_heater", discovery::MQTT_ITEM_WATER_HEATER::RESERVED_COUNT);
+    publishDiscovery(identifier, protocolVersion, "climate", discovery::MQTT_ITEM_CLIMATE::RESERVED_COUNT);
+
 
     mPublishedDiscovery = true;
 }
