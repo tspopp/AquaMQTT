@@ -20,9 +20,10 @@ constexpr char ENUM_UNKNOWN[] = { "UNKNOWN" };
 constexpr char ENUM_AQUAMQTT_MODE_LISTENER[] = { "LISTENER" };
 constexpr char ENUM_AQUAMQTT_MODE_MITM[]     = { "MITM" };
 
-constexpr char ENUM_AQUAMQTT_PROTOCOL_LEGACY[]  = { "LEGACY" };
-constexpr char ENUM_AQUAMQTT_PROTOCOL_NEXT[]    = { "NEXT" };
-constexpr char ENUM_AQUAMQTT_PROTOCOL_ODYSSEE[] = { "ODYSSEE" };
+constexpr char ENUM_AQUAMQTT_PROTOCOL_LEGACY[]     = { "LEGACY" };
+constexpr char ENUM_AQUAMQTT_PROTOCOL_LEGACY_ALT[] = { "LEGACY_ALT" };
+constexpr char ENUM_AQUAMQTT_PROTOCOL_NEXT[]       = { "NEXT" };
+constexpr char ENUM_AQUAMQTT_PROTOCOL_ODYSSEE[]    = { "ODYSSEE" };
 
 constexpr char ENUM_BRAND_ATLANTIC[] = { "Atlantic" };
 constexpr char ENUM_BRAND_THERMOR[]  = { "Thermor" };

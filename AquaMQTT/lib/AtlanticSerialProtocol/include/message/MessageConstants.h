@@ -1,8 +1,8 @@
 #ifndef AQUAMQTT_MESSAGECONSTANTS_H
 #define AQUAMQTT_MESSAGECONSTANTS_H
 
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 
 #include "mqtt/MQTTDefinitions.h"
 
@@ -21,10 +21,11 @@ enum class FrameBufferChannel
 
 enum ProtocolVersion
 {
-    PROTOCOL_UNKNOWN = -1,
-    PROTOCOL_LEGACY  = 0,
-    PROTOCOL_NEXT    = 1,
-    PROTOCOL_ODYSSEE = 2
+    PROTOCOL_UNKNOWN            = -1,
+    PROTOCOL_LEGACY             = 0,
+    PROTOCOL_NEXT               = 1,
+    PROTOCOL_ODYSSEE            = 2,
+    PROTOCOL_LEGACY_ALTERNATIVE = 3,
 };
 
 enum ProtocolChecksum
@@ -58,7 +59,7 @@ constexpr uint8_t EXTRA_MESSAGE_IDENTIFIER     = 217;
 constexpr uint8_t EXTRA_MESSAGE_LENGTH_ODYSSEE = 31;
 
 // this will work as long as they will always differ in length
-static ProtocolVersion getVersionByIdentifier(uint8_t identifier, uint8_t length)
+static ProtocolVersion getVersionByIdentifier(uint8_t identifier, uint8_t length, bool useAlternative)
 {
     if (identifier == HMI_MESSAGE_IDENTIFIER)
     {
@@ -69,6 +70,10 @@ static ProtocolVersion getVersionByIdentifier(uint8_t identifier, uint8_t length
             case HMI_MESSAGE_LENGTH_ODYSSEE:
                 return PROTOCOL_ODYSSEE;
             case HMI_MESSAGE_LENGTH_LEGACY:
+                if (useAlternative)
+                {
+                    return PROTOCOL_LEGACY_ALTERNATIVE;
+                }
                 return PROTOCOL_LEGACY;
             default:
                 break;
@@ -83,6 +88,10 @@ static ProtocolVersion getVersionByIdentifier(uint8_t identifier, uint8_t length
             case MAIN_MESSAGE_LENGTH_ODYSSEE:
                 return PROTOCOL_ODYSSEE;
             case MAIN_MESSAGE_LENGTH_LEGACY:
+                if (useAlternative)
+                {
+                    return PROTOCOL_LEGACY_ALTERNATIVE;
+                }
                 return PROTOCOL_LEGACY;
             default:
                 break;
@@ -97,6 +106,10 @@ static ProtocolVersion getVersionByIdentifier(uint8_t identifier, uint8_t length
             case ENERGY_MESSAGE_LENGTH_ODYSSEE:
                 return PROTOCOL_ODYSSEE;
             case ENERGY_MESSAGE_LENGTH_LEGACY:
+                if (useAlternative)
+                {
+                    return PROTOCOL_LEGACY_ALTERNATIVE;
+                }
                 return PROTOCOL_LEGACY;
             default:
                 break;
@@ -111,6 +124,10 @@ static ProtocolVersion getVersionByIdentifier(uint8_t identifier, uint8_t length
             case ERROR_MESSAGE_LENGTH_ODYSSEE:
                 return PROTOCOL_ODYSSEE;
             case ERROR_MESSAGE_LENGTH_LEGACY:
+                if (useAlternative)
+                {
+                    return PROTOCOL_LEGACY_ALTERNATIVE;
+                }
                 return PROTOCOL_LEGACY;
             default:
                 break;
@@ -140,6 +157,7 @@ static uint8_t lengthByFrameIdAndProtocol(const uint8_t frameId, const ProtocolV
             case PROTOCOL_ODYSSEE:
                 return HMI_MESSAGE_LENGTH_ODYSSEE;
             case PROTOCOL_LEGACY:
+            case PROTOCOL_LEGACY_ALTERNATIVE:
             default:
                 return HMI_MESSAGE_LENGTH_LEGACY;
         }
@@ -153,6 +171,7 @@ static uint8_t lengthByFrameIdAndProtocol(const uint8_t frameId, const ProtocolV
             case PROTOCOL_ODYSSEE:
                 return MAIN_MESSAGE_LENGTH_ODYSSEE;
             case PROTOCOL_LEGACY:
+            case PROTOCOL_LEGACY_ALTERNATIVE:
             default:
                 return MAIN_MESSAGE_LENGTH_LEGACY;
         }
@@ -166,6 +185,7 @@ static uint8_t lengthByFrameIdAndProtocol(const uint8_t frameId, const ProtocolV
             case PROTOCOL_ODYSSEE:
                 return ENERGY_MESSAGE_LENGTH_ODYSSEE;
             case PROTOCOL_LEGACY:
+            case PROTOCOL_LEGACY_ALTERNATIVE:
             default:
                 return ENERGY_MESSAGE_LENGTH_LEGACY;
         }
@@ -179,6 +199,7 @@ static uint8_t lengthByFrameIdAndProtocol(const uint8_t frameId, const ProtocolV
             case PROTOCOL_ODYSSEE:
                 return ERROR_MESSAGE_LENGTH_ODYSSEE;
             case PROTOCOL_LEGACY:
+            case PROTOCOL_LEGACY_ALTERNATIVE:
             default:
                 return ERROR_MESSAGE_LENGTH_LEGACY;
         }
@@ -196,6 +217,8 @@ static const char* protocolVersionStr(ProtocolVersion version)
     {
         case PROTOCOL_LEGACY:
             return reinterpret_cast<const char*>(mqtt::ENUM_AQUAMQTT_PROTOCOL_LEGACY);
+        case PROTOCOL_LEGACY_ALTERNATIVE:
+            return reinterpret_cast<const char*>(mqtt::ENUM_AQUAMQTT_PROTOCOL_LEGACY_ALT);
         case PROTOCOL_NEXT:
             return reinterpret_cast<const char*>(mqtt::ENUM_AQUAMQTT_PROTOCOL_NEXT);
         case PROTOCOL_ODYSSEE:
@@ -248,10 +271,10 @@ static const char* operationModeStr(HMIOperationMode mode)
 
 enum HMIOperationType : int
 {
-    OT_UNKNOWN = -1,
+    OT_UNKNOWN        = -1,
     OT_OFF_PEAK_HOURS = 0,
-    OT_ALWAYS_ON = 1,
-    OT_TIMER = 2,
+    OT_ALWAYS_ON      = 1,
+    OT_TIMER          = 2,
 
 };
 
