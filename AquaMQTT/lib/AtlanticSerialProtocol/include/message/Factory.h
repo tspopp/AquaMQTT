@@ -11,6 +11,8 @@
 #include "legacy/HMIMessage.h"
 #include "legacy/MainEnergyMessage.h"
 #include "legacy/MainStatusMessage.h"
+#include "legacy_alternative/HMIMessage.h"
+#include "legacy_alternative/MainStatusMessage.h"
 #include "next/ErrorMessage.h"
 #include "next/HMIMessage.h"
 #include "next/MainEnergyMessage.h"
@@ -33,6 +35,10 @@ static std::unique_ptr<IHMIMessage>
     if (version == PROTOCOL_LEGACY)
     {
         message = std::make_unique<legacy::HMIMessage>(buffer, previousBuffer);
+    }
+    if (version == PROTOCOL_LEGACY_ALTERNATIVE)
+    {
+        message = std::make_unique<legacyalt::HMIMessage>(buffer, previousBuffer);
     }
     else if (version == PROTOCOL_ODYSSEE)
     {
@@ -58,6 +64,10 @@ static std::unique_ptr<IMainMessage>
     {
         message = std::make_unique<odyssee::MainStatusMessage>(buffer, previousBuffer);
     }
+    else if (version == PROTOCOL_LEGACY_ALTERNATIVE)
+    {
+        message = std::make_unique<legacyalt::MainStatusMessage>(buffer, previousBuffer);
+    }
     else
     {
         message = std::make_unique<legacy::MainStatusMessage>(buffer, previousBuffer);
@@ -79,6 +89,7 @@ static std::unique_ptr<IEnergyMessage> createEnergyMessageFromBuffer(
     {
         message = std::make_unique<odyssee::MainEnergyMessage>(buffer, previousBuffer);
     }
+    // LEGACY + LEGACY ALTERNATIVE
     else
     {
         message = std::make_unique<legacy::MainEnergyMessage>(buffer, previousBuffer);
@@ -97,6 +108,7 @@ static std::unique_ptr<IErrorMessage> createErrorMessageFromBuffer(const Protoco
     {
         message = std::make_unique<odyssee::ErrorMessage>(buffer);
     }
+    // LEGACY + LEGACY ALTERNATIVE
     else
     {
         message = std::make_unique<legacy::ErrorMessage>(buffer);

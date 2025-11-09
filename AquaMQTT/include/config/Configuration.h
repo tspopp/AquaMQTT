@@ -103,6 +103,15 @@ constexpr bool MQTT_PUBLISH_SERIAL_STATISTICS = false;
 constexpr bool MQTT_PUBLISH_HEATPUMP_TIME_AND_DATE = false;
 
 /**
+ * Change this to use the alternative legacy protocol.
+ * There are heatpumps which use the legacy protocol identifiers ( id + length)
+ * but send different payloads Currently AquaMQTT does not support auto-detecting
+ * this special protocol type. In case you observe weird attributes and your heatpump
+ * is using the LEGACY protocol, you may set this flag to true.
+ */
+constexpr bool PROTOCOL_USE_LEGACY_ALTERNATIVE = false;
+
+/**
  * Change the time interval where all known attributes are re-published to the MQTT broker.
  */
 constexpr uint32_t MQTT_FULL_UPDATE_MS = 1000 * 60 * 30;
