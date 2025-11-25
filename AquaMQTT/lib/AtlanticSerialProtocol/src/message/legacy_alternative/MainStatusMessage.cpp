@@ -46,10 +46,6 @@ void MainStatusMessage::compareWith(const uint8_t* data)
                 mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_FAN);
                 mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_DEFROST);
                 break;
-            case 18:
-            case 19:
-                mHasChangedFloat.insert(MAIN_ATTR_FLOAT::FAN_SPEED_PWM);
-                break;
             case 20:
                 mHasChangedU8.insert(MAIN_ATTR_U8::SETTING_MIN_TARGET_WATER_TEMPERATURE);
                 break;
@@ -110,8 +106,6 @@ float MainStatusMessage::getAttr(const MAIN_ATTR_FLOAT attr)
             return (float) ((int16_t)((mData[10] << 8) | mData[9]) * 0.1);
         case MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE:
             return (float) ((int16_t)((mData[8] << 8) | mData[7]) * 0.1);
-        case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
-            return (float) (((short int) (mData[19] << 8) | mData[18]) / 10.0);
         default:
             return 0;
     }
@@ -258,9 +252,9 @@ bool MainStatusMessage::hasAttr(const MAIN_ATTR_FLOAT attr) const
         case MAIN_ATTR_FLOAT::WATER_TEMPERATURE:
         case MAIN_ATTR_FLOAT::AIR_TEMPERATURE:
         case MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE:
-        case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
             return true;
-    case MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE:
+        case MAIN_ATTR_FLOAT::EVAPORATOR_LOWER_TEMPERATURE:
+        case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
         default:
             return false;
     }
