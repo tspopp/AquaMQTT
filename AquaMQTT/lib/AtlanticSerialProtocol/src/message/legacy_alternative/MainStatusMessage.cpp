@@ -30,27 +30,12 @@ void MainStatusMessage::compareWith(const uint8_t* data)
             case 8:
                 mHasChangedFloat.insert(MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE);
                 break;
-            case 14:
-                mHasChangedU8.insert(MAIN_ATTR_U8::SETTING_FAN_PWM_THIRD);
-                break;
-            case 15:
-                mHasChangedU8.insert(MAIN_ATTR_U8::SETTING_FAN_PWM_FIRST);
-                break;
-            case 16:
-                mHasChangedU8.insert(MAIN_ATTR_U8::SETTING_FAN_PWM_SECOND);
-                break;
             case 17:
                 mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_HEATING_ELEMENT);
                 mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_HEATPUMP);
                 mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_BOILER_BACKUP);
                 mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_FAN);
                 mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_DEFROST);
-                break;
-            case 20:
-                mHasChangedU8.insert(MAIN_ATTR_U8::SETTING_MIN_TARGET_WATER_TEMPERATURE);
-                break;
-            case 21:
-                mHasChangedU8.insert(MAIN_ATTR_U8::SETTING_LEGIONELLA_TARGET_WATER_TEMPERATURE);
                 break;
             case 22:
                 mHasChangedBool.insert(MAIN_ATTR_BOOL::STATE_PV);
@@ -153,16 +138,6 @@ uint8_t MainStatusMessage::getAttr(const MAIN_ATTR_U8 attr)
                 return 0;
             }
             return mData[23];
-        case MAIN_ATTR_U8::SETTING_FAN_PWM_FIRST:
-            return mData[15];
-        case MAIN_ATTR_U8::SETTING_FAN_PWM_SECOND:
-            return mData[16];
-        case MAIN_ATTR_U8::SETTING_FAN_PWM_THIRD:
-            return mData[14];
-        case MAIN_ATTR_U8::SETTING_MIN_TARGET_WATER_TEMPERATURE:
-            return mData[20];
-        case MAIN_ATTR_U8::SETTING_LEGIONELLA_TARGET_WATER_TEMPERATURE:
-            return mData[21];
         case MAIN_ATTR_U8::SETTING_BRAND:
             switch (mData[35])
             {
@@ -286,11 +261,6 @@ bool MainStatusMessage::hasAttr(const MAIN_ATTR_U8 attr) const
     switch (attr)
     {
         case MAIN_ATTR_U8::ERROR_CODE:
-        case MAIN_ATTR_U8::SETTING_FAN_PWM_FIRST:
-        case MAIN_ATTR_U8::SETTING_FAN_PWM_SECOND:
-        case MAIN_ATTR_U8::SETTING_FAN_PWM_THIRD:
-        case MAIN_ATTR_U8::SETTING_MIN_TARGET_WATER_TEMPERATURE:
-        case MAIN_ATTR_U8::SETTING_LEGIONELLA_TARGET_WATER_TEMPERATURE:
         case MAIN_ATTR_U8::SETTING_BRAND:
         case MAIN_ATTR_U8::VERSION_CONTROLLER_ASCII:
             return true;
