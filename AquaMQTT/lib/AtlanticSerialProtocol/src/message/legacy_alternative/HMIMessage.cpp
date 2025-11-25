@@ -94,9 +94,6 @@ void HMIMessage::compareWith(const uint8_t* data)
             case 22:
                 mHasChangedU8.insert(HMI_ATTR_U8::STATE_TEST);
                 break;
-            case 27:
-                mHasChangedU8.insert(HMI_ATTR_U8::VERSION_HMI_ASCII);
-                break;
             case 28:
                 mHasChangedU8.insert(HMI_ATTR_U8::HMI_ERROR_NO_REQUESTED);
                 break;
@@ -235,8 +232,6 @@ uint8_t HMIMessage::getAttr(const HMI_ATTR_U8 attr)
                 return OT_TIMER;
             }
             return OT_ALWAYS_ON;
-        case HMI_ATTR_U8::VERSION_HMI_ASCII:
-            return mData[27];
         default:
             return 0;
     }
@@ -543,8 +538,8 @@ bool HMIMessage::hasAttr(const HMI_ATTR_U8 attr) const
         case HMI_ATTR_U8::HMI_ERROR_NO_REQUESTED:
         case HMI_ATTR_U8::OPERATION_MODE:
         case HMI_ATTR_U8::OPERATION_TYPE:
-        case HMI_ATTR_U8::VERSION_HMI_ASCII:
             return true;
+    case HMI_ATTR_U8::VERSION_HMI_ASCII:
         default:
             return false;
     }
