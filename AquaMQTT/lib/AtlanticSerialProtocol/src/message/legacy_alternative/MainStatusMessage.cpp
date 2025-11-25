@@ -22,8 +22,8 @@ void MainStatusMessage::compareWith(const uint8_t* data)
             case 2:
                 mHasChangedFloat.insert(MAIN_ATTR_FLOAT::WATER_TEMPERATURE);
                 break;
-            case 3:
-            case 4:
+            case 9:
+            case 10:
                 mHasChangedFloat.insert(MAIN_ATTR_FLOAT::AIR_TEMPERATURE);
                 break;
             case 7:
@@ -107,7 +107,7 @@ float MainStatusMessage::getAttr(const MAIN_ATTR_FLOAT attr)
         case MAIN_ATTR_FLOAT::WATER_TEMPERATURE:
             return (float) (((short int) (mData[2] << 8) | mData[1]) / 10.0);
         case MAIN_ATTR_FLOAT::AIR_TEMPERATURE:
-            return (float) (((short int) (mData[4] << 8) | mData[3]) / 10.0);
+            return (float) ((int16_t)((mData[10] << 8) | mData[9]) * 0.1);
         case MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE:
             return (float) ((int16_t)((mData[8] << 8) | mData[7]) * 0.1);
         case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
@@ -203,32 +203,6 @@ uint16_t MainStatusMessage::getAttr(const MAIN_ATTR_U16 attr)
 
 void MainStatusMessage::setAttr(const MAIN_ATTR_FLOAT attr, float value)
 {
-    switch (attr)
-    {
-        case MAIN_ATTR_FLOAT::WATER_TEMPERATURE:
-        {
-            short int rawValue = value * 100 / 10;
-            mData[1]           = rawValue & 0xFF;
-            mData[2]           = (rawValue >> 8) & 0xFF;
-        }
-        break;
-        case MAIN_ATTR_FLOAT::AIR_TEMPERATURE:
-        {
-            short int rawValue = value * 100 / 10;
-            mData[3]           = rawValue & 0xFF;
-            mData[4]           = (rawValue >> 8) & 0xFF;
-        }
-        break;
-        case MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE:
-        {
-            short int rawValue = value * 100 / 10;
-            mData[7]           = rawValue & 0xFF;
-            mData[8]           = (rawValue >> 8) & 0xFF;
-        }
-        break;
-        default:
-            break;
-    }
 }
 
 void MainStatusMessage::setAttr(MAIN_ATTR_BOOL attr, bool value)
