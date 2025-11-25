@@ -109,7 +109,7 @@ float MainStatusMessage::getAttr(const MAIN_ATTR_FLOAT attr)
         case MAIN_ATTR_FLOAT::AIR_TEMPERATURE:
             return (float) (((short int) (mData[4] << 8) | mData[3]) / 10.0);
         case MAIN_ATTR_FLOAT::EVAPORATOR_UPPER_TEMPERATURE:
-            return (float) (((short int) (mData[8] << 8) | mData[7]) / 10.0);
+            return (float) ((int16_t)((mData[8] << 8) | mData[7]) * 0.1);
         case MAIN_ATTR_FLOAT::FAN_SPEED_PWM:
             return (float) (((short int) (mData[19] << 8) | mData[18]) / 10.0);
         default:
