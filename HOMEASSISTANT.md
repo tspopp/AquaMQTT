@@ -1,4 +1,4 @@
-# Integrate AquaMQTT into HomeAssisant
+<img width="514" height="601" alt="image" src="https://github.com/user-attachments/assets/6be6a78e-63c7-4903-bbdc-4237b8ce0634" /># Integrate AquaMQTT into HomeAssisant
 
 ## Automatic via MQTT Discovery
 
@@ -34,28 +34,22 @@ To integrate this, add the following entry to your `mqtt.yaml` file (assuming yo
     max_temp: 60
     temp_step: 1
 
-    # Current water temperature
     current_temperature_topic: "aquamqtt/main/waterTemp"
-    current_temperature_template: "{{ value | float }}"
-
-    # Target temperature (read)
     temperature_state_topic: "aquamqtt/hmi/waterTempTarget"
-    temperature_state_template: "{{ value | float }}"
-
-    # Target temperature (set)
     temperature_command_topic: "aquamqtt/ctrl/waterTempTarget"
-    temperature_command_template: "{{ value | float }}"
 
-    # Only use standard HVAC modes
+    # --- HVAC MODES (Main Buttons) ---
     mode_state_topic: "aquamqtt/hmi/operationMode"
     mode_state_template: >
       {% set map = {
         'MAN ECO OFF': 'off',
         'AUTO': 'auto',
-        'MAN ECO ON': 'heat'
+        'MAN ECO ON': 'heat',
+        'BOOST': 'heat',
+        'ABSENCE': 'heat'
       } %}
       {{ map.get(value, 'auto') }}
-
+      
     mode_command_topic: "aquamqtt/ctrl/operationMode"
     mode_command_template: >
       {% set map = {
@@ -64,20 +58,25 @@ To integrate this, add the following entry to your `mqtt.yaml` file (assuming yo
         'heat': 'MAN ECO ON'
       } %}
       {{ map.get(value, 'AUTO') }}
-
+      
     modes:
       - "off"
       - "auto"
       - "heat"
 
-    # Preset modes (must match device payloads exactly)
+    # --- PRESET MODES (Special Buttons) ---
     preset_mode_state_topic: "aquamqtt/hmi/operationMode"
+    preset_mode_value_template: >
+      {% if value in ['BOOST', 'ABSENCE'] %}
+        {{ value }}
+      {% else %}
+        none
+      {% endif %}
     preset_mode_command_topic: "aquamqtt/ctrl/operationMode"
     preset_modes:
       - "BOOST"
       - "ABSENCE"
 
-    # Availability
     availability_topic: "aquamqtt/stats/lwlState"
     payload_available: "ONLINE"
     payload_not_available: "OFFLINE"
