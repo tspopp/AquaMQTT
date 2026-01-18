@@ -3,6 +3,8 @@
 
 #include <WiFi.h>
 
+#include "config/config.h"
+
 namespace aquamqtt
 {
 class WifiHandler
@@ -12,7 +14,8 @@ public:
 
     virtual ~WifiHandler() = default;
 
-    void setup();
+    bool setup();
+    void setupAP();
 
     void loop();
 
@@ -22,11 +25,8 @@ private:
     unsigned long mLastCheck;
 
     static bool mConnectedToWifiWithValidIpAddress;
-
 };
 
 }  // namespace aquamqtt
-
-
 
 #endif  // AQUAMQTT_WIFI_H

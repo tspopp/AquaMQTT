@@ -6,7 +6,9 @@
 #include "message/IMainMessage.h"
 #include "message/legacy/MainStatusMessage.h"
 #include "message/next/MainStatusMessage.h"
+#include "config/config.h"
 
+extern struct aquamqtt::AquaMqttStruct aquamqttSettings;
 namespace aquamqtt
 {
 
@@ -74,7 +76,7 @@ size_t MainStateProxy::copyFrame(
     }
 
     size_t mainMessageLength = aquamqtt::DHWState::getInstance().copyFrame(frameId, buffer, version, type);
-    if (mainMessageLength > 0 && aquamqtt::config::OPERATION_MODE == config::EOperationMode::MITM)
+    if (mainMessageLength > 0 && aquamqttSettings.operationMode == config::EOperationMode::MITM)
     {
         applyMainOverrides(buffer, version);
     }

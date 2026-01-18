@@ -5,9 +5,15 @@
 
 #include "MQTTDefinitions.h"
 #include "Version.h"
+#include "config/config.h"
 #include "message/MessageConstants.h"
 
-namespace aquamqtt::discovery
+extern aquamqtt::MqttSettingStruct mqttSettings;
+extern aquamqtt::AquaMqttStruct    aquamqttSettings;
+
+namespace aquamqtt
+{
+namespace discovery
 {
 enum class MQTT_ITEM_SENSOR
 {
@@ -159,19 +165,16 @@ static JsonDocument createFromDefault(const uint16_t identifier)
     // lazy init
     if (defaultJson.size() == 0)
     {
-        char baseTopic[strlen(config::mqttPrefix) + 10];
-        sprintf(baseTopic, "%saquamqtt", config::mqttPrefix);
-        defaultJson["~"]            = baseTopic;
-        defaultJson["dev"]["ids"]   = identifier;
-        defaultJson["dev"]["mf"]    = "Groupe Atlantic";
-        defaultJson["dev"]["name"]  = "AquaMQTT DHW Heat Pump";
-        defaultJson["dev"]["mdl"]   = config::heatpumpModelName;
-        defaultJson["o"]["name"]    = "AquaMQTT";
-        defaultJson["o"]["sw"]      = VERSION;
-        defaultJson["o"]["url"]     = "https://github.com/tspopp/AquaMQTT";
-        defaultJson["avty_t"]       = "~/stats/lwlState";
-        defaultJson["pl_not_avail"] = mqtt::ENUM_LAST_WILL_OFFLINE;
-        defaultJson["pl_avail"]     = mqtt::ENUM_LAST_WILL_ONLINE;
+        char baseTopic[strlen(mqttSettings.haDiscoveryPrefix.c_str()) + 10];
+        sprintf(baseTopic, "%saquamqtt", mqttSettings.haDiscoveryPrefix);
+        defaultJson["~"]           = baseTopic;
+        defaultJson["dev"]["ids"]  = identifier;
+        defaultJson["dev"]["mf"]   = "Groupe Atlantic";
+        defaultJson["dev"]["name"] = "AquaMQTT DHW Heat Pump";
+        defaultJson["dev"]["mdl"]  = aquamqttSettings.heatpumpModelName;
+        defaultJson["o"]["name"]   = "AquaMQTT";
+        defaultJson["o"]["sw"]     = aquamqtt::VERSION;
+        defaultJson["o"]["url"]    = "https://github.com/tspopp/AquaMQTT";
     }
 
     return { defaultJson };
@@ -411,7 +414,8 @@ static bool buildConfiguration(
             doc["uniq_id"]      = make_unique(temp, identifier, "energy_total_wp");
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_HANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -422,7 +426,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_UNHANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -433,7 +438,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_SENT:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -444,7 +450,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_MSG_CRC_NOK:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -455,7 +462,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_HMI_DROPPED_BYTES:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -466,7 +474,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_HANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -477,7 +486,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_UNHANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -488,7 +498,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_SENT:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -499,7 +510,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_MSG_CRC_NOK:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -510,7 +522,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_MAIN_DROPPED_BYTES:
-            if (config::OPERATION_MODE != config::EOperationMode::MITM || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::MITM
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -521,7 +534,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_MSG_HANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::LISTENER
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -532,7 +546,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_MSG_UNHANDLED:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::LISTENER
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -543,7 +558,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_MSG_CRC_NOK:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::LISTENER
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -554,7 +570,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_LST_DROPPED_BYTES:
-            if (config::OPERATION_MODE != config::EOperationMode::LISTENER || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
+            if (aquamqttSettings.operationMode != config::EOperationMode::LISTENER
+                || !config::MQTT_PUBLISH_SERIAL_STATISTICS)
             {
                 return false;
             }
@@ -1355,7 +1372,7 @@ static bool buildConfiguration(
     switch (item)
     {
         case MQTT_ITEM_WATER_HEATER::WATER_HEATER_CUSTOM:
-            doc["name"]             = config::heatpumpModelName;
+            doc["name"]             = aquamqttSettings.heatpumpModelName;
             doc["ent_cat"]          = "config";
             doc["uniq_id"]          = make_unique(temp, identifier, "water_heater");
             doc["ic"]               = "mdi:water";
@@ -1441,5 +1458,5 @@ static bool buildConfiguration(
 }
 
 }  // namespace aquamqtt::discovery
-
+}
 #endif  // AQUAMQTT_MQTTDISCOVERY_H

@@ -1,0 +1,9 @@
+{
+  "mqtt_server":  "localhost",
+  "mqtt_port": 1883,
+  "mqtt_user": "",
+  "mqtt_password": "",
+  "enableDiscovery": 1,
+  "haDiscoveryPrefix": "homeassistant/",
+  "brokerClientId": "aquamqtt"
+}

@@ -20,7 +20,7 @@ namespace aquamqtt::config
  * Defines the network name of your esp32 device in your network
  */
 
-constexpr char networkName[] = "aquamqtt";
+// char networkName[] = "aquamqtt";
 
 /**
  * Choose a timezone which is used for NTP time updates:
@@ -36,18 +36,18 @@ constexpr char ntpServer[] = "pool.ntp.org";
 /**
  * Enable HomeAssistant MQTT Discovery Mode
  */
-constexpr bool ENABLE_HOMEASSISTANT_DISCOVERY_MODE = true;
+// constexpr bool ENABLE_HOMEASSISTANT_DISCOVERY_MODE = true;
 
 /**
  * Homeassistant MQTT Discovery Prefix
  * https://www.home-assistant.io/integrations/mqtt/#discovery-topic
  */
-constexpr char haDiscoveryPrefix[] = "homeassistant/";
+// constexpr char haDiscoveryPrefix[] = "homeassistant/";
 
 /**
  * The OperationMode which is used for AquaMqtt. Refer to EOperationMode
  */
-constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
+// constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
 
 /**
  * Choose if the time and date values sent to the main controller should override the ones sent by the hmi controller.

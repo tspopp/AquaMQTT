@@ -1,0 +1,194 @@
+<head>
+    <!-- <script type='text/javascript' src='web/js/jquery-min.js'></script> -->
+    <script type='text/javascript' src='web/js/bootstrap.min.js'></script>
+    <link href='web/css/bootstrap.min.css' rel='stylesheet' type='text/css' />
+    <link href='web/css/style.css' rel='stylesheet' type='text/css' />
+    <!-- Modal -->
+    <div class='modal fade' id='staticBackdrop' data-bs-backdrop='static' data-bs-keyboard='false' tabindex='-1'
+        aria-labelledby='staticBackdropLabel' aria-hidden='true'>
+        <div class='modal-dialog'>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    <h5 class='modal-title' id='staticBackdropLabel'>Confirmation</h5>
+                    <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                </div>
+                <div class='modal-body'>
+                    Device reboot is necessary to take into account new settings.
+                    Do you want to reboot after modification save ?
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' id='save' data-bs-dismiss='modal' class='btn btn-primary'>Save only</button>
+                    <button type='button' id='savereboot' data-bs-dismiss='modal' class='btn btn-warning'>Save &
+                        reboot</button>
+                    <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Modal-->
+</head>
+
+<body>
+    <nav class='navbar navbar-expand-lg navbar-light bg-light rounded'><a class='navbar-brand' href='/'>
+            <img src='web/img/logo.png' /><strong>AquaMQTTConfig </strong> %VERSION%
+        </a>
+        <button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarNavDropdown'
+            aria-controls='navbarNavDropdown' aria-expanded='false' aria-label='Toggle navigation'>
+            <span class='navbar-toggler-icon'></span> </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="wifi-button" data-bs-toggle="tab" data-bs-target="#wifi-tab"
+                        type="button" role="tab" aria-controls="wifi" aria-selected="true">Wifi</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="mqtt-button" data-bs-toggle="tab" data-bs-target="#mqtt-tab" type="button"
+                        role="tab" aria-controls="mqtt" aria-selected="false">MQTT</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="aqua-button" data-bs-toggle="tab" data-bs-target="#aqua-tab" type="button"
+                        role="tab" aria-controls="aqua" aria-selected="false">AquaMQTT</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="tab-content" id="myTabContent">
+        <div class="container text-center">
+            <div class="row align-items-center">
+                <div class="col"></div>
+                <div id="liveAlertPlaceholder" class="col"> </div>
+                <div class="col"></div>
+            </div>
+        </div>
+        <div class="tab-pane fade show active" id="wifi-tab" role="tabpanel" aria-labelledby="wifi-tab">
+            <div class='row justify-content-md-center'>
+                <div class='col-sm-6'>
+                    <h1>Wifi Configuration</h1>
+                    <!-- action="/api/wifi" -->
+                    <form id='wifi' method='POST' class="needs-validation" novalidate>
+                        <div class='form-group mb-3'>
+                            <label for='ssid'>SSID</label>
+                            <div class="input-group has-validation">
+                                <input class='form-control' id='ssid' type='text' name='ssid' required>
+                                <div class="invalid-feedback">
+                                    Please enter a valid SSID.
+                                </div>
+                            </div>
+                        </div>
+                        <div class='form-group mb-3'>
+                            <label for='password'>Password</label>
+                            <input class='form-control' id='password' type='password' name='password'>
+                        </div>
+                        <div class='form-group mb-3'>
+                            <label for='networkname'>Network name</label>
+                            <input class='form-control' id='networkname' type='text' name='networkname'>
+                        </div>
+                    </form>
+                    <div class='form-group mb-3'>
+                        <button type='submit' class='btn btn-primary mb-3' data-bs-toggle='modal'
+                            data-bs-target='#staticBackdrop' name='save'>Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="mqtt-tab" role="tabpanel" aria-labelledby="mqtt-tab">
+            <div class='row justify-content-md-center'>
+                <div class='col-sm-6'>
+                    <h1>MQTT Configuration</h1>
+                    <form id='mqtt' method='POST' action='/api/mqtt'>
+                        <div class='form-group mb-3'>
+                            <label for='mqtt_server'>Server Address</label>
+                            <input class='form-control' id='mqtt_server' type='text' name='MQTT_Server'>
+                        </div>
+                        <div class='form-group mb-3'>
+                            <label for='mqtt_port'>Server Port</label>
+                            <input class='form-control' id='mqtt_port' type='number' name='MQTT_ServerPort'>
+                        </div>
+                        <div class='form-group mb-3'>
+                            <label for='mqtt_user'>User</label>
+                            <input class='form-control' id='mqtt_user' type='text' name='MQTT_UserName'>
+                        </div>
+                        <div class='form-group mb-3'>
+                            <label for='mqtt_password'>Password</label>
+                            <input class='form-control' id='mqtt_password' type='password' name='MQTT_Password'>
+                        </div>
+                        <div class='form-group mb-3'>
+                            <label for='brokerClientId'>ClientID</label>
+                            <input class='form-control' id='brokerClientId' type='text' name='MQTT_BrokerID'>
+                        </div>
+                        <div class='form-group form-switch mb-3'>
+                            <!-- form-control -->
+                            <input class='form-check-input' id='enableDiscovery' type='checkbox'
+                                name='enableDiscovery' role="switch">
+                            <label class='form-check-label' for='enableDiscovery'>Enable HomeAssistant Discovery</label>
+                        </div>
+                        <div class='form-group mb-3'>
+                            <label for='haDiscoveryPrefix'>Discovery prefix</label>
+                            <input class='form-control' id='haDiscoveryPrefix' type='text' name='MQTT_Prefix'>
+                        </div>
+                    </form>
+                    <div class='form-group mb-3'>
+                        <button type='submit' class='btn btn-primary mb-3' data-bs-toggle='modal'
+                            data-bs-target='#staticBackdrop' name='save'>Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="aqua-tab" role="tabpanel" aria-labelledby="aquamqtt-tab">
+            <div class='row justify-content-md-center'>
+                <div class='col-sm-6'>
+                    <h1>AquaMQTT Configuration</h1>
+                    <form id='aquamqtt' method='POST'>
+                        <div class='form-group mb-3'>
+                            <label for='heatpumpModelName'>Heat Pump model name</label>
+                            <input class='form-control' id='heatpumpModelName' type='text' name='AQUA_HeatPump'>
+                        </div>
+                        <div class='form-group mb-3'>
+                            <label for='operationMode'>operationMode</label>
+                            <select id='operationMode' name='AQUA_Mode' type='select' class='form-select form-control'
+                                form-select-md mb-3>
+                                <option value=0>LISTENER</option>
+                                <option value=1>MITM</option>
+                            </select>
+                        </div>
+                    </form>
+                    <div class='form-group mb-3'>
+                        <button type='submit' class='btn btn-primary mb-3' data-bs-toggle='modal'
+                            data-bs-target='#staticBackdrop' name='save'>Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="debug" role="tabpanel" aria-labelledby="debug-tab">
+            <div class='row justify-content-md-center'>
+                <div class='col-sm-8'>
+                    <h1>Debug</h1>
+                    <div class="btn-group-vertical">
+                        <a href="#" id="showfiles" class='btn btn-primary mb-2' data-bs-toggle="collapse"
+                            data-bs-target="#files">FSbrowser</a>
+                        <a href="/reboot" class='btn btn-primary mb-2'>Reboot</a>
+                    </div>
+                    <div id="files" class="collapse collapse-horizontal">
+                        <nav id='navbar-custom' class='navbar navbar-default navbar-fixed-left'>
+                            <div class='navbar-header'>
+                                <!--<a class='navbar-brand' href='#'>Brand</a>-->
+                            </div>
+                            <ul id="filelist" class='nav navbar-nav'>
+                            </ul>
+                        </nav>
+                        <div class='container-fluid'>
+                            <div class='app-main-content'>
+                                <div class='form-group'>
+                                    <label for='file'>File : <span id='title'></span></label>
+                                    <input type='hidden' name='filename' id='filename' value=''>
+                                    <textarea class='form-control' id='file' name='file' rows='10' disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type='text/javascript' src='web/js/main.js'></script>
+</body>
