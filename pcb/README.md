@@ -71,7 +71,7 @@ Your [heat pump](./../DEVICES.md) may use a different connector such as the Ther
 |------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|----------------|
 | AquaMqtt PCB Board (e.g. via AISLER.net)                                                                                                                         | 1x    | ~ 7 €          |
 | [Arduino Nano ESP32](https://docs.arduino.cc/hardware/nano-esp32). Note: Community suggested [cheaper alternative](https://github.com/tspopp/AquaMQTT/issues/56) | 1x    | ~ 20 €         |
-| Cable 2x4 2,54mm (Socket-Housing, Contacts, Wiring)                                                                                                              | 1x    | ~ 10 €         |
+| Cable 2x4 2,54mm (Socket-Housing, Contacts, Wiring, [Dupont](https://amzn.eu/d/fQyKTWX)                                                                          | 1x    | ~ 10 €         |
 | [Real Time Clock RTC DS3231](https://www.az-delivery.de/products/ds3231-real-time-clock) *(optional, experimental)*                                              | (1x)  | ~ 6 €          |
 | [SparkFun Logic Level Converter](https://eckstein-shop.de/SparkFunLogicLevelConverter-Bi-DirectionaShifterPegelwandlerEN) - 3.3V to 5V Bi-Directional or similar | 1x    | ~ 4 €          |
 | 100k Resistance 0207 (Ø x L) 2.5 mm x 6.8 mm                                                                                                                     | 3x    | < 1 €          |
