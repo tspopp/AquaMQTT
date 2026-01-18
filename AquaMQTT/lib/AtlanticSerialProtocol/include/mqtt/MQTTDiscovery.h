@@ -632,6 +632,10 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::STATS_AQUAMQTT_OVERRIDE_MODE:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "AquaMQTT Override Mode";
             doc["stat_t"]  = "~/stats/overrideMode";
             doc["uniq_id"] = make_unique(temp, identifier, "stats_amq_overridemode");
@@ -951,6 +955,10 @@ static bool buildConfiguration(
             doc["pl_off"]  = "0";
             break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_OPERATION_MODE:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Active Override Operation Mode";
             doc["stat_t"]  = "~/stats/activeOverrides";
             doc["val_tpl"] = "{{ value_json.operationMode }}";
@@ -961,6 +969,10 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_OPERATION_TYPE:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Active Override Operation Type";
             doc["stat_t"]  = "~/stats/activeOverrides";
             doc["val_tpl"] = "{{ value_json.operationType }}";
@@ -971,6 +983,10 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_TARGET_TEMP:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Active Override Target Temperature";
             doc["stat_t"]  = "~/stats/activeOverrides";
             doc["val_tpl"] = "{{ value_json.waterTempTarget }}";
@@ -981,6 +997,10 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_HEATING_ELEMENT_ENABLED:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Active Override Heating Element";
             doc["stat_t"]  = "~/stats/activeOverrides";
             doc["val_tpl"] = "{{ value_json.heatingElementEnabled }}";
@@ -991,6 +1011,10 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_EMERGENCY_MODE_ENABLED:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Active Override Emergency Mode";
             doc["stat_t"]  = "~/stats/activeOverrides";
             doc["val_tpl"] = "{{ value_json.emergencyModeEnabled }}";
@@ -1001,6 +1025,10 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_INSTALL_CONFIG:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Active Override Configuration Installation";
             doc["stat_t"]  = "~/stats/activeOverrides";
             doc["val_tpl"] = "{{ value_json.configInstallation }}";
@@ -1011,6 +1039,10 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_FAN_EXHAUST_CONFIG:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Active Override Configuration Fan Exhaust";
             doc["stat_t"]  = "~/stats/activeOverrides";
             doc["val_tpl"] = "{{ value_json.configFanExhaust }}";
@@ -1021,6 +1053,10 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_AIRDUCT_CONFIG:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Active Override Configuration Air Duct";
             doc["stat_t"]  = "~/stats/activeOverrides";
             doc["val_tpl"] = "{{ value_json.configAirduct }}";
@@ -1031,6 +1067,10 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_HMI_TIME_DATE:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Active Override Time/Date";
             doc["stat_t"]  = "~/stats/activeOverrides";
             doc["val_tpl"] = "{{ value_json['time/date'] }}";
@@ -1041,6 +1081,10 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_MAIN_SOLAR:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Active Override Solar Input";
             doc["stat_t"]  = "~/stats/activeOverridesMain";
             doc["val_tpl"] = "{{ value_json.stateSolar }}";
@@ -1051,6 +1095,10 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::STATS_ACTIVE_OVERRIDE_MAIN_PV:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Active Override PV Input";
             doc["stat_t"]  = "~/stats/activeOverridesMain";
             doc["val_tpl"] = "{{ value_json.statePV }}";
@@ -1145,9 +1193,12 @@ static bool buildConfiguration(
     switch (item)
     {
         case MQTT_ITEM_NUMBER::HMI_HOT_WATER_TEMP_TARGET:
-            doc["name"]         = "Target Temperature";
-            doc["stat_t"]       = "~/hmi/waterTempTarget";
-            doc["cmd_t"]        = "~/ctrl/waterTempTarget";
+            doc["name"]   = "Target Temperature";
+            doc["stat_t"] = "~/hmi/waterTempTarget";
+            if (config::OPERATION_MODE == config::EOperationMode::MITM)
+            {
+                doc["cmd_t"] = "~/ctrl/waterTempTarget";
+            }
             doc["ic"]           = "mdi:thermometer-water";
             doc["uniq_id"]      = make_unique(temp, identifier, "hmi_waterTempTarget");
             doc["ent_cat"]      = "config";
@@ -1176,6 +1227,10 @@ static bool buildConfiguration(
     switch (item)
     {
         case MQTT_ITEM_BUTTON::RESET_OVERRIDES:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "Reset Overrides";
             doc["cmd_t"]   = "~/ctrl/reset";
             doc["ic"]      = "mdi:restart";
@@ -1207,23 +1262,29 @@ static bool buildConfiguration(
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_opMode");
             doc["stat_t"]  = "~/hmi/operationMode";
-            doc["cmd_t"]   = "~/ctrl/operationMode";
-            doc["ic"]      = "mdi:list-box";
-            doc["ops"][0]  = mqtt::ENUM_OPERATION_MODE_ABSENCE;
-            doc["ops"][1]  = mqtt::ENUM_OPERATION_MODE_AUTO;
-            doc["ops"][2]  = mqtt::ENUM_OPERATION_MODE_BOOST;
-            doc["ops"][3]  = mqtt::ENUM_OPERATION_MODE_ECO_OFF;
-            doc["ops"][4]  = mqtt::ENUM_OPERATION_MODE_ECO_ON;
+            if (config::OPERATION_MODE == config::EOperationMode::MITM)
+            {
+                doc["cmd_t"] = "~/ctrl/operationMode";
+            }
+            doc["ic"]     = "mdi:list-box";
+            doc["ops"][0] = mqtt::ENUM_OPERATION_MODE_ABSENCE;
+            doc["ops"][1] = mqtt::ENUM_OPERATION_MODE_AUTO;
+            doc["ops"][2] = mqtt::ENUM_OPERATION_MODE_BOOST;
+            doc["ops"][3] = mqtt::ENUM_OPERATION_MODE_ECO_OFF;
+            doc["ops"][4] = mqtt::ENUM_OPERATION_MODE_ECO_ON;
             break;
         case MQTT_ITEM_SELECT::HMI_OPERATION_TYPE:
             doc["name"]    = "Operation Type";
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_opType");
             doc["stat_t"]  = "~/hmi/operationType";
-            doc["cmd_t"]   = "~/ctrl/operationType";
-            doc["ic"]      = "mdi:timetable";
-            doc["ops"][0]  = mqtt::ENUM_OPERATION_TYPE_ALWAYS_ON;
-            doc["ops"][1]  = mqtt::ENUM_OPERATION_TYPE_TIMER;
+            if (config::OPERATION_MODE == config::EOperationMode::MITM)
+            {
+                doc["cmd_t"] = "~/ctrl/operationType";
+            }
+            doc["ic"]     = "mdi:timetable";
+            doc["ops"][0] = mqtt::ENUM_OPERATION_TYPE_ALWAYS_ON;
+            doc["ops"][1] = mqtt::ENUM_OPERATION_TYPE_TIMER;
             if (protocolVersion == message::PROTOCOL_ODYSSEE)
             {
                 doc["ops"][2] = mqtt::ENUM_OPERATION_TYPE_OFF_PEAK_HOURS;
@@ -1238,14 +1299,17 @@ static bool buildConfiguration(
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_instConfig");
             doc["stat_t"]  = "~/hmi/configInstallation";
-            doc["cmd_t"]   = "~/ctrl/configInstallation";
-            doc["ic"]      = "mdi:cog";
-            doc["ops"][0]  = mqtt::ENUM_INSTALLATION_BOILER_BACKUP_EXT_OPT;
-            doc["ops"][1]  = mqtt::ENUM_INSTALLATION_BOILER_BACKUP_EXT_PRIO;
-            doc["ops"][2]  = mqtt::ENUM_INSTALLATION_BOILER_BACKUP_HP_PRIO;
-            doc["ops"][3]  = mqtt::ENUM_INSTALLATION_BOILER_BACKUP_HP_OPT;
-            doc["ops"][4]  = mqtt::ENUM_INSTALLATION_THERMODYNAMICS_ONLY;
-            doc["ops"][5]  = mqtt::ENUM_INSTALLATION_SOLAR_BACKUP;
+            if (config::OPERATION_MODE == config::EOperationMode::MITM)
+            {
+                doc["cmd_t"] = "~/ctrl/configInstallation";
+            }
+            doc["ic"]     = "mdi:cog";
+            doc["ops"][0] = mqtt::ENUM_INSTALLATION_BOILER_BACKUP_EXT_OPT;
+            doc["ops"][1] = mqtt::ENUM_INSTALLATION_BOILER_BACKUP_EXT_PRIO;
+            doc["ops"][2] = mqtt::ENUM_INSTALLATION_BOILER_BACKUP_HP_PRIO;
+            doc["ops"][3] = mqtt::ENUM_INSTALLATION_BOILER_BACKUP_HP_OPT;
+            doc["ops"][4] = mqtt::ENUM_INSTALLATION_THERMODYNAMICS_ONLY;
+            doc["ops"][5] = mqtt::ENUM_INSTALLATION_SOLAR_BACKUP;
             break;
         case MQTT_ITEM_SELECT::HMI_FAN_EXHAUST_CONFIG:
             if (protocolVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
@@ -1256,22 +1320,28 @@ static bool buildConfiguration(
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_fanExhaustConfig");
             doc["stat_t"]  = "~/hmi/configFanExhaust";
-            doc["cmd_t"]   = "~/ctrl/configFanExhaust";
-            doc["ic"]      = "mdi:fan";
-            doc["ops"][0]  = mqtt::ENUM_CONFIG_EXHAUST_FAN_STOP;
-            doc["ops"][1]  = mqtt::ENUM_CONFIG_EXHAUST_FAN_LOW_SPEED;
-            doc["ops"][2]  = mqtt::ENUM_CONFIG_EXHAUST_FAN_HIGH_SPEED;
+            if (config::OPERATION_MODE == config::EOperationMode::MITM)
+            {
+                doc["cmd_t"] = "~/ctrl/configFanExhaust";
+            }
+            doc["ic"]     = "mdi:fan";
+            doc["ops"][0] = mqtt::ENUM_CONFIG_EXHAUST_FAN_STOP;
+            doc["ops"][1] = mqtt::ENUM_CONFIG_EXHAUST_FAN_LOW_SPEED;
+            doc["ops"][2] = mqtt::ENUM_CONFIG_EXHAUST_FAN_HIGH_SPEED;
             break;
         case MQTT_ITEM_SELECT::HMI_AIR_DUCT_CONFIG:
             doc["name"]    = "AirDuct Configuration";
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_airduct_cfg_sel");
             doc["stat_t"]  = "~/hmi/configAirduct";
-            doc["cmd_t"]   = "~/ctrl/configAirduct";
-            doc["ic"]      = "mdi:sign-direction";
-            doc["ops"][0]  = mqtt::ENUM_AIR_DUCT_IN_IN;
-            doc["ops"][1]  = mqtt::ENUM_AIR_DUCT_INT_EXT;
-            doc["ops"][2]  = mqtt::ENUM_AIR_DUCT_EXT_EXT;
+            if (config::OPERATION_MODE == config::EOperationMode::MITM)
+            {
+                doc["cmd_t"] = "~/ctrl/configAirduct";
+            }
+            doc["ic"]     = "mdi:sign-direction";
+            doc["ops"][0] = mqtt::ENUM_AIR_DUCT_IN_IN;
+            doc["ops"][1] = mqtt::ENUM_AIR_DUCT_INT_EXT;
+            doc["ops"][2] = mqtt::ENUM_AIR_DUCT_EXT_EXT;
             break;
         case MQTT_ITEM_SELECT::RESERVED_COUNT:
         default:
@@ -1293,6 +1363,10 @@ static bool buildConfiguration(
     switch (item)
     {
         case MQTT_ITEM_SWITCH::STATS_ENABLE_FLAG_PV_HEATPUMP:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "PV Mode Heat Pump";
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "stats_flag_pv_hp");
@@ -1303,6 +1377,10 @@ static bool buildConfiguration(
             doc["pl_on"]   = "1";
             break;
         case MQTT_ITEM_SWITCH::STATS_ENABLE_FLAG_PV_HEATELEMENT:
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
+            {
+                return false;
+            }
             doc["name"]    = "PV Mode Heating Element";
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "stats_flag_pv_he");
@@ -1317,10 +1395,13 @@ static bool buildConfiguration(
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_emergencyMode");
             doc["stat_t"]  = "~/hmi/emergencyModeEnabled";
-            doc["cmd_t"]   = "~/ctrl/emergencyModeEnabled";
-            doc["ic"]      = "mdi:car-brake-alert";
-            doc["pl_off"]  = "0";
-            doc["pl_on"]   = "1";
+            if (config::OPERATION_MODE == config::EOperationMode::MITM)
+            {
+                doc["cmd_t"] = "~/ctrl/emergencyModeEnabled";
+            }
+            doc["ic"]     = "mdi:car-brake-alert";
+            doc["pl_off"] = "0";
+            doc["pl_on"]  = "1";
             break;
         case MQTT_ITEM_SWITCH::HMI_HEATING_ELEMENT_ENABLED:
             if (protocolVersion == message::ProtocolVersion::PROTOCOL_ODYSSEE)
@@ -1331,10 +1412,13 @@ static bool buildConfiguration(
             doc["ent_cat"] = "config";
             doc["uniq_id"] = make_unique(temp, identifier, "hmi_he_enabled");
             doc["stat_t"]  = "~/hmi/heatingElementEnabled";
-            doc["cmd_t"]   = "~/ctrl/heatingElementEnabled";
-            doc["ic"]      = "mdi:heating-coil";
-            doc["pl_off"]  = "0";
-            doc["pl_on"]   = "1";
+            if (config::OPERATION_MODE == config::EOperationMode::MITM)
+            {
+                doc["cmd_t"] = "~/ctrl/heatingElementEnabled";
+            }
+            doc["ic"]     = "mdi:heating-coil";
+            doc["pl_off"] = "0";
+            doc["pl_on"]  = "1";
             break;
         default:
             return false;
@@ -1355,12 +1439,16 @@ static bool buildConfiguration(
     switch (item)
     {
         case MQTT_ITEM_WATER_HEATER::WATER_HEATER_CUSTOM:
-            doc["name"]             = config::heatpumpModelName;
-            doc["ent_cat"]          = "config";
-            doc["uniq_id"]          = make_unique(temp, identifier, "water_heater");
-            doc["ic"]               = "mdi:water";
-            doc["mode_stat_t"]      = "~/hmi/operationMode";
-            doc["mode_cmd_t"]       = "~/ctrl/operationMode";
+            doc["name"]        = config::heatpumpModelName;
+            doc["ent_cat"]     = "config";
+            doc["uniq_id"]     = make_unique(temp, identifier, "water_heater");
+            doc["ic"]          = "mdi:water";
+            doc["mode_stat_t"] = "~/hmi/operationMode";
+            if (config::OPERATION_MODE == config::EOperationMode::MITM)
+            {
+                doc["mode_cmd_t"] = "~/ctrl/operationMode";
+                doc["temp_cmd_t"] = "~/ctrl/waterTempTarget";
+            }
             doc["modes"][0]         = mqtt::ENUM_OPERATION_MODE_AUTO;
             doc["modes"][1]         = mqtt::ENUM_OPERATION_MODE_BOOST;
             doc["modes"][2]         = mqtt::ENUM_OPERATION_MODE_ECO_ON;
@@ -1369,7 +1457,6 @@ static bool buildConfiguration(
             doc["min"]              = config::ABSENCE_WATER_TEMPERATURE;
             doc["max"]              = config::MAX_WATER_TEMPERATURE;
             doc["temp_stat_t"]      = "~/hmi/waterTempTarget";
-            doc["temp_cmd_t"]       = "~/ctrl/waterTempTarget";
             doc["curr_temp_t"]      = "~/main/waterTemp";
             doc["precision"]        = 1.0f;
             doc["temperature_unit"] = "C";
@@ -1394,6 +1481,10 @@ static bool buildConfiguration(
     {
         case MQTT_ITEM_CLIMATE::CLIMATE_CUSTOM:
             if (!config::ENABLE_HOMEASSISTANT_CLIMATE_CARD)
+            {
+                return false;
+            }
+            if (config::OPERATION_MODE == config::EOperationMode::LISTENER)
             {
                 return false;
             }
