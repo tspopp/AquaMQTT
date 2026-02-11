@@ -226,7 +226,8 @@ static bool buildConfiguration(
             doc["uniq_id"]      = make_unique(temp, identifier, "main_evoAirTempLower");
             break;
         case MQTT_ITEM_SENSOR::MAIN_COMPRESSOR_OUTLET_TEMP:
-            if (protocolVersion == message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion == message::ProtocolVersion::PROTOCOL_LEGACY
+                || protocolVersion == message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -292,7 +293,8 @@ static bool buildConfiguration(
             doc["ent_cat"]      = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::MAIN_ERROR_CODE:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -318,7 +320,8 @@ static bool buildConfiguration(
             doc["uniq_id"]      = make_unique(temp, identifier, "energy_total_hp_h");
             break;
         case MQTT_ITEM_SENSOR::ENERGY_TOTAL_HOURS:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -373,7 +376,8 @@ static bool buildConfiguration(
 
             break;
         case MQTT_ITEM_SENSOR::ENERGY_POWER_HEAT_ELEMENT:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -386,7 +390,8 @@ static bool buildConfiguration(
             doc["dev_cla"]      = "power";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_POWER_HEATPUMP:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -399,7 +404,8 @@ static bool buildConfiguration(
             doc["dev_cla"]      = "power";
             break;
         case MQTT_ITEM_SENSOR::ENERGY_TOTAL_WATER_PRODUCTION:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -613,7 +619,8 @@ static bool buildConfiguration(
             doc["ic"]      = "mdi:calendar-clock";
             break;
         case MQTT_ITEM_SENSOR::HMI_SETUP_STATE:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -643,7 +650,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_PWM_01:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -654,7 +662,8 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:fan-speed-1";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_PWM_02:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -665,7 +674,8 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:fan-speed-2";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_PWM_03:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -676,7 +686,8 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:fan-speed-3";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_MIN_TEMP_TARGET:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -687,7 +698,8 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:thermometer-chevron-down";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_MIN_TEMP_LEGIONELLA:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -698,7 +710,8 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:thermometer-plus";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_PWR_HEATELEM:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -709,7 +722,8 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:heating-coil";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_BOILER_CAP:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -720,7 +734,8 @@ static bool buildConfiguration(
             doc["ic"]           = "mdi:barrel";
             break;
         case MQTT_ITEM_SENSOR::MAIN_SETTING_BOILER_BRAND:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -742,7 +757,8 @@ static bool buildConfiguration(
             doc["ic"]      = "mdi:information";
             break;
         case MQTT_ITEM_SENSOR::HMI_TEST_MODE:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -1109,7 +1125,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_CAPABILITY_HEAT_EXC:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -1122,7 +1139,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_CAPABILITY_CIRCULATION:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -1135,7 +1153,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_CAPABILITY_PV_INPUT:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -1148,7 +1167,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_CAPABILITY_EXT_COMM:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }
@@ -1161,7 +1181,8 @@ static bool buildConfiguration(
             doc["ent_cat"] = "diagnostic";
             break;
         case MQTT_ITEM_BINARY_SENSOR::MAIN_CAPABILITY_DRY_HEATING:
-            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY)
+            if (protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY
+                && protocolVersion != message::ProtocolVersion::PROTOCOL_LEGACY_ALTERNATIVE)
             {
                 return false;
             }

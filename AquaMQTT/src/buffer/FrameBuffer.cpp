@@ -120,7 +120,7 @@ int FrameBuffer::handleFrame()
         ProtocolVersion protocolVersion = mLockedProtocol;
         if (protocolVersion == PROTOCOL_UNKNOWN)
         {
-            protocolVersion = getVersionByIdentifier(frameId, payloadLength);
+            protocolVersion = getVersionByIdentifier(frameId, payloadLength, config::PROTOCOL_USE_LEGACY_ALTERNATIVE);
         }
 
         bool crcResult = false;
@@ -248,6 +248,7 @@ bool FrameBuffer::isSync()
     switch (mLockedProtocol)
     {
         case PROTOCOL_LEGACY:
+        case PROTOCOL_LEGACY_ALTERNATIVE:
             return ((mBuffer[0] == HMI_MESSAGE_IDENTIFIER && mBuffer[1] == HMI_MESSAGE_LENGTH_LEGACY)
                     || (mBuffer[0] == MAIN_MESSAGE_IDENTIFIER && mBuffer[1] == MAIN_MESSAGE_LENGTH_LEGACY)
                     || (mBuffer[0] == ENERGY_MESSAGE_IDENTIFIER && mBuffer[1] == ENERGY_MESSAGE_LENGTH_LEGACY)

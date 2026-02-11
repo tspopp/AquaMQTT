@@ -74,3 +74,11 @@ TEST(DHWDataTypeTestSuite, WriteFloatValues)
     ASSERT_EQ(result[0], bytes8[0]);
     ASSERT_EQ(result[1], bytes8[1]);
 }
+
+TEST(DHWDataTypeTestSuite, LegacyAlternativeTemperatures)
+{
+    unsigned char bytes1[] = { 85, 0 };  // 8.5
+    float value = (int16_t)((bytes1[1] << 8) | bytes1[0]) * 0.1;
+    ASSERT_EQ(value, 8.5);
+
+}
