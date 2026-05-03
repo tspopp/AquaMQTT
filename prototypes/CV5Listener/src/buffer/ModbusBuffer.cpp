@@ -128,7 +128,7 @@ int ModbusBuffer::handleFrame()
             {
                 sprintf(reinterpret_cast<char*>(mTopicBuffer), "%s%s%d/%d/%d/%d/%s", config::mqttPrefix,
                 mqtt::BASE_TOPIC, functionCode, parameter01, parameter02, subfn, mqtt::DEBUG);
-                toHexStr(mTransferBuffer, length, reinterpret_cast<char*>(mPayloadBuffer));
+                toHexStr(mTransferBuffer, totalLength, reinterpret_cast<char*>(mPayloadBuffer));
                 mMQTTClient->publish(reinterpret_cast<char*>(mTopicBuffer), reinterpret_cast<char*>(mPayloadBuffer));
                 mHandledCount++;
             }
