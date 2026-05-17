@@ -22,9 +22,10 @@ enum class FrameBufferChannel
 enum ProtocolVersion
 {
     PROTOCOL_UNKNOWN = -1,
-    PROTOCOL_LEGACY  = 0,
-    PROTOCOL_NEXT    = 1,
-    PROTOCOL_ODYSSEE = 2
+    PROTOCOL_LEGACY      = 0,
+    PROTOCOL_NEXT        = 1,
+    PROTOCOL_ODYSSEE     = 2,
+    PROTOCOL_OPTITRONIC2 = 3
 };
 
 enum ProtocolChecksum

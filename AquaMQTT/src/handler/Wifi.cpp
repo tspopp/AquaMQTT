@@ -1,6 +1,7 @@
 #include "handler/Wifi.h"
 
 #include "config/Configuration.h"
+#include "config/WebConfig.h"
 
 namespace aquamqtt
 {
@@ -11,21 +12,34 @@ WifiHandler::WifiHandler() : mLastCheck(0)
 {
 }
 
-void WifiHandler::setup()
+void WifiHandler::setupAP()
+{
+    WiFiClass::mode(WIFI_AP);
+    WiFi.disconnect();
+    String macAddress = WiFi.softAPmacAddress();
+    macAddress.replace(":", "");
+    String apName = "aquamqtt-" + macAddress.substring(0, 4);
+    WiFi.softAP(apName.c_str());
+    Serial.print("[wifi] AP started: ");
+    Serial.println(apName);
+    Serial.print("[wifi] AP IP: ");
+    Serial.println(WiFi.softAPIP().toString().c_str());
+}
+
+bool WifiHandler::setup()
 {
     WiFiClass::mode(WIFI_STA);
 
-    // we don't trust the auto reconnect routine, as it seems there are edge cases where it does not work
     WiFi.setAutoReconnect(false);
-
-    // we trust the wifi callbacks to determine if we are properly connected or disconnected
     WiFi.onEvent(wifiCallback);
 
-    // begin a single wifi session
-    WiFi.begin(aquamqtt::config::ssid, aquamqtt::config::psk);
+    Serial.print("[wifi] connecting to SSID: ");
+    Serial.println(wifiConfig.ssid.c_str());
 
-    // perform the next wifi check in config::WIFI_RECONNECT_CYCLE_S
+    WiFi.begin(wifiConfig.ssid.c_str(), wifiConfig.password.c_str());
+
     mLastCheck = millis();
+    return true;
 }
 
 void WifiHandler::loop()

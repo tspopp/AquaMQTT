@@ -1,0 +1,9 @@
+{
+  "server": "CHANGE_ME",
+  "port": 1883,
+  "user": "CHANGE_ME",
+  "password": "CHANGE_ME",
+  "clientId": "aquamqtt",
+  "enableDiscovery": true,
+  "discoveryPrefix": "homeassistant/"
+}

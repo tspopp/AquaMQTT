@@ -6,13 +6,16 @@ namespace aquamqtt
 class OTAHandler
 {
 public:
-    OTAHandler() = default;
+    OTAHandler() : mStarted(false) {}
 
     virtual ~OTAHandler() = default;
 
     void setup();
 
     void loop();
+
+private:
+    bool mStarted;
 };
 }  // namespace aquamqtt
 

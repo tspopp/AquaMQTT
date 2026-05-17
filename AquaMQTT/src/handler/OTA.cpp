@@ -1,9 +1,11 @@
 #include "handler/OTA.h"
 
 #include <ArduinoOTA.h>
+#include <WiFi.h>
 #include <esp_task_wdt.h>
 
 #include "config/Configuration.h"
+#include "config/WebConfig.h"
 
 namespace aquamqtt
 {
@@ -14,7 +16,7 @@ void OTAHandler::setup()  // NOLINT(*-convert-member-functions-to-static)
     // ArduinoOTA.setPort(3232);
 
     // Hostname defaults to esp3232-[MAC]
-    ArduinoOTA.setHostname(config::networkName);
+    ArduinoOTA.setHostname(wifiConfig.networkName.c_str());
 
     // No authentication by default
     // ArduinoOTA.setPassword("admin");
@@ -53,11 +55,25 @@ void OTAHandler::setup()  // NOLINT(*-convert-member-functions-to-static)
                     Serial.println("End Failed");
             });
 
-    ArduinoOTA.begin();
+    // Don't call begin() here — WiFi may not be connected yet.
+    // begin() is called in loop() once WiFi is up.
+    mStarted = false;
 }
 
 void OTAHandler::loop()  // NOLINT(*-convert-member-functions-to-static)
 {
+    if (!mStarted)
+    {
+        // Wait until WiFi has an IP before binding OTA socket
+        if (WiFi.status() == WL_CONNECTED && WiFi.localIP() != INADDR_NONE)
+        {
+            ArduinoOTA.begin();
+            mStarted = true;
+            Serial.println("[ota] started");
+        }
+        return;
+    }
+
     ArduinoOTA.handle();
 }
 

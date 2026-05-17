@@ -12,9 +12,13 @@ public:
 
     virtual ~WifiHandler() = default;
 
-    void setup();
+    bool setup();
+
+    void setupAP();
 
     void loop();
+
+    static bool isConnected() { return mConnectedToWifiWithValidIpAddress; }
 
 private:
     static void wifiCallback(WiFiEvent_t event);
