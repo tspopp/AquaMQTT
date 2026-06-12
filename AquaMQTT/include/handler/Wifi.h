@@ -5,16 +5,18 @@
 
 namespace aquamqtt
 {
-class WifiHandler
+class WifiHandler final
 {
 public:
-    WifiHandler();
+    static WifiHandler& getInstance();
 
-    virtual ~WifiHandler() = default;
-
+    bool connected() { return mConnectedToWifiWithValidIpAddress; };
     void setup();
-
     void loop();
+
+private:
+    WifiHandler();
+    virtual ~WifiHandler() = default;
 
 private:
     static void wifiCallback(WiFiEvent_t event);

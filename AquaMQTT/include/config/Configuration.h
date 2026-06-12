@@ -1,10 +1,12 @@
 #ifndef AQUAMQTT_CONFIGURATION_H
 #define AQUAMQTT_CONFIGURATION_H
 
+#include <Arduino.h>
+
 /**
  * Possibility to include your own configuration file (added to .gitignore)
  */
-//#define CUSTOM_CONFIGURATION
+#define CUSTOM_CONFIGURATION
 
 #ifdef CUSTOM_CONFIGURATION
 #    include "CustomConfiguration.h"
@@ -16,6 +18,8 @@
 
 namespace aquamqtt::config
 {
+//#define USE_WDT
+
 /**
  * Defines the network name of your esp32 device in your network
  */
@@ -43,11 +47,6 @@ constexpr bool ENABLE_HOMEASSISTANT_DISCOVERY_MODE = true;
  * https://www.home-assistant.io/integrations/mqtt/#discovery-topic
  */
 constexpr char haDiscoveryPrefix[] = "homeassistant/";
-
-/**
- * The OperationMode which is used for AquaMqtt. Refer to EOperationMode
- */
-constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
 
 /**
  * Choose if the time and date values sent to the main controller should override the ones sent by the hmi controller.

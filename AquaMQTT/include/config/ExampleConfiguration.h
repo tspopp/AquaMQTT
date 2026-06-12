@@ -1,6 +1,11 @@
 #ifndef AQUAMQTT_EXAMPLECONFIGURATION_H
 #define AQUAMQTT_EXAMPLECONFIGURATION_H
 
+#include <Arduino.h>
+
+#include "Modes.h"
+
+
 namespace aquamqtt
 {
 namespace config
@@ -16,6 +21,11 @@ constexpr char brokerUser[]        = "";
 constexpr char brokerPassword[]    = "";
 constexpr char mqttPrefix[]        = "";
 constexpr char heatpumpModelName[] = "Atlantic Explorer v4";
+
+/**
+ * The OperationMode which is used for AquaMqtt. Refer to EOperationMode
+ */
+constexpr EOperationMode OPERATION_MODE = EOperationMode::MITM;
 
 }  // namespace config
 

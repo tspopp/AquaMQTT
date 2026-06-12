@@ -5,6 +5,11 @@
 namespace aquamqtt
 {
 
+WifiHandler& WifiHandler::getInstance() {
+    static WifiHandler instance;
+    return instance;
+}
+
 bool WifiHandler::mConnectedToWifiWithValidIpAddress = false;
 
 WifiHandler::WifiHandler() : mLastCheck(0)

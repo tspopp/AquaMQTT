@@ -37,7 +37,9 @@ void OTAHandler::setup()  // NOLINT(*-convert-member-functions-to-static)
             .onEnd([]() { Serial.println("\nEnd"); })
             .onProgress([](unsigned int progress, unsigned int total) {
                 Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+                #ifdef USE_WDT
                 esp_task_wdt_reset();
+                #endif
             })
             .onError([](ota_error_t error) {
                 Serial.printf("Error[%u]: ", error);

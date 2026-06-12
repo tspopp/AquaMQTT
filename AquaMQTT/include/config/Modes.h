@@ -20,6 +20,9 @@ enum EOperationMode
      * - Parses and publishes DHW messages to MQTT, Allows modification via MQTT
      */
     MITM,
+
+    V5_LISTENER,
+    V5_MITM,
 };
 }
 
