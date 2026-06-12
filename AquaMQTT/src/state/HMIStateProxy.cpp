@@ -62,8 +62,12 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, const message::ProtocolVe
                 // This configuration is not allowed in the HMI controller, but we hope the Main controller accepts it :)
                 message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_ACTIVE);
             } else {
-                message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_INACTIVE);
+                message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_BOOST);
             }
+                // ECO modes are designed with algorythms based on previous behaviour, while the Boost command is 
+                // on demand only, unregarding of previous behaviour. Built in checks prevent 
+                // enabling above factory-set temperatures. Will not override the refusal of the heatelement. Testing needed to see if Calypso
+                // accepts Boost instead of ECO_ACTIVE while still accepting refusal of HE.
             message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             // do not use heat element
             message->setAttr(message::HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED, false);
@@ -72,7 +76,8 @@ void HMIStateProxy::applyHMIOverrides(uint8_t* buffer, const message::ProtocolVe
         case AM_MODE_PV_HE_ONLY:
             message->setAttr(message::HMI_ATTR_U8::STATE_INSTALLATION_MODE, message::HMIInstallation::INST_HP_ONLY);
             message->setAttr(message::HMI_ATTR_U8::OPERATION_TYPE, message::HMIOperationType::OT_ALWAYS_ON);
-            message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_ECO_INACTIVE);
+            message->setAttr(message::HMI_ATTR_U8::OPERATION_MODE, message::HMIOperationMode::OM_BOOST);
+            // Same logic as with PV_HP_ONLY
             message->setAttr(message::HMI_ATTR_FLOAT::WATER_TARGET_TEMPERATURE, config::MAX_WATER_TEMPERATURE);
             // just use heat element
             message->setAttr(message::HMI_ATTR_BOOL::EMERGENCY_MODE_ENABLED, true);
