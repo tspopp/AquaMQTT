@@ -22,7 +22,7 @@ These devices have been tested succesfully by the community. Currently there are
 | [Thermor Aeromax RT5+ (jonvelle)](https://github.com/tspopp/AquaMQTT/issues/98)                      | ?                    | ?                           | [ODYSSEE](PROTOCOL_ODYSSEE.md)           | Requires `DEFAULT_SERIAL_CONFIGURATION` set to `Serial_8N1` in `Configuration.h`                                                       |                   |
 | Windhager Aquawin Air 2 AWA272 (Gwabo)                                                               | E                    | E                           | [NEXT](PROTOCOL_NEXT.md)                 |                                                                                                                                        | 2022?             |
 | Windhager Aquawin Air 3 AWA273                                                                       | B                    | B                           | [LEGACY](PROTOCOL.md) / CRC16      <br/> |                                                                                                                                        | 2021              |
-
+| [Atlantic Calypso 100L](https://github.com/tspopp/AquaMQTT/issues/97)                                | E                    | F                           | [LEGACY](PROTOCOL.md)                    | Requires `constexpr bool PROTOCOL_USE_LEGACY_ALTERNATIVE = true;` Has some quirks, but is functional                                   | 2025              |
 
 ## Potential compatible devices
 
